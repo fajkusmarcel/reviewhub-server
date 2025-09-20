@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2>Módy aplikace</h2>
+<a href="{{ url_for('select_mode', mode='test') }}">test</a> | <a href="{{ url_for('select_mode', mode='production') }}">production</a>
+
+<h2>Konfigurace GPTs</h2>
+<a href="{{ url_for('settings.configure_ai')}}">Konfigurovat</a>
+
+
+<h2>Databáze</h2>
+<a href="{{ url_for('settings.backup_db')}}">Zálohovat databázi reviewhub</a>
+
+<h2>Aktualizace informaci ze SCOPUS</h2>
+<a href="{{ url_for('settings.update_publications_from_scopus') }}" class="btn btn-primary">Aktualizovat články ze Scopusu</a>
+
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form method="post">
+    <div class="form-group">
+        <label for="project_name">Název projektu:</label>
+        <input type="text" id="project_name" name="project_name" value="{{ project.project_name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="project_description">Popis projektu:</label>
+        <textarea id="project_description" class="bigger" name="project_description" style="height: 350px;">{{ project.project_description }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="project_structure">Struktura review članku:</label>
+        <textarea id="project_structure" class="bigger" name="project_structure" style="height: 350px;">{{ project.project_structure }}</textarea>
+    </div>
+
+    <h3> Uživatelé</h3>
+    {% for user in users %}
+    <div class="form-group">
+        <label> {{ user['name']}} {{ user['surname']}} </label>
+        <input type="checkbox" name="user_ids" value="{{ user['user_id'] }}" {% if user['user_id'] in assigned_users %}checked{% endif %}>
+    </div>
+    {% endfor %}
+
+    <button type="submit">Uložit změny</button>
+</form>
+{% endblock %}
+

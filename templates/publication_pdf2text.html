@@ -1,0 +1,175 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+    <div id="article-export" class="article-export" style="display: flex;">  
+            
+        <div id="article-export-left">
+
+            <form id="pdfForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file-upload">Název PDF souboru:</label>
+                    <div id="file-upload" class="file-upload">
+                        <span>Přetáhněte soubor sem nebo klikněte pro výběr souboru</span>
+                        <input type="file" id="pdf_soubor" name="pdf_soubor" accept=".pdf" style="display:none;" onchange="updateFileName()">
+                    </div>
+                </div>
+                
+
+
+                
+                <button type="button" id="uploadButton">Nahrát a extrahovat text</button>
+
+                <br>
+                <div class="form-group"></div>
+                    <div class="checkbox-item">
+                        <label for="extractedText">Extrahovaný text:</label><button type="button" onclick="downloadTextFromTextarea('extractedText')">Stáhnout jako soubor</button>
+                    </div>        
+                    <textarea id="extractedText" rows="10" cols="130" placeholder="Sem bude vložen extrahovaný text ..."></textarea>
+                    <br>
+                    {% if session['user_role'] == 'admin' %}
+                    <div class="checkbox-item">
+                        <label for="configAI">Konfigurace AI:</label><button type="button" onclick="downloadTextFromTextarea('configAI')">Stáhnout jako soubor</button>
+                    </div>        
+                    <textarea id="configAI" rows="10" cols="130" placeholder="Sem bude vložena konfigurace AI ..."></textarea>
+                    <br>
+                    <div class="checkbox-item">
+                        <label for="dataForAI">Příkaz pro AI:</label>
+                        <button type="button" onclick="downloadTextFromTextarea('dataForAI')">Stáhnout jako soubor</button>
+                        <select id="gpt_model">
+                            <option value="gpt-4o">gpt-4o</option>
+                            <option value="gpt-4o-mini" select>gpt-4o-mini</option>
+                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                            <option value="gpt-4">gpt-4</option>
+                            <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
+                            <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>                            
+                        </select>
+                        <button type="button" onclick="exportPaperToStructureByGPT()">GPT</button>
+                    </div>            
+                    <textarea id="dataForAI" rows="10" cols="130" placeholder="Sem bude vložen celý příkaz pro zpracování AI ..."></textarea>
+                    {% endif %}
+                </form>
+            </div>
+            
+            
+                
+            <div id="article-export-right">
+                <h3>Vygenerovaný text</h3>
+                <div class="form-group">
+                    <div class="form-item">
+                        <label>Model</label>
+                        <input type="text" id="usedModel"></textarea>
+                    </div>
+                    <div class="form-item">
+                        <label>Input tokens</label>
+                        <input type="text" id="inputTokens"></textarea>
+                    </div>
+                    <div class="form-item">
+                        <label>Output tokens</label>
+                        <input type="text" id="outputTokens"></textarea>
+                    </div>
+                </div>
+                <button type="button" onclick="importPublication()">Importovat článek</button>
+                <textarea id="generatedText" rows="10" cols="130" placeholder="Sem bude vložena exportovaná struktura článku ..."></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+
+
+
+<!-- Textarea pro zobrazení extrahovaného textu -->
+
+
+<script>
+function importPublication() {
+  const json_data = document.getElementById("generatedText").value;
+
+  fetch('/reviewhub/publication_add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',              // pošli session cookie (máš @login_required)
+    body: JSON.stringify({
+      mode: 'preview',                       // << řekni backendu, že má vrátit stránku
+      json_data
+    })
+  })
+  .then(r => {
+    if (!r.ok) throw new Error('Request failed ' + r.status);
+    return r.json();
+  })
+  .then(({ redirect }) => {                  // backend vrátí URL
+    window.location.href = redirect;         // přesměruj na GET, který stránku vykreslí
+  })
+  .catch(err => {
+    console.error('Import failed:', err);
+  });
+}
+
+
+    function importPublication_backup() {
+        json_data = document.getElementById("generatedText").value;
+        window.location.href = `/reviewhub/publication_add?type=form_with_json&json_data=${json_data}`;
+    }
+
+    document.getElementById('file-upload').addEventListener('click', function() {
+        document.getElementById('pdf_soubor').click(); // Simulace kliknutí na input
+    });
+
+    document.getElementById('file-upload').addEventListener('dragover', function(event) {
+        event.preventDefault(); // Zamezíme výchozímu chování
+        this.style.backgroundColor = '#e1f5e1'; // Změna pozadí při přetahování
+    });
+
+    document.getElementById('file-upload').addEventListener('dragleave', function() {
+        this.style.backgroundColor = ''; // Obnovení původní barvy
+    });
+
+    document.getElementById('file-upload').addEventListener('drop', function(event) {
+        event.preventDefault(); // Zamezíme výchozímu chování
+        const files = event.dataTransfer.files; // Získání přetažených souborů
+        if (files.length > 0 && files[0].type === "application/pdf") {
+            document.getElementById('pdf_soubor').files = files; // Přiřazení souboru do inputu
+            updateFileName(); // Aktualizace zobrazení názvu souboru
+        }
+    });
+
+    function updateFileName() {
+        const fileInput = document.getElementById('pdf_soubor');
+        const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "Není vybrán žádný soubor";
+        document.getElementById('file-upload').querySelector('span').innerText = fileName; // Aktualizace textu
+    }
+    document.getElementById('uploadButton').addEventListener('click', function() {
+        const formData = new FormData();
+        const pdfFile = document.getElementById('pdf_soubor').files[0];
+        
+        if (!pdfFile) {
+            alert("Vyberte PDF soubor.");
+            return;
+        }
+        
+        formData.append('pdf_soubor', pdfFile);
+        
+        // Odeslání PDF souboru na server pomocí Fetch API
+        fetch('/reviewhub/publication_pdf2text', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                document.getElementById('extractedText').value = data.text;  // Vložení extrahovaného textu do textarea
+                document.getElementById('configAI').value = data.ai_a_config;  // Vložení extrahovaného textu do textarea
+                document.getElementById('dataForAI').value = [data.ai_a_config, data.text];  // Vložení extrahovaného textu do textarea
+            }
+        })
+        .catch(error => console.error('Chyba při odesílání souboru:', error));
+    });
+</script>
+{% endblock %}
+

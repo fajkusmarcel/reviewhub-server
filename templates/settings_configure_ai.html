@@ -1,0 +1,71 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <form method="POST" class="" action="{{ url_for('settings.save_ai_config') }}">
+
+        <div class="filter-row"> 
+                
+
+            <div class="filter-group">    
+                <!-- Tlačítko pro načtení souboru GPT A -->
+                <button type="button" onclick="loadConfig('A')">Načíst GPT A</button>
+
+                <!-- Tlačítko pro načtení souboru GPT B -->
+                <button type="button" onclick="loadConfig('B')">Načíst GPT B</button>
+
+            </div>
+        </div>
+        
+        <!-- Textarea pro zobrazení a editaci obsahu konfiguračního souboru -->
+        <div>
+            <textarea id="ai_config_text" name="ai_config_text" rows="40" cols="132">{{ ai_config_text }}</textarea>
+        </div>
+
+        <!-- Skrytý vstupní prvek pro předání, který soubor se upravuje (A nebo B) -->
+        <input type="hidden" id="file_type" name="file_type" value="">
+
+        <!-- Tlačítko pro odeslání upraveného konfiguračního souboru -->
+        <button type="submit">Uložit Konfiguraci</button>
+
+        <h3>Modely GPT</h3>
+        <select id="gpt_models">
+            {% for gpt_model in gptModels %}                         
+                <option value="{{ gpt_model }}">{{ gpt_model }}</option>
+            {% endfor %}                      
+        </select>
+    </form>
+
+    <div class="content">
+        
+            
+       
+    </div>
+    <script>
+        function loadConfig(type) {
+            // Změníme skrytý input podle vybraného typu (GPT A nebo GPT B)
+            document.getElementById('file_type').value = type;
+
+            // Odeslání požadavku na server k načtení příslušného souboru
+            fetch('/load_ai_config/' + type)
+            .then(response => response.json())
+            .then(data => {
+                // Načteme obsah souboru do textového pole
+                document.getElementById('ai_config_text').value = data.config_text;
+            })
+            .catch(error => {
+                console.error('Chyba při načítání souboru:', error);
+            });
+        }
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

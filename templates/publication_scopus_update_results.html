@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Název</th>
+            <th>Autoři</th>
+            <th>Časopis</th>
+            <th>Rok</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for publication in publications %}
+            <tr class="{{ 'error' if publication.status == 'error' else 'success' }}">
+                <td>{{ publication.id }}</td>
+                <td>{{ publication.title }}</td>
+                <td>{{ publication.authors if publication.status == 'success' else 'N/A' }}</td>
+                <td>{{ publication.journal if publication.status == 'success' else 'N/A' }}</td>
+                <td>{{ publication.year if publication.status == 'success' else 'N/A' }}</td>
+                <td>{{ 'Chyba' if publication.status == 'error' else 'Úspěšně aktualizováno' }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('settings.settings') }}" class="btn btn-primary">Zpět do nastavení</a>
+{% endblock %}

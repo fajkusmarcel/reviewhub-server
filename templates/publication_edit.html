@@ -1,0 +1,215 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="main-content-container">    
+    <!-- Levá část: Filtraci a seznam článků -->    
+    <div class="left-section">   
+        <form action="{{ url_for('publication.publication_update', clanek_id=clanek.publication_id) }}" method="post" enctype="multipart/form-data">
+            
+            <div class="form-group">
+                <label for="nazev_clanku">Název článku:</label>
+                <input type="text" id="nazev_clanku" name="nazev_clanku" value="{{ clanek.publication_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="abstract">Abstrakt:</label>
+                <textarea id="abstract" class="bigger" name="abstract">{{ clanek.abstract }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="casopis">Časopis:</label>
+                <input type="text" id="casopis" name="casopis" value="{{ clanek.journal }}">
+            </div>
+
+            <div class="form-group">
+                <label for="rok_vydani">Rok vydání:</label>
+                <input type="text" id="rok_vydani" name="rok_vydani" value="{{ clanek.year_publication }}">
+            </div>
+
+            <div class="form-group">
+                <label for="kategorie">Kategorie - Oblast použití:</label>
+                <input type="text" id="kategorie" name="kategorie" value="{{ clanek.category }}">
+            </div>
+
+            <div class="form-group">
+                <label for="podkategorie">Podkategorie:</label>
+                <input type="text" id="podkategorie" name="podkategorie" value="{{ clanek.subcategory }}">
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="typ_senzoru">Typ senzoru:</label>
+                <input type="text" id="typ_senzoru" name="typ_senzoru" value="{{ clanek.sensor_type }}">
+            </div>
+
+            <div class="form-group">
+                <label for="princip_senzoru">Princip senzoru:</label>
+                <input type="text" id="princip_senzoru" name="princip_senzoru" value="{{ clanek.sensor_principle }}">
+            </div>
+
+            <div class="form-group">
+                <label for="konstrukce_senzoru">Konstrukce senzoru:</label>
+                <textarea id="konstrukce_senzoru" class="bigger" name="konstrukce_senzoru">{{ clanek.construction_principle }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="zpusob_zapouzdreni">Způsob zapouzdření:</label>
+                <input type="text" id="zpusob_zapouzdreni" name="zpusob_zapouzdreni" value="{{ clanek.encapsulation }}">
+            </div>
+
+            <div class="form-group">
+                <label for="zpusob_implementace">Způsob implementace:</label>
+                <input type="text" id="zpusob_implementace" name="zpusob_implementace" value="{{ clanek.implementation }}">
+            </div>
+            <div class="form-group">
+                <label for="typ_optickeho_vlakna">Typ optického vlákna:</label>
+                <input type="text" id="typ_optickeho_vlakna" name="typ_optickeho_vlakna" value="{{ clanek.optical_fiber }}">
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="merena_velicina">Měřená veličina:</label>
+                <input type="text" id="merena_velicina" name="merena_velicina" value="{{ clanek.measured_value }}">
+            </div>
+
+            <div class="form-group">
+                <label for="rozsah_merani">Rozsah měření:</label>
+                <input type="text" id="rozsah_merani" name="rozsah_merani" value="{{ clanek.measuring_range }}">
+            </div>
+
+            <div class="form-group">
+                <label for="citlivost">Citlivost:</label>
+                <input type="text" id="citlivost" name="citlivost" value="{{ clanek.sensitivity }}">
+            </div>
+
+            <div class="form-group">
+                <label for="presnost">Přesnost:</label>
+                <input type="text" id="presnost" name="presnost" value="{{ clanek.accuracy }}">
+            </div>
+
+            <div class="form-group">
+                <label for="frekvencni_rozsah">Frekvenční rozsah:</label>
+                <input type="text" id="frekvencni_rozsah" name="frekvencni_rozsah" value="{{ clanek.frequency_range }}">
+            </div>
+
+            <hr> 
+            
+            <div class="form-group">
+                <label for="aplikace_studie">Aplikace/Případová studie:</label>
+                <textarea id="aplikace_studie" class="bigger" name="aplikace_studie">{{ clanek.application }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="klicove_poznatky">Klíčové poznatky:</label>
+                <textarea id="klicove_poznatky" class="bigger" name="klicove_poznatky">{{ clanek.key_knowledge }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="summary">Shrnutí:</label>
+                <textarea id="summary" class="bigger" name="summary">{{ clanek.summary }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="vyhody">Výhody:</label>
+                <textarea id="vyhody" class="bigger" name="vyhody">{{ clanek.advantages }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="nevyhody">Nevýhody:</label>
+                <textarea id="nevyhody" class="bigger" name="nevyhody">{{ clanek.disadvantages }}</textarea>
+            </div>
+
+            
+            <div class="form-group">
+                <label for="poznamky">Poznámky:</label>
+                <textarea id="poznamky" class="bigger" name="poznamky">{{ clanek.note }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="obrazky">Obrázky (název souboru):</label>
+                <textarea id="obrazky" class="bigger" name="obrazky">{{ clanek.figure }}</textarea>
+            </div>            
+
+            <hr>
+
+            <div class="form-group">
+                <label for="pdf_soubor">Název PDF souboru:</label>
+                <div id="file-upload" class="file-upload">
+                    
+                    <span>{% if clanek.pdf_soubor %} {{clanek.pdf_name}} {% endif %} <br>Přetáhněte soubor sem nebo klikněte pro výběr souboru</span>
+                    <input type="file" id="pdf_soubor" name="pdf_soubor" accept=".pdf" style="display:none;" onchange="updateFileName()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="autori">Autoři</label>
+                <input type="text" id="autori" name="autori" value="{{ clanek.authors }}">
+            </div>
+
+            <div class="form-group">
+                <label for="doi">DOI:</label>
+                <input type="text" id="doi" name="doi" value="{{ clanek.doi }}">
+            </div>
+
+            <div class="form-group">
+                <label for="citaceBib">Citace BIB:</label>
+                <input type="text" id="citaceBib" name="citaceBib" value="{{ clanek.citation }}">
+            </div>
+
+            <div class="form-group">
+                <label for="stav">Stav: {{ clanek.state }}</label>
+                <select id="stav" name="stav">
+                    <option value="zavedeno" {% if clanek.state == 'zavedeno' %}selected{% endif %}>Zavedeno</option>
+                    <option value="zpracováno" {% if clanek.state == 'zpracovano' %}selected{% endif %}>Zpracováno</option>
+                </select>
+            </div>
+
+
+            <button type="submit">Uložit změny</button>
+            <a href="{{ url_for('publication.publication') }}">Zrušit</a>
+        </form>
+    </div>    
+
+    <!-- Pravá část: Detail článku -->    
+    <div class="right-section">        
+        <div id="article-detail">            
+            {% if pdf_exists %}
+                <embed src="/reviewhub/static/uplouds/{{clanek.pdf_name}}" type="application/pdf" width="100%" height="1000px">
+            {% else %}
+                <p>PDF soubor neexistuje.</p>
+            {% endif %}
+        </div>    
+    </div>
+</div>
+
+<script>
+
+
+document.getElementById('file-upload').addEventListener('click', function() {
+    document.getElementById('pdf_soubor').click(); // Simulace kliknutí na input
+});
+
+document.getElementById('file-upload').addEventListener('dragover', function(event) {
+    event.preventDefault(); // Zamezíme výchozímu chování
+    this.style.backgroundColor = '#e1f5e1'; // Změna pozadí při přetahování
+});
+
+document.getElementById('file-upload').addEventListener('dragleave', function() {
+    this.style.backgroundColor = ''; // Obnovení původní barvy
+});
+
+document.getElementById('file-upload').addEventListener('drop', function(event) {
+    event.preventDefault(); // Zamezíme výchozímu chování
+    const files = event.dataTransfer.files; // Získání přetažených souborů
+    if (files.length > 0 && files[0].type === "application/pdf") {
+document.getElementById('pdf_soubor').files = files; // Přiřazení souboru do inputu
+        updateFileName(); // Aktualizace zobrazení názvu souboru
+    }
+});
+
+function updateFileName() {
+    const fileInput = document.getElementById('pdf_soubor');
+    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "Není vybrán žádný soubor";
+    document.getElementById('file-upload').querySelector('span').innerText = fileName; // Aktualizace textu
+}
+</script>
+
+{% endblock %}

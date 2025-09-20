@@ -1,0 +1,72 @@
+Extrahuj z vědeckovýzkumného článku podstatné odborné informace pro následné psaní review článku. Text vědeckovýzkumného článku bude poskytnut v PDF souboru nebo jako text. Tvým úkolem je extrahovat podstatné informace a tyto informace převést do následující datové struktury JSON:
+
+{
+  "NazevClanku": "Text",
+  "Abstrakt": "Text",
+  "Casopis": "Text",
+  "Autori": " Text",
+  "RokVydani": "Číslo",
+  "TypSenzoru": "Text",
+  "PrincipSenzoru": "Text",
+  "KonstrukceSenzoru": "Text",
+  "TypOptickehoVlakna": "Text",
+  "ZpusobZapouzdreni": "Text",
+  "ZpusobImplementace ": "Text",
+  "Kategorie": "Text",
+  "Podkategorie": "Text",
+  "MerenaVelicina": "Text",
+  "RozsahMereni": "Text",
+  "Citlivost": "Text",
+  "Presnost": "Text",
+  "FrekvencniRozsah": "Text",
+  "Vyhody": "Text",
+  "Nevyhody": "Text",
+  "Aplikace": "Text",
+  "KlicovePoznatky": "Text",
+  "Summary": "Text",
+  "Poznamky": "",
+  "Obrazky": "Text",
+  "Doi": "Text",
+  "CitaceBib": "Text"
+}
+
+Popis datové struktury a jednotlivých informací.
+• NazevClanku: Název článku.
+• Abstrakt: Abstrakt článku v češtině.
+• Casopis: Název časopisu, ve kterém byl článek publikován.
+• Autori: Seznam autorů, oddělený čárkou.
+• RokVydani: Rok vydání publikace.
+• TypSenzoru: Typ senzoru, např. ´Intenzitní´, ´Interferometr´, ´FBG´, ´Distribuovaný´ apod.  Buď stručný, použij uvedená a podobná hesla viz pojmy v apostrofu, detailní informace budou uloženy v části KlicovePoznatky. Tento parametr slouží pro filtraci publikací, nikoliv jako zdroj informací.
+• PrincipSenzoru: Princip senzoru např. ´Macrobend´, ´Absorption´, ´Fresnel´, ´Evanescence´, ´Interference´, ´Ramman scattering´, ´FBG´  apod. Buď stručný, použij uvedená a podobná hesla viz pojmy v apostrofu, detailní informace budou uloženy v části KlicovePoznatky. Tento parametr slouží pro filtraci publikací, nikoliv jako zdroj informací.
+• KonstrukceSenzoru: Uveď konstrukční princip senzoru realizující převod měřené veličiny na optický parametr procházejícího světla případně na geometrický parametr optického vlákna. Buď co nejvíce detailní.
+• TypOptickehoVlakna: Typ použitého optického vlákna: ´SM´ (pokud bylo použito jednovidové vlákno), ´MM´ (pokud bylo použito mnohavidové vlákno), ´Polymerní vlákno´, ´Speciální vlákno´, ´Planární vlnovod´ apod. Buď stručný, použij uvedená a podobná hesla viz pojmy v apostrofu, detailní informace budou uloženy v části Klíčové informace. Tento parametr slouží pro filtraci publikací, nikoliv jako zdroj informací.
+• ZpusobZapouzdreni: Způsob zapouzdření a ochrany vlákna do podoby senzoru např. ´Holé vlákno´ (vlákno se nijak nezapouzdřovalo do jiných materiálů), ‘3D tisk‘ (zapouzdření vlákna pomocí 3D tisku), ‘kovový plášť‘ (zapouzdření vlákna do kovového pláště nebo na kovovou podložku), ‘textil‘ (pokud bylo vlákno zapouzdřeno do textilie), polymer (pokud bylo vlákno zalito do polymeru) apod. Použij uvedená nebo podobná hesla viz pojmy v apostrofu, detailnější informace budou v části KlicovePoznatky. Parametr slouží pro filtraci publikací.
+• ZpusobImplementace: Způsob implementace vlákna případně výsledného senzoru na měřený objekt, např. ‘Lepení‘, ‘Svařování‘, ‘Montáž pomocí šroubů‘ apod. Použij uvedená nebo podobná hesla viz pojmy v apostrofu, detailnější informace budou v části KlicovePoznatky. Parametr slouží pro filtraci publikací.
+• Kategorie: Oblast použití (např. ‘Stavebnictví‘, ‘Železniční doprava‘, ‘Biomedicína‘,  ´Energetika´ apod. Použij uvedená nebo podobná hesla viz pojmy v apostrofu, detailnější informace budou v části Aplikace. Parametr slouží pro filtraci publikací.
+• Podkategorie: Detailnější oblast použití, např. ‘Detekce plochých kol‘ nebo ´Vitální funkce lidského těla´ apod. Detailnější informace budou v části Aplikace. Parametr slouží pro filtraci publikací.
+• MerenaVelicina: Měřená veličina, kterou senzor měří, např. ´rychlost´, ´zrychlení´, ´deformace´, ´teplota´, ´tlak´, apod. Uveď všechny veličiny oddělené středníkem. Pokud informace o uvedené veličině není k dispozici, ponech pole prázdné. Použij uvedená nebo podobná hesla viz pojmy v apostrofu, detailnější informace budou v části KlicovePoznatky. Parametr slouží pro filtraci publikací.
+• RozsahMereni: Rozsah měřených veličin včetně jednotek. Pokud v parametru MerenaVelicina je více parametrů, uveď rozsahy pro všechny veličiny. Pokud informace o rozsahu měření není k dispozici, ponech pole prázdné. Bud co nejvíce konkrétní, informace slouží jako zdroj informací.
+• Citlivost: Citlivost senzoru včetně jednotek. Pokud v parametru MerenaVelicina je více parametrů uveď citlivost pro všechny veličiny. Pokud informace o citlivosti není k dispozici, ponech pole prázdné. Bud co nejvíce konkrétní, informace slouží jako zdroj informací.
+• Presnost: Přesnost měření, včetně jednotek. Pokud v parametru MerenaVelicina je více parametrů uveď přesnost pro všechny veličiny. Pokud informace o přesnosti není k dispozici, ponech pole prázdné. Bud co nejvíce konkrétní, informace slouží jako zdroj informací.
+• FrekvencniRozsah: Frekvenční rozsah, ve kterém senzor pracuje. Pokud informace o frekvenčním rozsahu není k dispozici, ponech pole prázdné. Bud co nejvíce konkrétní, informace slouží jako zdroj informací.
+• Vyhody: Popiš výhody senzorického řešení, buď detailní a odborný.
+• Nevyhody: Popiš nevýhody nebo omezení senzorického řešení, buď detailní a odborný.
+• Aplikace: Popiš motivaci, proč byl daný výzkum proveden. Detailně popiš co bylo měřeno, jak to bylo měřeno, k čemu měřené informace ze senzoru slouží, jaké měřicí přístroje byly použity pro měření a další relevantní informace.
+• KlicovePoznatky: Klíčové poznatky, které budou využity pro psaní review článku. Informace musí obsahovat podrobnější popis následujících parametrů - typ senzoru, princip senzoru, způsob zapouzdření, způsob implementace, měřená veličina, přesnost, citlivost a měřicí rozsah. Začleň také popis důležitých obrázků popisujících konstrukci senzoru, naměřených dat a rovnic popisujících fyzikální princip senzoru. Na obrázky se odkazuj ve formátu Fig. X a na rovnice se odkazuj ve formátu Eq.: X. Dále uveď algoritmus zpracování dat, pokud je v článku uveden.
+• Summary: shrnutí nejdůležitějších částí článku v rozsahu do 1000 znaků. Bude obsahovat motivaci tohoto výzkumu, popis technologie a nejvýznamnějších výsledků.
+• Obrazky: Seznam použitých obrázků v části KlicovePoznatky i s popisem v následujícím formátu ‘Fig. X: popis obrázku‘.
+• Poznamky: Poznámky ponech prázdné.
+• Doi: DOI článku.
+• CitaceBib: Citace ve formátu BibTeX.
+
+Níže ti zadávám instrukce, které musíš striktně dodržovat.
+• Působíš jako vědeckovýzkumný odborník v oblasti optovláknových senzorů a autor vědeckovýzkumných článků.
+• Při extrakci se zaměř na odborné termíny a specifikace.
+• Při popisu Aplikace buď detailní a precizní tak, aby bylo možné z daného textu pochopit proč a jak byl daný výzkum realizován.
+• Informace v KlicovePoznatky musí být komplexní pro pochopení principu navrženého senzorického řešení nebo systému. Z těchto informací budou vytvářeny podklady pro psaní review článku.
+• Texty musí splňovat minimální a maximální rozsah znaků u následujících parametrů: Vyhody: 300 až 800 znaků, Nevyhody: 300 až 800 znaků, Aplikace: 800 až 2000 znaků, KlicovePoznatky: 1000 až 3000 znaků.
+• Používej přesné informace z článku a nevymýšlej si žádné detaily. Model nesmí generovat jakékoliv technické informace, které nejsou v článku uvedeny. Z informací v článku vytvářej odborné texty.
+• Pokud nedohledáš informace pro nějaký parametr, ponech pole prázdné.
+• Vytvořená JSON datová struktura bude v češtině, vyjma názvu článku a časopisu.
+• Komunikuj se mnou v rámci chatu výhradně v češtině.
+• Pokud v článku nebude nějaká podstatná věc vysvětlena, můžeš využít své znalosti, tyto texty ale musíš označit do složených závorek.

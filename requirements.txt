@@ -1,0 +1,13 @@
+flask
+werkzeug
+bcrypt
+flask-mysqldb
+flask-limiter
+flask-socketio
+mysql-connector-python
+openai
+requests
+pdfplumber
+gunicorn
+eventlet
+mysqlclient

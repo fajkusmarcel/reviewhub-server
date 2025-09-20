@@ -1,0 +1,545 @@
+TheInternationalJournalofAdvancedManufacturingTechnology(2018)96:765–773
+https://doi.org/10.1007/s00170-018-1642-5
+ORIGINALARTICLE
+Study of temperature field for UVAG of CFRP based on FBG
+TaoChen1&MengliYe1&YanDeng1&ShuliangLiu1
+Received:10October2017/Accepted:15January2018/Publishedonline:29January2018
+#Springer-VerlagLondonLtd.,partofSpringerNature2018
+Abstract
+Ultrasonicvibration-assistedgrinding(UVAG)isaneffectivemethodforprocessingcarbon-fiber-reinforcedplastics(CFRP);on
+theotherhand,howtolowerthegrindingtemperatureisalwaysaburningquestion;thus,itisofgreatsignificancetofurtherstudy
+thetemperaturefielddistributionforprocessingCFRP.AsforUVAGofCFRP,temperaturemaybemeasuredbythemethod
+(multi-point and multi-level layout of FBGs) to study temperature field distribution of CFRP workpieces and corresponding
+influencingfactorsandprovideareferencebasisforimprovementofCFRPnondestructivemonitoringtechnologyandoptimi-
+zation of UVAG process parameters. A comparison of simulation and experimental results indicates that the weak thermal
+conductivityandanisotropyofCFRPleadtotheellipticaltemperaturedistributioninthesamesection;whatismore,thegrinding
+parametershavegreatinfluenceonthedistributionoftemperatureexceptthegranularityofthetool.
+Keywords Ultrasonicvibration-assistedgrinding(UVAG) .Carbon-fiber-reinforcedplastics(CFRP) .FiberBragggrating(FBG) .
+Temperaturefield
+1 Introduction cuttingabilityofdiamondgrindinghead[4].CFRPisprimarily
+madeupofcarbonfiberandresinwhosethermalconductivities
+CFRP(Carbon-fiber-reinforcedplastics)takingmanyadvan- arerelativelysmallsothatheataccumulationphenomenamay
+tages (such as low density, high modulus, and large specific easilyoccurnearbytheprocessingregionduringanyprocess-
+strength) has beenverypopular inthose fieldssuchasaero- ingprocess.Whiletheprocessingtemperatureismorethanthe
+space, automobile, chemical industry, and medical applica- glass transition temperature of resin substrate, the mechanical
+tions [1]. On the other hand, CFRP workpieces have aniso- propertiessuchaselasticitymodulusandstrengthofresinmay
+tropicmechanicalproperties,lowinterlaminarstrength,poor fallsharply[5].Whatismore,dryprocessingisgenerallyper-
+thermal conductivity, and high overall strength; thus, CFRP formedforCFRPtofurtherincreasetheoccurrencepossibility
+workpiecesmaybetypicallyprocessedwithdifficulties[2]. of processing defects, and the dimensional and shape accura-
+UVAG(ultrasonicvibration-assistedgrinding)asoneofthe cies of workpieces may also be affected. Thus, study of the
+up-to-datetechnologiesispopularingrindingapplicationsand temperature field distribution and influencing factors of
+become one primary method for processing difficult-to- UVAGofCFRPshallbeofgreatsignificance[6].
+machinematerialssuchasCFRP[3].Veryhighenergyisnec- Yangetal.[7]throughthedeterminationofthemovingheat
+essarily input per unit volume during any UVAG process, sourceloadingmethodtoobtainthetemperaturefielddistribu-
+whichisalmostfullyconvertedintoheatonlyinthegrinding tionofdifferentloadstepsandthetemperaturechangecurveof
+regionsothatsuchhighgrindingtemperaturemayleadtorapid nodesindifferentdepths,thetemperatureishigherwithbeing
+reduction of hardness of abrasive particles and removal of moreclosetotheheatsourceandthetemperatureriseofarti-
+factsbelowmaterialsislowerthantheworkpiecesurface.Xiao
+etal.[8],accordingtotheellipticalcontacttheory,obtaineddisc
+wheel basic grinding parameters of geargrinding surface and
+* MengliYe
+establishedfiniteelementmodeland,usingtherectangulardis-
+952297563@qq.com
+tributionofheatforthegeargrindingthermalsimulation,ob-
+tainedthegrindingtemperaturefieldverifiedthefeasibilityof
+1 SchoolofMechanicalandElectronicEngineering,Wuhan theellipsecontacttheoryinthesurfacegeargrindingthermal
+UniversityofTechnology,Thesouthofluoshistreet,Wuhan430070,
+research. Lv et al. [9] based on the transient temperature
+China766 IntJAdvManufTechnol(2018)96:765–773
+distribution and the differential equation of nonsteady-state For simplifying the calculation need, its thermal parameters
+three-dimensionalheatconductiontoestablisha3Danalytical were assumed. Homogenization was performed to thermal
+model to predict grinding temperature and obtain a three- parameters of CFRP for UVAG of CFRP and the following
+dimensional nonsteady-state temperature integral equation. consumptionswereputforward[16,17]:
+PatilandPatil[10]proposesanapproachforthedevelopment
+ofathreedimensionaltransientheatconductionfiniteelement 1. Carbonfibersareevenlydistributedintheresinsubstrate
+model(FEM)forgrindingprocess.Thismodelcanbeusedto and there shall be no internalprocessing defect (such as
+predictthecoolingeffectivenessofvariouslubricationsystems. stratification,inclusionoraircavity);
+AnalysisshowsthattheFEMtemperaturevaluesmatcheswith 2. Carbonfibersandtheresinsubstrateareinclosecontact
+the experimental temperature data. Gonzalez-Santander et al. andthecontactresistanceshallbenegligible;
+[11]considertheanalyticalsolutionsforheattransferinwetflat 3. ThermalparametersofCFRPremainconstantinanytran-
+grinding entering into the workpiece and provide a very fast sienttemperature field environment;namely,theyare ir-
+methodforthecomputationofthemaximumtemperatureand relevanttotemperature.
+perform an analysis for the computation optimization of the
+temperature evolution on the workpiece surface. This kind of Asforanythermalconductionprocess,fibersandresinare
+analysisoffersaveryinterestingsimulationtooltoavoidther- continuousinthedirectionparalleltofibers;ontheotherhand,
+maldamageduringthetransientregime. resin is continuous but fibers are dispersed in direction per-
+The generally conventional temperature measurement de- pendiculartofibers.Homogenizationofthermalparametersof
+viceshavethefollowingshortcomings:relativelylowprecision CFRPisbasedonthefollowingequations:
+andhighdissipation(thermocouples),poorantijammingcapa-
+bility(thermalresistors),poorlinearityandreliability(thermis-
+ρ¼ρ
+c
+⋅V
+c
+þρ
+r
+⋅ð1−V
+c
+Þ ð1Þ
+tors), low precision and poor antijamming capability (radiant
+thermometers) [4]. Therefore, the dynamic and rapid changes
+c¼c
+c
+⋅V
+c
+þc
+r
+⋅ð1−V
+c
+Þ ð2Þ
+of grinding temperature in the workpiece may be measured k h ¼k c ⋅V c þk r ⋅ð1−V c Þ ð3Þ
+difficultly to a certain extent by utilizing any conventional (cid:1) (cid:3)
+method. FBG (Fiber Bragg grating) temperature sensors take k
+l
+¼
+V
+k
+c þ
+1−
+k
+V
+c
+−1
+ð4Þ
+advantages (such as being free of electromagnet interference, c r
+large signal bandwidth, high sensibility, easily repeated use, whereρ candc crepresentthedensityandspecificheatcapac-
+lowweight)beingappropriateforhightemperature,corrosive ityofcarbonfibers,respectively;ρ randc rrepresenttheden-
+andhazardousenvironments,beingpastedinfacesorembed- sityandspecificheatcapacityofepoxyresin,respectively;k
+c
+dedinequipmentandsoon[12,13].Atthesametime,theFBG and k r represent thermal conductivities of carbon fibers and
+sensing technology may not damage CFRP structures due to epoxyresin,respectively;V crepresentsthevolumecontentof
+low volumes and the monitoring effects are accurate. Thus, carbonfibers;ρandcrepresentthedensityandspecificheat
+FBGtemperaturesensorshavebecomethemostpotentialtem- capacityofCFRP,respectively;k handk lrepresentsthethermal
+peraturemonitoringtechnologyinrecentyears[14,15].
+conductivityofCFRPinthedirectionparallelandperpendic-
+Study of temperature field distribution situations and
+ulartofibers,respectively.
+influencingfactorswascarriedouttoUVAGofCFRPwork-
+Grinding heat derived from the mechanical energy con-
+pieces by means of the temperature measurement method
+sumption for tooling a workpiece and the grinding power
+based on the multi-point and multi-level layout of FBGs;
+may be calculated primarily based on the actually measured
+moreover,agrindingmodelwasestablishedforperformance
+torquetothegrindingworkpiece;andtheUVAGpowermay
+offiniteelementsimulation,comparisonandanalysis,andour
+becalculatedbasedonthefollowingEq.[18]:
+study may provide a reference basis for improvement of
+πnM
+CFRP nondestructive monitoring technology and optimiza- P¼ ð5Þ
+tionofUVAGprocessparameters. 15000
+where prepresents the grinding power (W); M represents the
+2 Theoretical analysis of the grinding torquetothegrindingworkpiece(N⋅m);andnrepresentsthe
+temperature field toolingspeed(r/min).
+At present, there are primarily three grinding heat source
+CFRP is made by means of the hot-forming of carbon fiber models (namely even, triangular and parabolic heat source
+prepreg layers, whose fibers are arranged in various direc- models),whoseschematicdiagramsareshowninFig.1.
+tions; thus, CFRP is anisotropic; moreover, carbon fibers AsforUVAGofCFRP,theendfaceandthecircularcylin-
+andresinaregreatlydifferentinthermalphysicalproperties. drical surface of a diamond grinding head are fully in contactIntJAdvManufTechnol(2018)96:765–773 767
+3 Simulation of grinding process
+After establishment of the model (as shown in Fig. 5a) for
+UVAG of CFRP, finite element simulation was carried out
+Fig.1 Schematicdiagramof3grindingheatsourcemodels(auniform by utilizing the ANSYS software. The experimental condi-
+distribution heat source model; b triangular heat source model; c tionsandsimulationresultsforUVAGareshowninTable1.
+parabolicheatsourcemodel)
+Basedonobservationofsimulationresultsundervariouspro-
+cessingconditions,wecanfoundthatthemeasuredgrinding
+with the workpiece; moreover, the size of grinding head is
+temperatureisbasicallyontheconsistentriseateachposition
+small; thus, the heat flux (q t) of the grinding region may be
+along the growth of the spindle speed (grinding depth, feed
+simplifiedasauniformdistributionmodelexpressedasfollows:
+rate)asforUVAGofCFRPwhileitisirrelevanttothegran-
+200nM ularity of the tool. What is more, the grinding temperature
+q
+t
+¼
+3d2
+ð6Þ
+cloud picture of simulation distributed elliptically (elliptical
+major axis: parallel to carbon fibers) in the same section of
+the workpiece grinding region and the maximum grinding
+Where:drepresentsthediameterofthediamondgrindinghead
+temperaturedataappearonthepositiona[19,20].
+(mm); and other parameters are the same as the above
+Thesimulationmayalsogainapreliminaryunderstanding
+descriptions.
+of the temperature field distribution situations, and most of
+AsforUVAGofCFRP,thegrindingheatprimarilyiscon-
+heatisaccumulatednearbythegrindingregionduetothevery
+verted into three parts: heat flux to the workpiece (q w), heat
+poor thermal conductivity of CFRP; thus, the FBGs layout
+fluxtothetool(q s),andheatfluxtothegrindings(q ch).Onthe schemeasfollowsbasedonthegrindingdepth(a p)maycover
+otherhand,thethirdpartisverysmallerthanthefirstorsec-
+thespreadingdepthofthegrindingtemperature.
+ondpartsothatitmaybeignored.Thus,thetotalgrindingheat
+fluxmayalsobeexpressedas[18]:
+q ¼q þq ð7Þ
+t w s 4 Experimental verification of grinding
+temperature field
+q
+R
+w
+¼
+q
+w ð8Þ
+t 4.1Experimentalsetup
+where R w represents the ratio of the total heat fluxed to the
+workpieceandthegrindingregion,whichisalsocalledasthe Grindingtests(UVAGofCFRP)werecarriedoutinavertical
+energydistributionratioforshort. machining centerand theexperimentalsetupisprimarilydi-
+In accordance with experiences of tests for grinding hard
+videdintothreeparts[21–23]:
+brittlematerialsfromWangetal.[18],R wis0.8,whichactsas
+theempiricvalueforcalculationofthetotalheatflux(q w)to 1. Grindingtemperaturemeasurementsystem:asshownin
+theworkpiecebasedonthefollowingequation: Fig.2.FBG1(temperaturemeasurement)andFBG2(vi-
+brationmeasurement)shallbecalibrated,respectively;
+160nM
+q ¼ ð9Þ then,thecalibratedFBG1andFBG2shallbeembedded
+w 3d2
+into the processing workpiece in accordance with the
+Table1 ExperimentalconditionsandsimulationresultsforUVAG
+Experiment Spindlespeed Grinding Feedrate Gritsize Wheel Ultrasonic Maximum Theposition
+(rpm) depth(mm) (mm/min) (mesh#) diameter amplitude temperature(°C) ofmaximum
+(d/mm) (mm) temperature
+1 500,1000,1500, 0.2 180 120 4 0.01 34,42,49,54,62 a
+2000,2500
+2 1500 0.1,0.15,0.2, 180 120 4 0.01 37,43,49,61,81 a
+0.25,0.3
+3 1500 0.2 100,140,180, 120 4 0.01 42,44,50,56,71 a
+220,260
+4 1500 0.2 180 60,100,120, 4 0.01 50,48,49,48,47 a
+150,200768 IntJAdvManufTechnol(2018)96:765–773
+Fig.2 Temperaturemeasurement
+Experimental parameters
+systems
+Signal generator Temperature controlled tank Grinding machining platform Modeling and simulation
+Power amplifier Pre-calibrated FBG1 Grinding temperature Simulation temperature
+Comparative analysis
+Shaker table FBG demodulator
+Temperature distribution of
+Pre-calibrated FBG2 Calibrated FBG1 and FBG2 workpiece
+followingdesignrequirements.Inaccordancewiththe 4.2DesignoftheFBGlayoutscheme
+reference grating method, FBG2 may be utilized the
+cross-sensitivityissueduringthetemperaturemeasure- Forperformanceofmeasurementofthe internaltemperature
+ment processes to improve the temperature measuring field of CFRP for UVAG of CFRP, FBGs were arranged as
+accuracyofFBG1. showninFig.5.
+2. Torquemeasurementdevice:asshowninFig.3,including Annulartemperaturemeasurementmethodwascarriedout
+a Kistler torque sensor, a Kistler charge amplifier, and a to four selected typical orientations and marked in Fig. 6.
+DEWE soft data acquisition device. The collected data Those key distribution points of the temperature field also
+maybeutilizedfortheoreticalderivationofthegrinding included. Four multi-staged depths (A, B, C, and D) were
+heatanddatasupportforfiniteelementanalysis. selectedinthedepthdirectiontocontinuouslyreflectthetem-
+3. Ultrasonic processing device: as shown in Fig. 4, the peraturechangealongthedepthoftheworkpiece.
+ultrasonicprocessingequipmentisrotatedforauxiliary FunctionsofFBG1andFBG2aremeasurementoftemper-
+grinding of CFRP (operating frequency: 20,000– atureandvibration,respectively.LayoutofFBG2istosolve
+30,000 Hz;output power 260W (continuously adjust- the FBG cross-sensitivity issue by means of the reference
+able); maximum operating amplitude 40 μm; and di- FBG method. As for FBGs embedded in accordance with
+ameter of the diamond electroplating cutter 3 mm). theabovedesignscheme,carbonfibercompositesheetmate-
+rialsshallbenecessarilydrilledinadvanceasshowninFig.7.
+Fig.4 Ultrasonicprocessingdevices(aultrasonicpowersupply,bFBG
+Fig.3 Torquemeasurement devices (aKistler torquesensor,b Kistler
+demodulator,cultrasonicvibrator)
+chargeamplifier,andcDEWEsoftdataacquisitiondevice)IntJAdvManufTechnol(2018)96:765–773 769
+Fig.5 LayoutplansofFBGs(b
+enlargedpartialviewof(a)andc
+Enlargedpartialviewof(b))
+Inaccordancewith key parameters(gratinglength6 mm, 3. As for UVAG of CFRP, the grinding depth is among
+corediameter0.125mm,claddingmaterialepoxideresin)of 0.1–0.3 mm. Thus, the distance between the highest
+FBGs,thefollowingquestionsshallbetakenintoaccountfor point of the layout hole of FBG1 and the workpiece
+settingpositionsandgrindingdepthsofFBGs. surface may be set as the grinding depth for measur-
+ing the temperature of the grinding region. Due to the
+1. LayoutholesofalltypesofFBGsshallnotfullybedis- grinding depth has been determined; it may be
+tributed in one workpiece; otherwise, too many holes in regarded as the basis for setting the layout position
+the same CFRP workpiece would necessarily affect the of FBG1 in D layer.
+overallperformancesofCFRP;thus,theprocessingcon-
+ditionsshallbeundercontrolbymeansofthethoughtof
+thecontrolvariablemethodtoensureoneFBG1andone 4.3Grindingtestsandanalysisofmeasuredresults
+FBG2distributedinaworkpiece.
+2. As for positioning FBGs, the diameter of FBGs is 4.3.1Thechangeofsurfacetemperatureingrindingarea
+0.125mmandthesizeofthelayoutholeis0.3mm,whose
+other positions are full of thermal conductive grease Theoperatingconditionsareasfollows:
+(FBG1) and thermal insulation glue (FBG2). This will
+notonlyfixFBGs,butalsoimprovetheaccuracyoftem- Spindlespeed1500rpm,grindingdepth0.2mm
+perature monitoring. Moreover, the thickness of thermal Feedrate180mm/min,toolgranularity120#
+conductive grease is relatively large in comparison with
+the diameter of FBG1; thus, it may not be worried that Figure8indicatesthetemperaturechangecurves(measure-
+theFBG1maybedamagedduringthegrindingprocess. ment positions:a, b,c, and d;measurement period 10s) for
+Fig.6 MarkingdiagramofFBG1
+(aishorizontalorientation,bis
+d/4orientation,cisd/2
+orientation,anddisinclined
+orientation(φ=45°))Fig.7 DrillingCFRPworkpieces
+(aaluminumdrillingtool,ϕ=
+0.3mm,bsomeprocessed
+workpiecesofvariousparameters,
+ctheverticalmachiningcenter
+underfieldprocessing)
+UVAG of CFRP in the grinding region plane (D depth) and degree of the workpiece and the tool of positions a and
+getthefollowingconclusions: c,sothetemperaturehavethesameorder.
+1. The temperature change of the workpiece plane is basi-
+cally inconsistenttrendsexceptthatthe maximum tem- 2. The maximum grinding temperature measured by
+perature of each region changes, which depends on the means of FBGs does not correspond to the position
+correspondinggrindingparticipationdegreeofthework- rightabovethetoolingoneatFBGs;ontheotherhand,
+pieceandthetoolindifferentpositions.Asforpositiona there is a certain time delay due to the weak thermal
+(the primarily grinding position in the workpiece), the conductivityofCFRPandnoenoughtimeforspread-
+material removal rate and the tooling intensity are inggrindingheatoutofthegrindingregionratherthan
+peaking;thus,thecorrespondinggrindingtemperatureis accumulating heat in the workpiece plane during the
+maximum; on the other hand, as for position c (at the entiregrindingprocesssothatthesubsequentgrinding
+central of the tooling contact region), the grinding sym- heatinginertiaeffectdominatethecontinuoustemper-
+metry is the most intensive but the grinding rate is rela- atureriseinthegrindingregion,namelythemaximum
+tively minimum; thus, the correspondingly measured temperaturedelayphenomenonoccurs(Fig.8).
+planetemperatureisminimum;whatismore,asforposi-
+tions b and d, it is between the grinding participation
+45 4.3.2Therelationshipbetweenthegrindingtemperature
+anddepthsinthesamegrindingregion
+40
+Theoperatingconditionsareasfollows:
+35 Spindlespeed1500rpm,grindingdepth0.2mm
+Feedrate100mm/min,toolgranularity120#
+30
+Figure9presentsthetemperaturechangecurves(measure-
+ment depths A, B, C, and D; measurement period 20 s) for
+25
+UVAG of CFRP as for position a and get the following
+conclusions:
+20
+0 1 2 3 4 5 6 7 8 9 10
+Grinding time( t )/s 1. Onlyalittlegrindingheatistransferredintotheworkpiece
+(temperature20–40°C);
+/)T(erutarepmetgnidnirG
+770 IntJAdvManufTechnol(2018)96:765–773
+Grinding temperature of Da
+Grinding temperature of Db
+Grinding temperature of Dc
+Grinding temperature of Dd
+The grinding
+tool is located
+just above the
+FBG sensors
+Highest
+grinding
+temperature
+Fig.8 Grindingtemperaturewithtimeforvariouspositions40
+38
+36
+34
+32
+30
+28
+26
+24
+22
+20
+0 5 10 15 20
+Grinding time( t )/s
+more deeply to the workpiece; moreover, the situations
+2. Comparisonoftemperaturedatacorrespondingtovarious for temperature measurement positions a, b, c, and d
+depths (A, B, C, and D) in position a reflects the work- changeintheconsistenttrend;thus,theentiretemperature
+piecetemperaturerise(orinputheat)fallsalongwiththe change of a grinding workpiece may be reflected by
+growthofthedepth.Whatismore,theinternaltempera- meansofstudyofthetemperaturechangecorresponding
+ture falling gradient is larger than that of the workpiece toacertainposition.
+grindingregion; 2. Comparisonoftemperaturedistributionsituationsforpo-
+3. Since staring grinding, the temperature response periods sitionsa,b,c,anddindicatethatthetemperatureofposi-
+ofFBGsforvariousdepths(Da,Ca,Ba,andAa)are<1, tiona isthe maximumbutpositionc istheminimumin
+3, 8, and 16 s, respectively; such case indicates that the caseof the samedepth, and such case isproportionalto
+grindingheatisspreadmorerapidlyinthedirectionpar- thegrindingparticipationdegreeoftheworkpieceandthe
+allel tocarbonfibersoftheCFRPworkpiece sothatthe tool.Thetemperatureofpositiondfallsthefastestandthe
+temperaturemaybedistributedelliptically(ellipticalma- corresponding degree of reduction is maximum because
+jor axis: paralleltocarbonfibers) inthe samesection of itslineardistancerelativetothegrindingregionismaxi-
+theworkpiecegrindingregion.Thecorrespondingcause mumincaseofthesamedepth(temperaturemeasurement
+lies in that the thermal conductivity of carbon fibers is positionc:diagonalposition).
+higherthanthatofepoxyresin.
+4.3.4Thegrindingparametersvs.thegrindingplane
+temperature
+4.3.3Themaximumgrindingtemperatureatvarious
+positionsofaworkpiece The maximum grinding temperature of position D where
+FBGsaretheclosesttothegrindingregionmayreflecteffects
+AsshowninFig.10,PositionsA,B,C,andDare0.15,0.45, ofgrindingparametersontheinternaltemperaturedistribution
+0.75, and 1.05 mm below the tooling face (or workpiece ofaworkpieceforUVAGofCFRP.
+contactingplane),respectively,andtherearetemperaturemea- Figure11aindicatesthecircumstancesofspindlespeedvs.
+surementpositionsa,b,c,andd.Thegrindingparametersare grindingtemperature.Themeasuredgrindingtemperatureof
+setasfollows: eachpositionisbasicallyontheconsistentrisealongwiththe
+growthofthespindlespeed.Moreover,thegrindingtemper-
+Spindlespeed1500rpm,grindingdepth0.3mm ature is more greatly affected and the corresponding growth
+Feedrate180mm/min,toolgranularity120# rate is higher while the spindle speed is in the high or low
+sectionratherthantheintermediatesectiontemperature.
+Figure11bindicatesthecircumstancesofgrindingdepthvs.
+Figure10indicatesthefollowing: grinding temperature. The measured grinding temperature of
+eachpositionisbasicallyontheconsistentrisesandthecorre-
+1. Thegrindingtemperaturefallsbutthecorrespondingde- sponding growth rate increases along with the growth of the
+gree of reduction rises while the grinding heat spreads grinding depth. The grinding force also rises along with the
+/)
+T
+(erutarepmet
+gnidnirG
+80
+Grinding temperature of Da
+Grinding temperature of Ca
+Grinding temperature of Ba 70
+Grinding temperature of Aa
+60
+50
+40
+30
+20
+0.15 0.45 0.75 1.05
+Depth( Dp )/mm
+Fig.9 Grindingtemperaturewithtimeforvariousprocessdepthsofa
+workpiece
+/) T
+(erutarepmet
+gnidnirG
+IntJAdvManufTechnol(2018)96:765–773 771
+Position a
+Position b
+Position c Position d
+Fig.10 Maximumtemperaturesvs.thepositionofaworkpiece65 80
+Grinding temperature of Da Grinding temperature of Da
+60 Grinding temperature of Db 70 Grinding temperature of Db
+55 Grinding temperature of Dc Grinding temperature of Dc
+Grinding temperature of Dd Grinding temperature of Dd
+50 60
+45
+50
+40
+35 40
+30
+30
+25
+20 20
+500 1000 1500 2000 2500 0.1 0.15 0.2 0.25 0.3
+Spindle speed( n )/rpm Grinding depth( Ap )/mm
+70
+60
+50
+40
+30
+20
+100 140 180 220 260
+Feed rate( V )/mm/min
+growthofthegrindingdepth;moreover,thecorrespondingcal- ofpositionsDa,Db,Dc,andDdfluctuateslightly(oralmost
+culated heat flux density also rise, thus, the grinding heat in- remainconstant)withthegrowthofgrindingdepthtodemon-
+creasessothatthetemperaturemeasuredwithFBGsmayrise strate that the grinding temperature field distribution of the
+remarkably.Atthesametime,thegrowthofthegrindingdepth workpieceisirrelevanttothegranularityofthetool.
+leads to increasing the material removal rate and the corre-
+spondingenergyconsumptionforremovalofmaterialalsorise, 4.4Themutualverificationbetweensimulation
+which is primarily converted into the grinding heat; thus, the andexperimentalresults
+temperaturemeasuredwithFBGsincreasessignificantly.
+Figure 11c indicates the circumstances of feed rate vs. In the progress of grinding and simulation for UVAG of
+grindingtemperature.Theworkpiecegrindingplanetemper- CFRP,observingthedistributionoftemperaturefield(includ-
+aturerisesfasterandfasteralongwiththegrowthofthefeed ingthesurfacetemperature,theinternaltemperature,andthe
+rate;moreover,thetemperaturesofpositionsDa,Db,Dc,and maximumgrindingatvariouspositions)nearthegrindingarea
+Dd basically change in the same trend. The feed rate may ofaworkpiecewhilechangingtheparameters(includingspin-
+influencethegrindingtemperatureintwoaspectsasfollows: dlespeed,feedrate,grindingdepth,andgritsize).
+(1) the growth of the feed rate leads to the growth of the Themutualverificationresultsindicatethattheresultsobtain-
+material removal volume per unit time so that the grinding edbysimulationandgrindingexperimentundervariouscondi-
+loadandtheheatsourcestrengthmayrise;thus,thegrinding tionsinthepaperareconsistentwithintheerrorrange.Besides,
+temperaturerises.(2)Thegrowthofthefeedrateisequivalent thechangetrendandthecharacteristicvalueofthetemperature
+to the growth of the moving speed of the heat source in the distribution under specific parameters are the same. What is
+workpieceplanesothattheworkpieceplanemaybeheatedin more,italsoshowsthatthetwoschemestostudythedistribution
+a shorter period and less grinding heat may be input to the ofgrindingtemperaturefieldareallfeasible.Therelevantcon-
+workpiece.Relatedstudyresultsindicatethatwhilethegrind- clusionsarecorrectandhaveimportantguidingsignificancefor
+ingdepthisrelativelysmall,theheatingfactorisdominant;on theactualproductionprocessinUVAGofCFRP.
+theotherhand,thecoolingfactorisdominantwhilethegrind-
+ingdepthisrelativelylarge.Figure11cindicatesthemeasured
+grinding depth is relatively small and the corresponding 5 Conclusions
+heatingfactorisdominant.
+Figure 11d indicates the circumstances of grit size vs. The research presented above demonstrates the temperature
+grinding temperature. Which indicates that the temperatures field distribution of CFRP workpieces and corresponding
+/)
+T (erutarepmet
+gnidnirG
+Grinding temperature of Da 55 Grinding temperature of Da
+Grinding temperature of Db Grinding temperature of Db
+Grinding temperature of Dc Grinding temperature of Dc
+Grinding temperature of Dd 50 Grinding temperature of Dd
+45
+40
+60 80 100 120 140 160 180 200
+Grit size /mesh#
+/)
+T
+(erutarepmet
+gnidnirG
+/)
+T
+(erutarepmet
+gnidnirG
+/) T
+(erutarepmet
+gnidnirG
+772 IntJAdvManufTechnol(2018)96:765–773
+Fig.11 Thegrindingparameters a b
+vs.thegrindingplanetemperature
+(ashowsspindlespeedvs.
+grindingtemperature;bshows
+grindingdepthvs.grinding
+temperature;cshowsfeedratevs.
+grindingtemperature;dshows
+gritsizevs.grindingtemperature)
+c dIntJAdvManufTechnol(2018)96:765–773 773
+influencingfactorsbyFBGs.Someconclusionscanbegotten 5. Lu PC, Bi YF, Wang ZP, Zhang J, Zhang GS (2016)Effects of
+electric thermal effect on mechanical properties of carbon fiber
+asfollows:
+reinforcedpolymer.ActaMaterCompositSin33(10):2223–2229
+6. Yin GQ, GongYD, Chao W, Cui Q (2015) Study oneffects of
+1. The delay of the maximum grinding temperature mea- novel point grinding wheels processing parameters on grinding
+sured by means of FBGs and the elliptical temperature temperature.ChinaMechEng26(6):716–720
+7. YangHB,ZhaoHH,LiuWR(2014)Finiteelementsimulationof
+distribution in the same section for UVAG of CFRP are
+grinding temperature field in plane grinding based on ANSYS.
+due to the weak thermal conductivity of CFRP (thermal MachBuildAutom43(4):111–114
+conductivity:carbonfibers>epoxyresin).Whileheatis 8. XiaoL,MingXZ,LiuJH,GaoQ,LongY(2013)Modelingand
+spreading in a workpiece, the grinding temperature in- analysisofface-geargrindingtemperature.JHunanUnivTechnol
+29(5):34–39
+creasinglyfallsalongwiththegrowthofthetoolingdepth
+9. LvCF,WuXY,ZhengJM(2016)Exploring3Danalyticalmodel-
+and the temperature basically changes in the same trend
+ingofgrindingtemperature.MechSciTechnolAerospEng35(6):
+foreachpositioninCFRP.Theconsistencyofsimulation 918–923
+andexperimentalresultssupporttheaboveconclusions. 10. PatilP,PatilC(2016)FEMsimulationandanalysisoftemperature
+2. Acomparisonofsimulationandexperimentalresultsin- fieldofenvironmentalfriendlyMQLgrinding.IntConfCommun
+SignalProcess137:182–186
+dicates that the grinding temperature is basically on the
+11. González-Santander JL,Martín G, Gálvez EM, Yanez D (2015)
+consistent rise at each position along the growth of the Optimizationoftemperaturefieldevolutionsimulationduringwet
+spindle speed (grinding depth, feed rate) as for UVAG flatgrinding.ContactSurf91:221–232
+12. LiTL,TanYG,ZhouZD,ZhengK(2016)Anon-contactFBG
+of CFRP; on the other hand, the grinding temperature
+vibrationsensorwithdoubledifferentialtemperaturecompensation.
+fielddistributionoftheworkpieceisirrelevanttothegran- OptRev23(1):26–32.https://doi.org/10.1007/s10043-015-0153-y
+ularityofthetool. 13. BeneitezNT,MissinneJ,ShiY,ChiesuraG,LuyckxG,DegrieckJ
+3. The mutual verification between simulation and experi- (2016)HighlysensitivewaveguideBragggratingtemperaturesen-
+sor using hybrid polymers. IEEE Photon Technol Lett 28(10):
+mentalresultsindicatestheirerrorisamongtheallowable
+1150–1153.https://doi.org/10.1109/LPT.2016.2533020
+rangeandtheychangethesametrend;thus,ourdesignfor
+14. Deng LN, Peng L, Liao L, Yu ZH, Ma J, Qian XG (2017)
+measurementofthegrindingtemperaturebymeansofthe Experiment on temperature sensing performance of intelligent
+optical fiber arrangement scheme for UVAG of CFRP CFRPplate based onoptical fiber Bragg grating. J Guilin Univ
+shallbereliable.
+Technol37(1):77–80
+15. YuQG,NanK(2011)Principleandengineeringapplicationofdual
+periodfibergratingsensor.ShanxiArchit37(31):163–164
+Acknowledgments The authors would like to thank the Science and 16. BaoYJ,GaoH,LiangYD,ZhuGP(2013)Modelingandexperi-
+Technology Department of Hubei Province (Grant Number: mentalresearchondrillingtemperaturefieldofcarbonfiber/epoxy
+2015BAA022)forfundingthisstudy. reinforcedcomposites.ActaArmamentarii34(7):846–852
+17. RenXZ,ZhuPF,RenHL(2013)Studyongrindingtemperature
+field of forming method under different grinding parameters. J
+References
+HenanUnivSciTechnolNatSci34(2):26–33
+18. WangKJ,WangLY,YangLJ,ZhangH,YangL(2016)Studyon
+ultrasonicvibrationaidedmicroendgrindingtemperatureofquartz
+1. LiuSL,ChenT,WeiYX,WuCQ(2016)Studyonsurfacequality glassbasedonAnsys.SciTechnolEng16(12):62–67
+of CFRP after rotary ultrasonic face grinding. Aeronaut Manuf 19. GhafarizadehS,ChatelainJF,LebrunG(2016)Finiteelementanal-
+Technol15:57–61 ysisofsurfacemillingofcarbon fiber-reinforcedcomposites.Int
+2. LiuJ,ChenG,JiC,QinX,LiH,RenC(2014)Aninvestigationof AdvManufTechnol87(1–4):1–11
+workpiecetemperaturevariationofheliamillingforcarbonfiber 20. HeJL,MaYR,LiD,TanY,XuL(2014)Numericalsimulationof
+reinforce plastics (CFRP). Int J Mach Tools Manuf 86:89–103. curingdeformationofthermosettingresinmatrixcompositecurved
+https://doi.org/10.1016/j.ijmachtools.2014.06.008 structure.ApplMechMater684(3):145–153
+3. LiuSL,ChenT,WuCQ(2017)Rotaryultrasonicgrindingofcar- 21. WangS(2012)Heattransfermodelandenergyallocationratioin
+bonfiberreinforcedplastic(CFRP):astudyoncuttingforcemodel. shallowcutofgrinding.JPrecisManufAutom4(15):13–17
+Int Adv Manuf Technol 89(1):847–856. https://doi.org/10.1007/ 22. ZhangGF,HeY,LuYX,ZhouHM,ZhuKJ(2016)Experimental
+s00170-016-9151-x study on cryogenic cold air grinding of carbon fiber reinforced
+4. ChenT,YeML,LiuSL,TianSL(2017)Measurementofultrasonic plastics.ChinaMechEng27(20):2779–2790
+assistedgrindingtemperaturebasedonfiberBragggrating(FBG) 23. ZhangL, Ge PD (2010)Study of mechanism in thermodynamic
+sensor.IntAdvManufTechnol1:1–10 couplingfieldofhighspeedgrinding.ToolEng44(4):25–28

@@ -1,0 +1,49 @@
+Cílem tohoto požadavku  je na základě vstupních dat vytvořit odborný text pro připravovaný review vědecký článek zabývající se optovláknovými senzory. Vstupní data jsou ve formě JSON struktury a obsahují podstatné informace z vědeckovýzkumných článků zabývajících se určitou úzkou oblasti.
+
+**Důrazný požadavek na zahrnutí všech článků**: Povinné je zahrnout všechny poskytnuté články do souvislého textu a citovat je ve formátu `[ID]`. Pokud jsou články s podobným konstrukčním řešením senzoru, můžeš je kombinovat a citovat všechny současně. Každý článek musí být zmíněn alespoň jednou.
+
+Formát vstupních dat ve struktuře JSON:
+{
+    "project_name": "",
+    "RozsahGenerovanehoTextu": "",
+    "Instrukce": "",
+    "Struktura": "Struktura review článku",
+    "Articles": [
+        {
+            "ID":  "text",
+            "DOI": "text",
+            "NazevClanku": "text",
+            "RokPublikovani":  "text",
+            "KonstrukceSenzoru": "text",
+            "Kategorie": "text",
+            "Podkategorie": "text",
+            "Aplikace": "text",
+            "KlicovePoznatky": "text"
+        }
+    ]
+
+Popis parametrů, nemusí být poskytnuty všechny:
+•	project_name: název review článku
+•	RozsahGenerovanehoTextu: rozsah generovaneho textu ve znacích i s mezerami.
+•	Instrukce: další instrukce
+•	Struktura: Struktura review článku
+•	Articles: obsahuje data z jednotlivých článků
+•	ID: uživatelský identifikátor článku použitá pro citování.
+•	DOI: identifikátor článku
+•	NazevClanku: Název vědeckovýzkumného článku.
+•	RokPublikovani: rok publikování článku.
+•	KonstrukceSenzoru: Popis principu konstrukce senzoru a převodu měřené veličiny na optický parametr procházejícího světla optickým vláknem nebo na geometrický parametr optického vlákna.
+•	Kategorie: Popis oblasti použití nebo aplikace senzoru.
+•	Podkategorie: Podoblast použití nebo aplikace senzoru.
+•	Aplikace: Popis motivace, proč byl výzkum proveden, co bylo měřeno, jaké měřicí přístroje byly použity a jak byly výsledky využity.
+•	KlicovePozntaky: Podrobné informace o typu senzoru, principu fungování, způsobu zapouzdření, implementace a matematických vztazích či fyzikálních jevů, algoritmů zpracování dat apod.. Může zahrnovat popisy klíčových obrázků a rovnic.
+
+Instrukce pro generování textu:
+•	Text vytváříš jako vědec v oboru optovláknových senzorických technologií působící na prestižní vysoké škole.
+•	Při tvorbě textu vycházej pouze z odborných informací uvedených ve vstupních datech.
+•	Části textu vycházející z poskytnutých informací budou citovány dle ID článku ve formátu [ID]
+•	Pokud to bude potřeba, můžeš přidat vlastní odborné informace, ty ale musí být zřetelně označené složenými závorkami {....}.
+
+Struktura generovaného textu:
+1.	Odborný text do článku: Odborný souvislý text popisující výzkum a dosažené výsledky z poskytnutých článků. Ve výstupním textu budou texty řazeny od nejstarších nebo nejjednodušších řešení k sofistikovanějším a novějším. Při generování textu uváděj výhody, benefity či vylepšení novějších či sofistikovanějších řešení oproti těm již zmíněných. Ve výsledném textu kombinuj více článků s podobným řešením nebo principem senzoru, na ty se pak odkazuj sumárně následovně [ID][ID][ID] apod.. Do výstupního textu začleň doporučené obrázky a rovnice i s popisem, jež jsou uvedené v parametru KlicovePoznatky.  Na obrázky a rovnice se odkazuj podle jeho čísla např. (Fig. X) nebo (Eq. X).
+2.	Zhodnocení: Uveď doporučení na vylepšení textu, např. potřebu dohledání dalších relevantních publikací pro dosažení uceleného popisu dané problematiky.

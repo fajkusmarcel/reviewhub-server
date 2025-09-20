@@ -1,0 +1,85 @@
+{% extends "index.html" %}
+
+{% block content %}
+<!-- Kontejner pro zobrazení detailu článku a pravého bloku -->
+<div class="detail-container">
+    <!-- Levá sekce s informacemi -->
+    <div class="left-section">
+        <h2>Informace</h2>
+        <p><strong>Autoři:</strong> {{ clanek[1] }}</p>
+        <p><strong>Rok:</strong> {{ clanek[3] }}</p>
+        <p><strong>Princip senzoru:</strong> {{ clanek[5] }}</p>
+        <p><strong>Oblast použití:</strong> {{ clanek[9] }}</p>
+        <!-- Další informace -->
+    </div>
+
+    <!-- Pravá sekce s částmi (tabs) -->
+    <div class="right-section">
+        <ul class="tabs">
+            <li><a href="#abstract" onclick="showTab(event, 'abstract')">Abstract</a></li>
+            <li><a href="#informace" onclick="showTab(event, 'informace')">Informace</a></li>
+            <li><a href="#klicove_poznatky" onclick="showTab(event, 'klicove_poznatky')">Klíčové poznatky</a></li>
+            <li><a href="#obrazky" onclick="showTab(event, 'obrazky')">Obrázky</a></li>
+            <li><a href="#fulltext" onclick="showTab(event, 'fulltext')">Full Text</a></li>
+        </ul>
+
+        <!-- Obsah pro jednotlivé části -->
+        <div class="tab-content" id="informace">
+            <h2>Informace</h2>
+            <p><strong>Princip senzoru:</strong> {{ clanek[5] }}</p>
+            <p><strong>Oblast použití:</strong> {{ clanek[9] }}</p>
+            <!-- Další informace o článku -->
+        </div>
+
+        <div class="tab-content" id="klicove_poznatky">
+            <h2>Klíčové poznatky</h2>
+            <p>{{ clanek[19] }}</p>
+            <!-- Klíčové poznatky z článku -->
+        </div>
+
+        <div class="tab-content" id="obrazky">
+            <h2>Obrázky</h2>
+            
+            {% for obrazek in obrazky %}
+                <img src="{{ url_for('static', filename='uploads/' + obrazek) }}" alt="Obrázek článku" style="width:100px; height:auto;">
+            {% endfor %}
+        </div>
+
+        <div class="tab-content" id="fulltext">
+            <h2>Full Text</h2>            
+            {% if clanek[21] %}
+                <embed src="{{ url_for('static', filename='uploads/projekt_' + str(clanek[0]) + '/' + clanek[21]) }}" type="application/pdf" width="100%" height="600px" />
+            {% else %}
+                <p>Full text není dostupný.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pro přepínání záložek -->
+<script>
+function showTab(event, tabId) {
+    // Skryj všechny tab-content divy
+    var tabContents = document.getElementsByClassName('tab-content');
+    for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].style.display = 'none';
+    }
+
+    // Odeber třídu 'active' ze všech záložek
+    var tabs = document.querySelectorAll('.tabs li a');
+    tabs.forEach(function(tab) {
+        tab.classList.remove('active');
+    });
+
+    // Zobraz vybraný tab-content a přidej třídu 'active' pro aktuální záložku
+    document.getElementById(tabId).style.display = 'block';
+    event.currentTarget.classList.add('active');
+}
+
+// Zobraz první záložku při načtení stránky
+document.addEventListener('DOMContentLoaded', function() {
+    showTab(event, 'informace');
+});
+</script>
+{% endblock %}
+

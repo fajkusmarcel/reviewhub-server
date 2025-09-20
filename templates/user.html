@@ -1,0 +1,97 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="centre-container">
+    <h3>Seznam uživatelů</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Jméno</th>
+                <th>Příjmení</th>
+                <th>Login</th>
+                <th>Role</th>
+                {% if session.get('user_role') == 'admin' %}
+                    <th class="akce">Akce</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.surname }}</td>
+                <td>{{ user.login }}</td>
+                <td>{{ user.role }}</td>
+                
+                {% if session.get('user_role') == 'admin' %}
+                    <td class="akce">
+                        <a href="{{ url_for('user.user_edit', user_id=user.user_id) }}" style="padding: 3px;"><img src="/reviewhub/static/icon-edit.svg" height="20px"></a>
+                        <a href="{{ url_for('user.user_password', user_id=user.user_id) }}" style="padding: 3px;"><img src="/reviewhub/static/icon-password.svg" height="20px"></a>
+                        <a href="javascript:void(0);" onclick="openDeleteModal('{{ url_for('user.user_delete', user_id=user.user_id) }}', '{{user.name}} {{user.surname}}({{user.role}})')" style="padding: 3px;"><img src="/reviewhub/static/icon-delete.svg" height="20px"></a>
+                        
+                        
+                    </td>
+                {% endif %}
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Tlačítko pro přidání uživatele -->
+    {% if session.get('user_role') == 'admin' %}
+    <a href="{{ url_for('user.user_add') }}" class="btn">Přidat uživatele</a>
+    {% endif %}
+</div>
+
+
+    
+<br>
+<!-- Překryvný div pro zobrazení výsledku -->
+<div id="overlay">
+    <div id="overlayContent">
+        <h3>Výsledek kontroly</h3>
+        <p id="overlayMessage"></p>
+        <button type="button" onclick="closeOverlay()" >Zavřít</button>
+    </div>
+</div>
+<!-- Modalni okno pro potvrzeni smazani uzivatele -->
+<div id="delete-modal">
+    <div id="delete-modalContent">
+        <h2>Potvrzení smazání</h2>
+        <p>Opravdu chcete smazat tohoto uživatele?</p>
+        <div id="delete-modalContent-name"></div>
+        <div class="modal-buttons">
+            <button onclick="confirmDeletion()">Smazat</button>
+            <button onclick="closeModal()">Zrušit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Funkce pro zobrazení overlay
+    function showOverlay(message, level) {
+        var overlay = document.getElementById('overlay');
+        var overlayMessage = document.getElementById('overlayMessage');
+        
+        overlayMessage.textContent = message;
+        overlayMessage.className = level;  // Nastavení třídy podle úrovně (INFO nebo WARNING)
+
+        overlay.style.display = 'block';  // Zobrazení overlay
+    }
+
+    // Funkce pro zavření overlay
+    function closeOverlay() {
+        var overlay = document.getElementById('overlay');
+        overlay.style.display = 'none';
+    }
+
+    // Pokud máme zprávu z backendu, zobraz overlay s výsledkem
+    {% if msg %}
+        document.addEventListener("DOMContentLoaded", function() {
+            showOverlay("{{ msg.TEXT }}", "{{ msg.LEVEL }}");
+        });
+    {% endif %}
+</script>
+
+{% endblock %}
+

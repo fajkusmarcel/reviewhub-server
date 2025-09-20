@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form method="post" action="{{ url_for('user.user_add') }}">
+    <div class="form-group">
+        <label for="jmeno">Jméno:</label>
+        <input type="text" id="jmeno" name="jmeno" required>
+    </div>
+    <div class="form-group">
+        <label for="prijmeni">Příjmení:</label>
+        <input type="text" id="prijmeni" name="prijmeni" required>
+    </div>
+    <div class="form-group">
+        <label for="login">Login:</label>
+        <input type="text" id="login" name="login" required>
+    </div>
+    <div class="form-group">
+        <label for="heslo">Heslo:</label>
+        <input type="password" id="heslo" name="heslo" required>
+    </div>
+    <div class="form-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role" required>
+            <option value="admin">Administrátor</option>
+            <option value="autor">Autor</option>
+        </select>
+    </div>
+
+    <button type="submit">Přidat uživatele</button>
+    
+</form>
+{% endblock %}
+

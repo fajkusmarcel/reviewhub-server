@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReviewHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-agel.css') }}">
+    <script src="/reviewhub/static/js.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    
+
+</head>
+<body>
+    <!-- Horní lišta -->
+    <header {% if session['ModeApp'] == 'test' %} class="top-bar-test" {% else %} class="top-bar" {%endif%}>
+        
+        <div class="top-bar-left">
+            <div class="web_name">ReviewHub {% if session['ModeApp'] == 'test' %} test {% endif %}</div>
+            <div class="project_name">{{ session['selected_project_name'] }}</div> <!-- Zde bude název projektu -->
+        </div>
+        
+        <div class="top-bar-right">
+            {% if 'user_id' in session %}
+                <span>{{ session['user_name'] }} {{ session['user_surname'] }} ({{ session['user_role'] }})</span>
+                <a href="{{ url_for('logout') }}">Odhlásit</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">LOGIN</a>
+            {% endif %}
+        </div>
+        
+    </header>
+    
+
+    <!-- Hlavní rozvržení -->
+    <div class="container">
+        <!-- Boční panel (Sidebar) -->
+        <nav class="sidebar">
+            <ul>                
+                <li class="left_menu_section">Základní funkce</li>
+                <li><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('publication.publication_search') }}">Hledat</a></li>
+                <li><a href="{{ url_for('publication.publication') }}">Články</a></li>
+                <li><a href="{{ url_for('publication.publication_add') }}">Přidat článek</a></li>                 
+                <li><a href="{{ url_for('project.project') }}">Projekty</a></li>
+                
+                {% if session['user_role'] == 'admin' %}
+                         
+                    <li class="left_menu_section">Skryté funkce</li>                                   
+                    <li><a href="{{ url_for('publication.publication_all') }}">Seznam článků</a></li> 
+                    <li><a href="{{ url_for('publication.publication_pdf2text') }}">PDF2Text</a></li>  
+                    <li><a href="{{ url_for('publication.publication_bib') }}">BIB references</a></li>
+
+                    <li class="left_menu_section">Administrace</li>
+                    <li><a href="{{ url_for('user.users') }}">Uživatelé</a></li>
+                    <li><a href="{{ url_for('settings.settings') }}">Nastavení</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Hlavní obsah -->
+        <main class="main_content">
+            <div class="site_name">{{site_name}}</div>
+            <div class="main_container">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+

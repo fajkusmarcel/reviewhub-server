@@ -1,0 +1,481 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <table class="dashboard">
+        <tr>
+            <td colspan="2"><h3>Statistika článku zařazených do projektu</h3></td>
+        </tr>
+        <tr>
+            <td><h4>Celkový Počet Článků</h4>    
+                <div class="chart-box-container-group">
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div></div>                       
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartDay"></canvas>  <!-- Canvas pro graf -->
+                    </div></div>                       
+                </div>
+            </td>
+            <td><h4> Počet článků podle uživatelů</h4>
+                <div class="chart-box-container-group">
+                    <div class="chart-box-container"><div class="chart-container">
+                            <canvas id="barChartUsersProcessed"></canvas>
+                    </div></div>
+                    
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartUsersNONProcessed"></canvas>
+                    </div></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><h3>Statistika článku využitých v review článku.</h3>
+            </td>
+        </tr>
+        <tr>
+            <td>Čeká na zpracování</td>
+            <td>{{ total_articles - articles_in_review[0].total}} / {{total_articles}}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="2"><h4> Počet článků podle roku, oblasti použití a typu senzoru</h4>
+                <div class="chart-box-container-group">
+                    <div class="chart-box-container"><div class="chart-container">
+                            <canvas id="barChartYearInReview"></canvas>
+                    </div></div>
+            
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartCategoryInReview"></canvas>
+                    </div></div>
+
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartSubcategoryInReview"></canvas>
+                    </div></div>
+            
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartSensorInReview"></canvas>
+                    </div></div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2"><h4> Počet článků podle roku, oblasti použití a typu senzoru</h4>
+                <div class="chart-box-container-group">
+                    <div class="chart-box-container"><div class="chart-container">
+                            <canvas id="barChartYear"></canvas>
+                    </div></div>
+            
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartCategory"></canvas>
+                    </div></div>
+
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartSubcategory"></canvas>
+                    </div></div>
+            
+                    <div class="chart-box-container"><div class="chart-container">
+                        <canvas id="barChartSensor"></canvas>
+                    </div></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                
+            </td>
+            <td></td>
+        </tr>
+    </table>  
+
+    <h3>Celkové statistiky</h3>
+    <div class="stat-container">
+        <div class="stat-container-collumn">
+            <h4>Počet článků</h4>
+            <table border="1" class="dashboard_table_stat">
+                <tr>
+                    <th>Metrika</th>
+                    <th>Hodnota</th>
+                </tr>
+                <tr>
+                    <td>Celkový počet článků</td>
+                    <td>{{ stat.total_articles }}</td>
+                </tr>
+                <tr>
+                    <td>Počet článků s PDF</td>
+                    <td>{{ stat.articles_with_pdf }}</td>
+                </tr>
+            </table>
+
+            <h4>Počet článků podle roku</h4>
+            <table border="1" class="dashboard_table_stat">
+                <tr>
+                    <th>Rok</th>
+                    <th>Počet článků</th>
+                </tr>
+                {% for year, count in stat.articles_by_year.items() %}
+                <tr>
+                    <td>{{ year }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="stat-container-collumn">
+            <h4>Počet článků podle kategorie</h4>
+            <table border="1" class="dashboard_table_stat">
+                <tr>
+                    <th>Kategorie</th>
+                    <th>Počet článků</th>
+                </tr>
+                {% for category, count in stat.articles_by_category.items() %}
+                <tr>
+                    <td>{{ category }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <h4>Počet článků podle podkategorie</h4>
+            <table border="1" class="dashboard_table_stat">
+                <tr>
+                    <th>Podkategorie</th>
+                    <th>Počet článků</th>
+                </tr>
+                {% for subcategory, count in stat.articles_by_subcategory.items() %}
+                <tr>
+                    <td>{{ subcategory }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="stat-container-collumn">
+            <h4>Počet článků podle typu senzoru</h4>
+            <table border="1" class="dashboard_table_stat">
+                <tr>
+                    <th>Typ senzoru</th>
+                    <th>Počet článků</th>
+                </tr>
+                {% for sensor_type, count in stat.articles_by_sensor_type.items() %}
+                <tr>
+                    <td>{{ sensor_type }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        
+    // Funkce pro použití barev z pevné sady
+    const getColor = (index) => {
+        return fixedColors[index % fixedColors.length];
+    };
+
+    
+// Koláčový graf
+const ctxPie = document.getElementById('pieChart').getContext('2d');
+ctxPie.canvas.width = 150;
+ctxPie.canvas.height = 150;
+const pieChart = new Chart(ctxPie, {
+    type: 'pie',
+    data: {
+        labels: ['Zadané články', 'Zpracované články'],
+        datasets: [{
+            data: [{{ total_entered }}, {{ total_processed }}],
+            backgroundColor: ['#FF6384', '#36A2EB'],
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,  // Zakázat udržování poměru stran
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right'  // Zde můžeš nastavit 'top', 'left', 'bottom', nebo 'right'
+            }
+        }
+    }
+});
+
+// Data předaná z backendu
+const processedArticlesByDay = {{ processed_articles_by_day | tojson }};
+const labels = Object.keys(processedArticlesByDay);  // Dny
+const data = Object.values(processedArticlesByDay);  // Počet článků
+
+// Konfigurace grafu
+const ctx = document.getElementById('barChartDay').getContext('2d');
+const barChartDay = new Chart(ctx, {
+    type: 'bar',  // Typ grafu (sloupcový)
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Počet zadaných článků za den',
+            data: data,
+            backgroundColor: '#36A2EB',
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Sloupcový graf - podle uživatelů
+const ctxUsersProcessed = document.getElementById('barChartUsersProcessed').getContext('2d');
+const labelsUsersProcessed = {{ processed_articles|tojson|safe }}.map(item => item['full_name']);
+const dataUsersProcessed = {{ processed_articles|tojson|safe }}.map(item => item['processed_count']);        
+const barChartUsersProcessed = new Chart(ctxUsersProcessed, {
+    type: 'bar',
+    data: {
+        labels: labelsUsersProcessed,
+        datasets: [{
+            label: 'Počet zpracovaných článků',
+            data: dataUsersProcessed,
+            backgroundColor: '#36A2EB',  // Můžeš změnit barvu
+        }]
+    }
+});
+
+// Sloupcový graf - podle uživatelů
+const ctxUsersNONProcessed = document.getElementById('barChartUsersNONProcessed').getContext('2d');
+const labelsUsersNONProcessed = {{ non_processed_articles|tojson|safe }}.map(item => item['full_name']);
+const dataUsersNONProcessed = {{ non_processed_articles|tojson|safe }}.map(item => item['non_processed_articles_count']);
+const barChartUsersNONProcessed = new Chart(ctxUsersNONProcessed, {
+    type: 'bar',
+    data: {
+        labels: labelsUsersNONProcessed,
+        datasets: [{
+            label: 'Počet ne-zpracovaných článků',
+            data: dataUsersNONProcessed,
+            backgroundColor: '#FF5733',  // Můžeš změnit barvu
+        }]
+    }
+});
+
+// Sloupcový graf - podle roku
+const ctxYearInReview = document.getElementById('barChartYearInReview').getContext('2d');
+const labelsYearInReview = {{ articles_by_year_in_review|tojson }};
+
+// Získání počtu článků z klíče "total" a roku z klíče "RokVydani"
+const dataYearInReview = labelsYearInReview.map(item => item['total']);
+const yearLabelsInReview = labelsYearInReview.map(item => item['RokVydani']);
+
+const barChartYearInReview = new Chart(ctxYearInReview, {
+    type: 'bar',
+    data: {
+        labels: yearLabelsInReview,
+        datasets: [{
+            label: 'Počet článků podle roku',
+            data: dataYearInReview,
+            backgroundColor: '#FFCE56',
+        }]
+    }
+});
+
+// Sloupcový graf - podle oblasti použití
+const ctxCategoryInReview = document.getElementById('barChartCategoryInReview').getContext('2d');
+const labelsCategoryInReview = {{ articles_by_category_in_review|tojson }};
+const dataCategoryInReview = labelsCategoryInReview.map(item => item['total']);
+const categoryLabelsInReview = labelsCategoryInReview.map(item => item['Kategorie']);
+
+
+const barChartCategoryInReview = new Chart(ctxCategoryInReview, {
+    type: 'bar',
+    data: {
+        labels: categoryLabelsInReview,
+        datasets: [{
+            label: 'Počet článků podle oblasti použití',
+            data: dataCategoryInReview,
+            backgroundColor: '#36a2eb',
+        }]
+    }
+});
+
+// Sloupcový graf - podle oblasti podkategorie
+const ctxSubcategoryInReview = document.getElementById('barChartSubcategoryInReview').getContext('2d');
+const labelsSubcategoryInReview = {{ articles_by_subcategory_in_review|tojson }};
+const dataSubcategoryInReview = labelsSubcategoryInReview.map(item => item['total']);
+const subcategoryLabelsInReview = labelsSubcategoryInReview.map(item => item['Podkategorie']);
+
+const barChartSubcategoryInReview = new Chart(ctxSubcategoryInReview, {
+    type: 'bar',
+    data: {
+        labels: subcategoryLabelsInReview,
+        datasets: [{
+            label: 'Počet článků podle podkategorií',
+            data: dataCategoryInReview,
+            backgroundColor: '#4BC0C0',
+        }]
+    }
+});
+
+
+
+
+// Sloupcový graf - podle typů senzorů
+const ctxSensorInReview = document.getElementById('barChartSensorInReview').getContext('2d');
+const labelsSensorInReview = {{ articles_by_sensor_type_in_review|tojson }};
+const dataSensorInReview = labelsSensorInReview.map(item => item['total']);
+const sensorLabelsInReview = labelsSensorInReview.map(item => item['TypSenzoru']);
+
+const barChartSensorInReview = new Chart(ctxSensorInReview, {
+    type: 'bar',
+    data: {
+        labels: sensorLabelsInReview,
+        datasets: [{
+            label: 'Počet článků podle typů senzorů',
+            data: dataSensorInReview,
+            backgroundColor: '#9966FF',
+        }]
+    }
+});
+
+// Sloupcový graf - podle roku
+const ctxYear = document.getElementById('barChartYear').getContext('2d');
+const labelsYear = {{ articles_by_year|tojson }};
+const dataYear = labelsYear.map(item => item['total']);
+const yearLabels = labelsYear.map(item => item['RokVydani']);
+
+const barChartYear = new Chart(ctxYear, {
+    type: 'bar',
+    data: {
+        labels: yearLabels,
+        datasets: [{
+            label: 'Počet článků podle roku',
+            data: dataYear,
+            backgroundColor: '#FFCE56',
+        }]
+    }
+});
+
+// Sloupcový graf - podle oblasti použití
+const ctxCategory = document.getElementById('barChartCategory').getContext('2d');
+const labelsCategory = {{ articles_by_category|tojson }};
+const dataCategory = labelsCategory.map(item => item['total']);
+const categoryLabels = labelsCategory.map(item => item['Kategorie']);
+
+const barChartCategory = new Chart(ctxCategory, {
+    type: 'bar',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            label: 'Počet článků podle oblasti použití',
+            data: dataCategory,
+            backgroundColor: '#36a2eb',
+        }]
+    }
+});
+
+// Sloupcový graf - podle oblasti podkategorie
+const ctxSubcategory = document.getElementById('barChartSubcategory').getContext('2d');
+const labelsSubcategory = {{ articles_by_subcategory|tojson }};
+const dataSubcategory = labelsSubcategory.map(item => item['total']);
+const subcategoryLabels = labelsSubcategory.map(item => item['Podkategorie']);
+
+const barChartSubcategory = new Chart(ctxSubcategory, {
+    type: 'bar',
+    data: {
+        labels: subcategoryLabels,
+        datasets: [{
+            label: 'Počet článků podle podkategorií',
+            data: dataSubcategory,
+            backgroundColor: '#4BC0C0',
+        }]
+    }
+});
+/*
+// Sloupcový graf - podle oblasti podkategorie
+const ctxSubcategory = document.getElementById('barChartSubcategory').getContext('2d');
+const labelsSubcategory = {{ articles_by_subcategory|tojson }};
+const dataSubcategory = labelsSubcategory.map(item => item['total']);
+const subcategoryLabels = labelsSubcategory.map(item => item['Podkategorie']);
+
+// Definice pevné sady 10 barev
+const fixedColors = [
+'#FF6384', // Red
+'#36A2EB', // Blue
+'#FFCE56', // Yellow
+'#4BC0C0', // Green
+'#9966FF', // Purple
+'#FF9F40', // Orange
+'#FF6384', // Light Red
+'#4BC0C0', // Light Green
+'#36A2EB', // Light Blue
+'#FFCE56'  // Light Yellow
+];
+
+
+// Použití pevné sady barev pro každý sloupec
+const backgroundColors = subcategoryLabels.map((_, index) => getColor(index));
+
+const barChartSubcategory = new Chart(ctxSubcategory, {
+type: 'bar',
+data: {
+    labels: subcategoryLabels,
+    datasets: [{
+        label: 'Počet článků podle podkategorií',
+        data: dataSubcategory,
+        backgroundColor: backgroundColors,
+    }]
+},
+options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: true,
+            position: 'right',
+            labels: {
+                generateLabels: (chart) => {
+                    return subcategoryLabels.map((label, index) => ({
+                        text: label,
+                        fillStyle: backgroundColors[index],
+                    }));
+                }
+            }
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                autoSkip: false,
+                maxRotation: 45,
+                minRotation: 0,
+            }
+        }
+    }
+}
+});        
+*/
+// Sloupcový graf - podle typů senzorů
+const ctxSensor = document.getElementById('barChartSensor').getContext('2d');
+const labelsSensor = {{ articles_by_sensor_type|tojson }};
+const dataSensor = labelsSensor.map(item => item['total']);
+const sensorLabels = labelsSensor.map(item => item['TypSenzoru']);
+
+const barChartSensor = new Chart(ctxSensor, {
+type: 'bar',
+data: {
+    labels: sensorLabels,
+    datasets: [{
+        label: 'Počet článků podle typů senzorů',
+        data: dataSensor,
+        backgroundColor: '#9966FF',
+    }]
+}
+});
+
+
+
+
+    </script>
+{% endblock %}
+

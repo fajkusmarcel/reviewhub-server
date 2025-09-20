@@ -1,0 +1,343 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form id="publication_form" class="formWidthMedium"enctype="multipart/form-data" onsubmit="return submitForm();">
+
+    <!-- Textarea pro JSON -->
+    <p class="description">Import článku z datové struktury (JSON) do formuláře.</p>
+    <textarea id="article_data" rows="5" cols="60" placeholder='{
+        "PublicationName": "Wheel Flat Detection...",
+        "Journal": "Proceedings of SPIE",
+        ...
+    }'></textarea><br>
+
+    <button id="importButton">Importovat Článek</button>
+
+    
+    <!-- Překryvný div pro zobrazení výsledku -->
+    <div id="overlay">
+        <div id="overlayContent">
+            <h3>Výsledek kontroly</h3>
+            <p id="overlayMessage"></p>
+            <button type="button" onclick="closeOverlay()" >Zavřít</button>
+        </div>
+    </div>
+
+    <br>
+
+
+    <div class="form-group">
+        <label for="nazev_clanku">Název článku:</label>
+        <input type="text" id="nazev_clanku" name="nazev_clanku" required>
+        <button type="button" onclick="checkArticle()" class="small">Zkontrolovat</button>
+    </div>
+
+    <div class="form-group">
+        <label for="abstract">Abstrakt:</label>
+        <textarea id="abstract" class="bigger" name="abstract"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="casopis">Časopis:</label>
+        <input type="text" id="casopis" name="casopis">
+    </div>
+
+    <div class="form-group">
+        <label for="rok_vydani">Rok vydání:</label>
+        <input type="text" id="rok_vydani" name="rok_vydani">
+    </div>
+
+    <div class="form-group">
+        <label for="kategorie">Kategorie:</label>
+        <input type="text" id="kategorie" name="kategorie">
+    </div>
+
+    <div class="form-group">
+        <label for="podkategorie">Podkategorie:</label>
+        <input type="text" id="podkategorie" name="podkategorie">
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label for="typ_senzoru">Typ senzoru:</label>
+        <input type="text" id="typ_senzoru" name="typ_senzoru">
+    </div>
+
+    <div class="form-group">
+        <label for="princip_senzoru">Princip senzoru:</label>
+        <input type="text" id="princip_senzoru" name="princip_senzoru">
+    </div>
+
+    <div class="form-group">
+        <label for="konstrukce_senzoru">Princip konstrukce:</label>
+        <textarea id="konstrukce_senzoru" class="bigger" name="konstrukce_senzoru"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="zpusob_zapouzdreni">Způsob zapouzdření:</label>
+        <input type="text" id="zpusob_zapouzdreni" name="zpusob_zapouzdreni">
+    </div>
+
+    <div class="form-group">
+        <label for="zpusob_implementace">Způsob implementace:</label>
+        <input type="text" id="zpusob_implementace" name="zpusob_implementace">
+    </div>
+
+    <div class="form-group">
+        <label for="typ_optickeho_vlakna">Typ optického vlákna:</label>
+        <input type="text" id="typ_optickeho_vlakna" name="typ_optickeho_vlakna">
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label for="merena_velicina">Měřená veličina:</label>
+        <input type="text" id="merena_velicina" name="merena_velicina">
+    </div>
+
+    <div class="form-group">
+        <label for="rozsah_merani">Rozsah měření:</label>
+        <input type="text" id="rozsah_merani" name="rozsah_merani">
+    </div>
+
+    <div class="form-group">
+        <label for="citlivost">Citlivost:</label>
+        <input type="text" id="citlivost" name="citlivost">
+    </div>
+
+    <div class="form-group">
+        <label for="presnost">Přesnost:</label>
+        <input type="text" id="presnost" name="presnost">
+    </div>
+
+    <div class="form-group">
+        <label for="frekvencni_rozsah">Frekvenční rozsah:</label>
+        <input type="text" id="frekvencni_rozsah" name="frekvencni_rozsah">
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label for="aplikace_studie">Aplikace/Případová studie:</label>
+        <textarea id="aplikace_studie" class="bigger" name="aplikace_studie"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="klicove_poznatky">Klíčové poznatky:</label>
+        <textarea id="klicove_poznatky" class="bigger" name="klicove_poznatky"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="summary">Shrnutí:</label>
+        <textarea id="summary" class="bigger" name="summary"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="vyhody">Výhody:</label>
+        <textarea id="vyhody" class="bigger" name="vyhody"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="nevyhody">Nevýhody:</label>
+        <textarea id="nevyhody" class="bigger" name="nevyhody"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="poznamky">Poznámky:</label>
+        <textarea id="poznamky" class="bigger" name="poznamky"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="obrazky">Obrázky (název souboru):</label>
+        <input type="text" id="obrazky" name="obrazky">
+    </div>
+
+    <hr>
+    <div class="form-group">
+        <label for="pdf_soubor">Název PDF souboru:</label>
+        <div id="file-upload" class="file-upload">
+            <span>Přetáhněte soubor sem nebo klikněte pro výběr souboru</span>
+            <input type="file" id="pdf_soubor" name="pdf_soubor" accept=".pdf" style="display:none;" onchange="updateFileName()">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="autori">Autori</label>
+        <input type="text" id="autori" name="autori">
+    </div>
+
+    <div class="form-group">
+        <label for="doi">DOI:</label>
+        <input type="text" id="doi" name="doi">
+    </div>
+
+    <div class="form-group">
+        <label for="citaceBib">Citace BIB:</label>
+        <input type="text" id="citaceBib" name="citaceBib">
+    </div>
+
+    <div class="form-group">
+        <label for="stav">Stav:</label>
+        <select id="stav" name="stav">
+            <option value="zavedeno">Zavedeno</option>
+            <option value="zpracováno">Zpracováno</option>
+        </select>
+    </div>
+
+    <button type="button" id="submit_button" onclick="submitForm(event)">Pridat článek</button>
+</form>
+
+<script>
+document.getElementById('importButton').addEventListener('click', function() {
+    event.preventDefault(); // Zamezíme odeslání formuláře
+    const articleData = document.getElementById('article_data').value;
+    try {
+        const articleJson = JSON.parse(articleData);  // Parsování JSON
+
+        // Předvyplnění formuláře
+        document.getElementById('nazev_clanku').value = articleJson.NazevClanku || '';
+        document.getElementById('abstract').value = articleJson.Abstrakt || '';
+        document.getElementById('casopis').value = articleJson.Casopis || '';
+        document.getElementById('rok_vydani').value = articleJson.RokVydani || '';
+        document.getElementById('typ_senzoru').value = articleJson.TypSenzoru || '';
+        document.getElementById('princip_senzoru').value = articleJson.PrincipSenzoru || '';
+        document.getElementById('konstrukce_senzoru').value = articleJson.KonstrukceSenzoru || '';
+        document.getElementById('typ_optickeho_vlakna').value = articleJson.TypOptickehoVlakna || '';
+        document.getElementById('zpusob_zapouzdreni').value = articleJson.ZpusobZapouzdreni || '';
+        document.getElementById('zpusob_implementace').value = articleJson.ZpusobImplementace || '';
+        document.getElementById('kategorie').value = articleJson.Kategorie || '';
+        document.getElementById('podkategorie').value = articleJson.Subkategorie || '';
+        document.getElementById('merena_velicina').value = articleJson.MerenaVelicina || '';
+        document.getElementById('rozsah_merani').value = articleJson.RozsahMereni || '';
+        document.getElementById('citlivost').value = articleJson.Citlivost || '';
+        document.getElementById('presnost').value = articleJson.Presnost || '';
+        document.getElementById('frekvencni_rozsah').value = articleJson.FrekvencniRozsah || '';
+        document.getElementById('vyhody').value = articleJson.Vyhody || '';
+        document.getElementById('nevyhody').value = articleJson.Nevyhody || '';
+        document.getElementById('aplikace_studie').value = articleJson.Aplikace || '';
+        document.getElementById('klicove_poznatky').value = articleJson.KlicovePoznatky || '';
+        document.getElementById('summary').value = articleJson.Summary || '';
+        document.getElementById('poznamky').value = articleJson.Poznamky || '';
+        document.getElementById('obrazky').value = articleJson.Obrazky || '';  // Převod pole na řetězec
+        document.getElementById('autori').value = articleJson.Autori || '';  // Převod pole na řetězec
+        document.getElementById('doi').value = articleJson.Doi || '';  // Převod pole na řetězec
+        document.getElementById('citaceBib').value = articleJson.CitaceBib || '';  // Převod pole na řetězec
+        
+    } catch (error) {
+        alert('Chyba při parsování JSON: ' + error.message);
+    }
+    checkArticle();
+}); 
+    
+document.getElementById('file-upload').addEventListener('click', function() {
+    document.getElementById('pdf_soubor').click(); // Simulace kliknutí na input
+});
+
+document.getElementById('file-upload').addEventListener('dragover', function(event) {
+    event.preventDefault(); // Zamezíme výchozímu chování
+    this.style.backgroundColor = '#e1f5e1'; // Změna pozadí při přetahování
+});
+
+document.getElementById('file-upload').addEventListener('dragleave', function() {
+    this.style.backgroundColor = ''; // Obnovení původní barvy
+});
+
+document.getElementById('file-upload').addEventListener('drop', function(event) {
+    event.preventDefault(); // Zamezíme výchozímu chování
+    const files = event.dataTransfer.files; // Získání přetažených souborů
+    if (files.length > 0 && files[0].type === "application/pdf") {
+        document.getElementById('pdf_soubor').files = files; // Přiřazení souboru do inputu
+        updateFileName(); // Aktualizace zobrazení názvu souboru
+    }
+});
+
+function updateFileName() {
+    const fileInput = document.getElementById('pdf_soubor');
+    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "Není vybrán žádný soubor";
+    document.getElementById('file-upload').querySelector('span').innerText = fileName; // Aktualizace textu
+}
+
+// Funkce pro kontrolu článku
+async function checkArticle() {
+    const nazev = document.getElementById('nazev_clanku').value;
+
+    // Provedeme asynchronní volání na server
+    const response = await fetch('/reviewhub/publication_check', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nazev_clanku: nazev })
+    });
+
+    const data = await response.json();
+    const overlay = document.getElementById('overlay');
+    const message = document.getElementById('overlayMessage');
+
+    if (data.exists) {
+        // Zobrazení chybové zprávy a zamezení odeslání formuláře
+        message.textContent = "Článek již existuje v databázi.";
+        message.className = "red-text";
+        overlay.style.display = 'block';
+        return false;  // Zastavení odeslání formuláře
+    } else {
+        message.textContent = "Článek v databázi neexistuje.";
+        message.className = "green-text";
+        overlay.style.display = 'none';  // Skrytí zprávy, pokud článek neexistuje
+        return true;  // Článek neexistuje, formulář může být odeslán
+    }
+}
+
+// Funkce pro odeslání formuláře
+async function submitForm(event) {
+    event.preventDefault();  // Zabráníme výchozímu chování (odeslání formuláře)
+
+    const articleExists = await checkArticle();  // Nejprve zkontrolujeme, zda článek existuje
+
+    if (!articleExists) {
+        return;  // Článek existuje, formulář se neodesílá
+    }
+
+    // Pokud článek neexistuje, odesíláme formulář na server
+    const form = document.getElementById('publication_form');
+    const formData = new FormData(form);  // Vytvoříme nový FormData objekt
+
+    const response = await fetch('/reviewhub/publication_add', {
+        method: 'POST',
+        body: formData  // Posíláme data včetně souborů
+    });
+
+    if (response.ok) {
+        window.location.href = "{{ url_for('publication.publication') }}";
+    } else {
+        console.error('Chyba při přidávání článku.');
+    }
+}
+
+
+function closeOverlay() {
+    const button = document.querySelector('button');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+
+
+// Pokud se stranka vola z publication_pdf2text.html a zaroven se predava json_data
+function getURLParameter(name) {
+    return new URLSearchParams(window.location.search).get(name);
+}
+
+// Získání JSON dat z URL parametru, pokud jsou přítomna
+const jsonData = getURLParameter('json_data');
+
+// Pokud jsou JSON data přítomna, vložíme je do textarea
+if (jsonData) {
+    document.getElementById("article_data").value = decodeURIComponent(jsonData);
+}
+
+
+
+</script>
+
+
+{% endblock %}
+
+

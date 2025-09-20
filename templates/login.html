@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form class="formWidthSmall"method="POST">
+    <div class="form-group">
+        <label for="username">Uživatelské jméno:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Heslo:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Přihlásit se</button>
+</form>
+
+{% endblock %}
+

@@ -1,0 +1,907 @@
+{% extends "index.html" %} {% block content %}
+<!-- Kontejner pro seznam článků a detail -->
+
+<div class="select-view">    
+    <!-- Přepínač pro volbu zobrazení -->
+    <div class="view-options">
+        <button class="button-option" onclick="toggleView('list')">Seznamu</button>        
+        <button class="button-option active" onclick="toggleView('both')">Seznam a detail</button>
+        <button class="button-option" onclick="toggleView('detail')">Detail</button>
+    </div>
+</div>
+
+<div class="main-content-container">    
+    
+
+    <!-- Levá část: Filtraci a seznam článků -->    
+    <div class="left-section"> 
+
+        <!-- Filtrační formulář -->     
+        <form id="filter-form">        
+            <div class="filter-row"> 
+                
+
+                <div class="filter-group">                
+                    <label for="filter_casopis">Časopis:
+                    </label>                
+                    <select id="filter_Casopis" name="filter_Casopis">                    
+                        <option value="">Vše
+                        </option>                    {% for casopis in casopisy %}                         
+                        <option value="{{ casopis.journal }}" {% if casopis.journal == request.args.get('filter_Casopis') %}selected{% endif %}>{{ casopis.journal }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>      
+     
+                <div class="filter-group">                
+                    <label for="filter_RokVydani">Rok vydání:
+                    </label>                
+                    <select id="filter_RokVydani" name="filter_RokVydani">                    
+                        <option value="">Vše
+                        </option>                    {% for rok in roky_vydani %}                         
+                        <option value="{{ rok.year_publication }}" {% if rok.year_publication == request.args.get('filter_RokVydani') %}selected{% endif %}>{{ rok.year_publication }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>        
+            </div>        
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="filter_Kategorie">Kategorie:
+                    </label>                
+                    <select id="filter_Kategorie" name="filter_Kategorie">                    
+                        <option value="">Vše
+                        </option>                    {% for kat in kategorie %}                         
+                        <option value="{{ kat.category }}" {% if kat.category == request.args.get('filter_Kategorie') %}selected{% endif %}>{{ kat.category }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>            
+                <div class="filter-group">                
+                    <label for="filter_Podkategorie">Podkategorie:
+                    </label>                
+                    <select id="filter_Podkategorie" name="filter_Podkategorie">                    
+                        <option value="">Vše
+                        </option>                    {% for podkat in podkategorie %}                         
+                        <option value="{{ podkat.subcategory }}" {% if podkat.subcategory == request.args.get('filter_Podkategorie') %}selected{% endif %}>{{ podkat.subcategory }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>        
+            </div>        
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="filter_TypSenzoru">Typ senzoru:
+                    </label>                
+                    <select id="filter_TypSenzoru" name="filter_TypSenzoru">                    
+                        <option value="">Vše
+                        </option>                    {% for typ in typy_senzoru %}                         
+                        <option value="{{ typ.sensor_type }}" {% if typ.sensor_type == request.args.get('filter_TypSenzoru') %}selected{% endif %}>{{ typ.sensor_type }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>    
+                
+                <div class="filter-group">                
+                    <label for="filter_PrincipSenzoru">Princip senzoru:
+                    </label>                
+                    <select id="filter_PrincipSenzoru" name="filter_PrincipSenzoru">                    
+                        <option value="">Vše
+                        </option>                    {% for princip in principy_senzoru %}                         
+                        <option value="{{ princip.sensor_principle }}" {% if princip.sensor_principle == request.args.get('filter_PrincipSenzoru') %}selected{% endif %}>{{ princip.sensor_principle }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>                 
+            </div>  
+            <div class="filter-row">    
+                <div class="filter-group">                
+                    <label for="filter_Velicina">Veličina:
+                    </label>                
+                    <select id="filter_Velicina" name="filter_Velicina">                    
+                        <option value="">Vše                            
+                        </option>                    
+                        {% for value in veliciny %}     
+                            <option value="{{ value.measured_value }}" {% if value.measured_value == request.args.get('filter_Velicina') %}selected{% endif %}>{{ value.measured_value }}</option>
+                        {% endfor %}               
+                    </select>            
+                </div>    
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">                
+                    <label for="filter_ZpusobZapouzdreni">Zapouzdření:
+                    </label>                
+                    <select id="filter_ZpusobZapouzdreni" name="filter_ZpusobZapouzdreni">                    
+                        <option value="">Vše</option>                    {% for zpusob in zpusoby_zapouzdreni %}                         
+                        <option value="{{ zpusob.encapsulation }}" {% if zpusob.encapsulation == request.args.get('filter_ZpusobZapouzdreni') %}selected{% endif %}>{{ zpusob.encapsulation }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>    
+                <div class="filter-group">            
+                    <label for="filter_ZpusobImplementace">Implementace:</label>                
+                    <select id="filter_ZpusobImplementace" name="filter_ZpusobImplementace">                    
+                        <option value="">Vše</option>                    {% for zpusob in zpusoby_implementace %}                         
+                        <option value="{{ zpusob.implementation }}" {% if zpusob.implementation == request.args.get('filter_ZpusobImplementace') %}selected{% endif %}>{{ zpusob.implementation }}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div> 
+            </div>   
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="filter_UsedInReview">Used in review:</label>                
+                    <select id="filter_UsedInReview" name="filter_UsedInReview">    
+                        <option value="">Vše</option>
+                        {% for used in usedInReview %}                         
+                        <option value="{{ used }}" {% if used == request.args.get('filter_UsedInReview') %}selected{% endif %}>{{ used }}</option>
+                        {% endfor %}                                           
+                    </select>            
+                </div> 
+                <div class="filter-group">                
+                    <label for="filter_UsedInProject">Used in project:</label>                
+                    <select id="filter_UsedInProject" name="filter_UsedInProject">    
+                        <option value="">Vše</option>
+                        {% for used in usedInProject %}     
+                            <option value="{{ used }}" {% if used == request.args.get('filter_UsedInProject') %}selected{% endif %}>{{ used }}</option>
+                        {% endfor %}                                           
+                    </select>            
+                </div> 
+
+            </div>
+            
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="search_query">Hledat:</label>                
+                    <input type="text" id="search_query" name="search_query" placeholder="Zadejte hledaný výraz..." value="{{ request.args.get('search_query', '') }}">            
+                </div>            
+                <div class="filter-group">                
+                    <label for="search_option">Možnost:
+                    </label>                
+                    <select id="search_option" name="search_option">                    
+                        <option value="any" {% if request.args.get('search_option') == 'any' %}selected{% endif %}>Alespoň jeden
+                        </option>                    
+                        <option value="all" {% if request.args.get('search_option') == 'all' %}selected{% endif %}>Všechny
+                        </option>                
+                    </select>            
+                </div>        
+            </div>  
+            
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="sort_column_name">Sorting:</label>                
+                    <select id="sort_column_name" name="sort_column_name"> 
+                        {% for sort in sorting %}                         
+                            <option value="{{ sort.column_name }}" {% if sort.column_name == request.args.get('sort_column_name') %}selected{% endif %}>
+                                {{ sort.display_name }}
+                            </option>
+                        {% endfor %}  
+                    </select>            
+                </div> 
+
+                <div class="filter-group">                
+                    <label for="sort_order">Order:</label>                
+                    <select id="sort_order" name="sort_order">                    
+                        {% for sort in sorting_order %}                         
+                            <option value="{{ sort.order }}" {% if sort.order == request.args.get('sort_order') %}selected{% endif %}>
+                                {{ sort.display_name }}
+                            </option>
+                        {% endfor %} 
+                    </select>            
+                </div> 
+
+            </div>
+
+            <button type="button" onclick="applyFilters()">Filtrovat</button>    
+            <!-- Sekce pro volbu zobrazených sloupců -->
+            <br>
+            <div class="filter-group checkbox-container">
+
+
+                <div class="checkbox-item">
+                    <label for="col_NazevClanku">Název článku</label>
+                    <input type="checkbox" id="col_NazevClanku" checked onchange="toggleColumn('NazevClanku')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_Casopis">Název časopisu</label>
+                    <input type="checkbox" id="col_Casopis"  onchange="toggleColumn('Casopis')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_RokVydani">Rok vydání</label>
+                    <input type="checkbox" id="col_RokVydani"  onchange="toggleColumn('RokVydani')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_TypSenzoru">Typ senzoru</label>
+                    <input type="checkbox" id="col_TypSenzoru" checked onchange="toggleColumn('TypSenzoru')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_PrincipSenzoru">Princip senzoru</label>
+                    <input type="checkbox" id="col_PrincipSenzoru" checked onchange="toggleColumn('PrincipSenzoru')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_PrincipKonstrukce">Konstrukce senzoru</label>
+                    <input type="checkbox" id="col_PrincipKonstrukce" onchange="toggleColumn('PrincipKonstrukce')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_TypOptickehoVlakna">Vlakno</label>
+                    <input type="checkbox" id="col_TypOptickehoVlakna" onchange="toggleColumn('TypOptickehoVlakna')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_ZpusobZapouzdreni">Zapouzdreni</label>
+                    <input type="checkbox" id="col_ZpusobZapouzdreni"  onchange="toggleColumn('ZpusobZapouzdreni')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_ZpusobImplementace">Implementace</label>
+                    <input type="checkbox" id="col_ZpusobImplementace"  onchange="toggleColumn('ZpusobImplementace')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_Kategorie">Kategorie</label>
+                    <input type="checkbox" id="col_Kategorie" checked onchange="toggleColumn('Kategorie')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_Podkategorie">Podkategorie</label>
+                    <input type="checkbox" id="col_Podkategorie" checked onchange="toggleColumn('Podkategorie')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_MerenaVelicina">Veličina</label>
+                    <input type="checkbox" id="col_MerenaVelicina"  onchange="toggleColumn('MerenaVelicina')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_RozsahMereni">Rozsah měření</label>
+                    <input type="checkbox" id="col_RozsahMereni"  onchange="toggleColumn('RozsahMereni')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Citlivost">Citlivost</label>
+                    <input type="checkbox" id="col_Citlivost"  onchange="toggleColumn('Citlivost')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Presnost">Přesnost</label>
+                    <input type="checkbox" id="col_Presnost"  onchange="toggleColumn('Presnost')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_FrekvencniRozsah">Frekvencni rozsah</label>
+                    <input type="checkbox" id="col_FrekvencniRozsah"  onchange="toggleColumn('FrekvencniRozsah')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Vyhody">Výhody</label>
+                    <input type="checkbox" id="col_Vyhody"  onchange="toggleColumn('Vyhody')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Nevyhody">Nevýhody</label>
+                    <input type="checkbox" id="col_Nevyhody"  onchange="toggleColumn('Nevyhody')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_AplikaceStudie">Aplikace</label>
+                    <input type="checkbox" id="col_AplikaceStudie"  onchange="toggleColumn('AplikaceStudie')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_KlicovePoznamky">Klíčové poznámky</label>
+                    <input type="checkbox" id="col_KlicovePoznamky"  onchange="toggleColumn('KlicovePoznamky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Poznamky">Poznámky</label>
+                    <input type="checkbox" id="col_Poznamky"  onchange="toggleColumn('Poznamky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_NazevPDF">PDF</label>
+                    <input type="checkbox" id="col_NazevPDF"  onchange="toggleColumn('NazevPDF')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Obrazky">Obrazky</label>
+                    <input type="checkbox" id="col_Obrazky"  onchange="toggleColumn('Obrazky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Stav">Stav</label>
+                    <input type="checkbox" id="col_Stav"  onchange="toggleColumn('Stav')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_CitaceBib">CitaceBib</label>
+                    <input type="checkbox" id="col_CitaceBib"  onchange="toggleColumn('CitaceBib')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_UsedInReview">Used in review</label>
+                    <input type="checkbox" id="col_UsedInReview"  onchange="toggleColumn('UsedInReview')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_UsedInProject">Used in project</label>
+                    <input type="checkbox" id="col_UsedInProject"  onchange="toggleColumn('UsedInProject')">
+                </div>
+
+
+
+            </div>
+
+        </form> 
+
+
+        <div>Počet zobrazených článků: {{pocetClanku}}/{{pocetClankuCelkem.pocetClankuCelkem}} </div>
+        <!-- Seznam clanku  -->         
+        <table border="1" class="article-table">            
+            <tr>                
+                <th class='publication_id'>    ID</th>  
+                <th class='NazevClanku'>       Článek</th>                
+                <th class='Casopis' style="display: none">           Časopis</th>                
+                <th class='RokVydani' style="display: none">         Rok Vydání</th>                
+                <th class='TypSenzoru'>        Typ sen.</th>                
+                <th class='PrincipSenzoru'>    Princip sen.</th>                
+                <th class='PrincipKonstrukce' style="display: none"> Princip konstrukce</th> 
+                <th class='TypOptickehoVlakna' style="display: none">Vlakno</th>                
+                <th class='ZpusobZapouzdreni' style="display: none"> Zapouzdření</th>                
+                <th class='ZpusobImplementace' style="display: none">Implementace</th>                                              
+                <th class='Kategorie'>         Kategorie</th>                
+                <th class='Podkategorie'>      Podkategorie</th>                 
+                <th class='MerenaVelicina' style="display: none">    Veličina</th>  
+                <th class='RozsahMereni' style="display: none">      Rozsah mereni</th>  
+                <th class='Citlivost' style="display: none">         Ciltivost</th>  
+                <th class='Presnost' style="display: none">          Presnost</th>  
+                <th class='FrekvencniRozsah' style="display: none">  FrekvencniRozsah</th>  
+                <th class='Vyhody' style="display: none">            Vyhody</th>  
+                <th class='Nevyhody' style="display: none">          Nevyhody</th>  
+                <th class='AplikaceStudie' style="display: none">    Aplikace</th>  
+                <th class='KlicovePoznamky' style="display: none">   Klicove poznamky</th>  
+                <th class='Poznamky' style="display: none">          Poznamky</th>  
+                <th class='NazevPDF' style="display: none">          NazevPDF</th>  
+                <th class='Obrazky' style="display: none">           Obrazky</th>  
+                <th class='Stav' style="display: none">              Stav</th>  
+                <th class='CitaceBib' style="display: none">         CitaceBib</th>  
+                <th class='UsedInReview' style="display: none">      In review</th>
+                <th class='UsedInProject' style="display: none">     In project</th>                
+                <th class='akce'>Akce</th>             
+            </tr>            
+            {% for clanek in clanky %}   
+                <tr onclick="showArticleDetail({{ clanek.publication_id }})">  
+                    <td class='publication_id'>    {{ clanek.publication_id }}</th>   
+                    <td class='NazevClanku'>       {{ clanek.publication_name }}       </td>                
+                    <td class='Casopis' style="display: none">           {{ clanek.journal }}           </td>                
+                    <td class='RokVydani' style="display: none">         {{ clanek.year_publication }}         </td>     
+                    <td class='TypSenzoru'>        {{ clanek.sensor_type }}        </td>                
+                    <td class='PrincipSenzoru'>    {{ clanek.sensor_principle }}    </td>                
+                    <td class='PrincipKonstrukce' style="display: none"> {{ clanek.construction_principle }}    </td>  
+                    <td class='TypOptickehoVlakna' style="display: none">{{ clanek.optical_fiber }}</td>                
+                    <td class='ZpusobZapouzdreni' style="display: none"> {{ clanek.encapsulation }} </td>                
+                    <td class='ZpusobImplementace' style="display: none">{{ clanek.implementation }}</td>                                              
+                    <td class='Kategorie'>         {{ clanek.category }}         </td>                
+                    <td class='Podkategorie'>      {{ clanek.subcategory }}      </td>                 
+                    <td class='MerenaVelicina' style="display: none">    {{ clanek.measured_value }}    </td>  
+                    <td class='RozsahMereni' style="display: none">      {{ clanek.measuring_range }}      </td>  
+                    <td class='Citlivost' style="display: none">         {{ clanek.sensitivity }}         </td>  
+                    <td class='Presnost' style="display: none">          {{ clanek.accuracy }}          </td>  
+                    <td class='FrekvencniRozsah' style="display: none">  {{ clanek.frequency_range }}  </td>  
+                    <td class='Vyhody' style="display: none">            {{ clanek.advantages }}            </td>  
+                    <td class='Nevyhody' style="display: none">          {{ clanek.disadvantages }}          </td>  
+                    <td class='AplikaceStudie' style="display: none">    {{ clanek.application }}    </td>  
+                    <td class='KlicovePoznamky' style="display: none">   {{ clanek.key_knowledge }}   </td>  
+                    <td class='Poznamky' style="display: none">          {{ clanek.note }}          </td>  
+                    <td class='NazevPDF' style="display: none">          {{ clanek.pdf_name }}          </td>  
+                    <td class='Obrazky' style="display: none">           {{ clanek.figure }}           </td>  
+                    <td class='Stav' style="display: none">              {{ clanek.state }}              </td>  
+                    <td class='CitaceBib' style="display: none">         {{ clanek.citation }}         </td>               
+                    <td class="UsedInReview" style="display: none">
+                        {{clanek['used_in_review']}}
+                    </td>
+                    <td class="UsedInProject" style="display: none">
+                        {% if clanek.assigned %}
+                            <span class="badge badge-success">ANO</span>
+                        {% else %}
+                            <span class="badge badge-success">NE</span>
+                        {% endif %}
+                    </td>
+                    <td class='akce'>
+                        {% if clanek.assigned %}
+                            
+                        {% else %}
+                            <a href="{{ url_for('publication.publication_import', clanek_id=clanek.publication_id) }}" class="btn btn-primary"><img src="/static/icon-import.svg" width="20px"></a>
+                        {% endif %}  
+                        <a href="" onclick="confirmDelete({{ clanek.publication_id }}); return false;" class="btn btn-primary"><img src="/static/icon-delete.svg"  width="20px"></a>                        
+                    </td>            
+                </tr>           
+            {% endfor %}         
+        
+        
+        </table> 
+            
+      
+
+
+    </div>    
+
+
+
+    <!-- Pravá část: Detail článku -->    
+    <!-- Pravá část: Detail článku -->    
+    <div class="right-section">        
+        <div id="article-detail" class="article-detail">  
+            <div id="article-detail-views" class="article-detail-views">
+                <button onclick="showTab(event, 'informace')">Detailní informace</button>
+                <button onclick="showTab(event, 'klicove_informace')">Klíčové informace</button>
+                <button onclick="showTab(event, 'fulltext')">Full Text</button>
+            </div>
+            <div id="article-detail-content" class="article-detail-content">  
+                
+            </div>
+        </div>
+
+        <div id="article-export-bib" class="article-export-bib" style="display:none">            
+            <form id="extract-form">
+                <p>BIB reference</p>
+                <textarea id="bib" rows="30" cols="100"></textarea>   
+                <button type="button" class="style" onclick="exportBIB()">Export BIB</button> <br>          
+            </form>
+        </div>    
+
+        <div id="article-export" class="article-export" style="display:none">  
+            
+            
+            <form id="extract-form">
+                <div class="form-group">
+                    <label for="RozsahGenerovanehoTextu">Doporuceny rozsah</label>
+                    <input type="text" id="RozsahGenerovanehoTextu" name="RozsahGenerovanehoTextu"  value="3000">                
+                </div>
+
+                <div class="form-group">
+                    <label for="Instrukce">Instrukce</label>
+                    <textarea id="Instrukce" rows="3" cols="100"></textarea>              
+                </div>
+
+                
+
+                <!-- Textová oblast pro zobrazení výsledku JSON -->
+                <div class="filter-group checkbox-container">                    
+                    <div class="checkbox-item">
+                        <label for="col_extract_NazevClanku">Název článku</label>
+                        <input type="checkbox" id="col_extract_NazevClanku" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_Kategorie">Kategorie</label>
+                        <input type="checkbox" id="col_extract_Kategorie" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_Podkategorie">Podkategorie</label>
+                        <input type="checkbox" id="col_extract_Podkategorie" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_TypSenzoru">Typ senzoru</label>
+                        <input type="checkbox" id="col_extract_TypSenzoru" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_TypSenzoru">Typ senzoru</label>
+                        <input type="checkbox" id="col_extract_TypSenzoru" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_PrincipSenzoru">Princip senzoru</label>
+                        <input type="checkbox" id="col_extract_PrincipSenzoru" checked >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_KonstrukceSenzoru">Konstrukce senzoru</label>
+                        <input type="checkbox" id="col_extract_KonstrukceSenzoru" checked >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_TypOptickehoVlakna">Vlakno</label>
+                        <input type="checkbox" id="col_extract_TypOptickehoVlakna"  >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_ZpusobZapouzdreni">Zapouzdreni</label>
+                        <input type="checkbox" id="col_extract_ZpusobZapouzdreni" checked >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_ZpusobImplementace">Implementace</label>
+                        <input type="checkbox" id="col_extract_ZpusobImplementace" checked >
+                    </div>
+
+                    <div class="checkbox-item">
+                        <label for="col_extract_MerenaVelicina">Veličina</label>
+                        <input type="checkbox" id="col_extract_MerenaVelicina" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_Vyhody">Výhody</label>
+                        <input type="checkbox" id="col_extract_Vyhody" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_Nevyhody">Nevýhody</label>
+                        <input type="checkbox" id="col_extract_Nevyhody" >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_AplikaceStudie">Aplikace</label>
+                        <input type="checkbox" id="col_extract_AplikaceStudie" checked >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_KlicovePoznamky">Klíčové poznámky</label>
+                        <input type="checkbox" id="col_extract_KlicovePoznamky" checked >
+                    </div>
+                    <div class="checkbox-item">
+                        <label for="col_extract_Poznamky">Poznámky</label>
+                        <input type="checkbox" id="col_extract_Poznamky" >
+                    </div>
+                </div>
+
+                <button type="button" class="style" onclick="exportToJSON()">Export to Text</button> <br>
+
+                <textarea id="exportedText" rows="30" cols="100">{{ json_data }}</textarea>
+
+                
+            </form>          
+                 
+        </div>    
+    </div>
+</div>
+<!-- Modální okno pro editaci -->
+<div id="edit-modal" class="modal" style="display:none;">    
+    <div class="modal-content">        
+        <span class="close" onclick="closeModal()">&times;
+        </span>        <h2>Editace Článku</h2>        
+        <form id="edit-form" action="{{ url_for('publication.publication_add') }}" method="post" enctype="multipart/form-data">            
+            <!-- Obsah formuláře se stejnými poli jako při vytváření článku -->            
+            <div class="form-group">                
+                <label for="edit_nazev_clanku">Název článku:
+                </label>                
+                <input type="text" id="edit_nazev_clanku" name="nazev_clanku" required>            
+            </div>            
+            <!-- Přidej další pole zde... -->            
+            <button type="submit">Uložit změny
+            </button>        
+        </form>    
+    </div>
+</div>
+<!-- JavaScript pro načítání detailu článku -->
+<script>
+
+
+function showArticleDetail(clanekId) {
+
+    // Zruší předchozí zvýraznění článku
+    const previousHighlighted = document.querySelector('.highlighted');
+    if (previousHighlighted) {
+        previousHighlighted.classList.remove('highlighted');
+    }
+
+    // Najdi řádek tabulky s odpovídajícím ID článku a přidej mu třídu pro zvýraznění
+    const selectedRow = document.getElementById(`article-${clanekId}`);
+    if (selectedRow) {
+        selectedRow.classList.add('highlighted');
+    }
+
+
+    const clankyData = {{ clanky|tojson }};
+    const clanek = clankyData.find(publication => publication.publication_id == clanekId);  // Debug: porovnej clanekId s publication_id
+
+    // Pokud clanek neexistuje, vypiš chybu a ukonči funkci
+    if (!clanek) {
+        console.error("Článek s tímto ID nebyl nalezen.");
+        return;
+    }
+
+    // Aktualizuj obsah pravé sekce s informacemi o článku
+    document.getElementById('article-detail-content').innerHTML = `
+
+        
+        <div class="tab-content" id="informace"> 
+            <h2>Detailní informace</h2>
+            <p><strong>Název:</strong> ${clanek.publication_name}</p>
+            <p><strong>Abstrakt:</strong> ${clanek.abstract}</p>
+            <p><strong>Časopis:</strong> ${clanek.journal}</p>
+            <p><strong>Rok vydání:</strong> ${clanek.year_publication}</p>
+            <hr>
+            <p><strong>Kategorie:</strong> ${clanek.category}</p>
+            <p><strong>Podkategorie:</strong> ${clanek.subcategory}</p>
+            <hr>
+            <p><strong>Typ senzoru:</strong> ${clanek.sensor_type}</p>
+            <p><strong>Princip senzoru:</strong> ${clanek.sensor_principle}</p>
+            <p><strong>Konstrukce senzoru:</strong> ${clanek.construction_principle}</p>
+            <p><strong>Typ optického vlákna:</strong> ${clanek.optical_fiber}</p>
+            <p><strong>Způsob zapouzdření:</strong> ${clanek.encapsulation}</p>
+            <p><strong>Způsob implementace:</strong> ${clanek.implementation}</p>
+            <hr>            
+            <p><strong>Měřená veličina:</strong> ${clanek.measured_value}</p>
+            <p><strong>Rozsah měření:</strong> ${clanek.measuring_range}</p>
+            <p><strong>Citlivost:</strong> ${clanek.sensitivity}</p>
+            <p><strong>Přesnost:</strong> ${clanek.accuracy}</p>
+            <p><strong>Frekvenční rozsah:</strong> ${clanek.frequency_range}</p>            
+            <hr>
+            <p><strong>Aplikace:</strong> ${clanek.application}</p>
+            <p><strong>Klíčové poznatky:</strong> ${clanek.key_knowledge}</p>
+            <p><strong>Výhody:</strong> ${clanek.advantages}</p>
+            <p><strong>Nevýhody:</strong> ${clanek.disadvantages}</p>
+            <hr>
+            <p><strong>Poznámky:</strong> ${clanek.note}</p>
+            <p><strong>Obrázky:</strong> ${clanek.figure}</p>
+            <p><strong>Autoři:</strong> ${clanek.authors}</p>
+            <p><strong>DOI:</strong> ${clanek.doi}</p>
+            <p><strong>CitaceBib:</strong> ${clanek.citation}</p>
+            <p><strong>Stav:</strong> ${clanek.used_in_review}</p>
+            <p><strong>Název PDF souboru:</strong> ${clanek.pdf_name}</p>
+        </div>
+        
+        <div class="tab-content" id="klicove_informace" style="display:none;">
+            <h2>Klíčové informace</h2>
+            <p><strong>Abstrakt:</strong> ${clanek.abstract}</p>                    
+            <p><strong>Aplikace:</strong> ${clanek.application}</p>                    
+            <p><strong>Klíčové poznatky:</strong> ${clanek.key_knowledge}</p>
+            <p><strong>Poznámky:</strong> ${clanek.note}</p>
+        </div>
+        <div class="tab-content" id="fulltext" style="display:none;">
+            ${clanek.pdf_name ? `<embed src="/static/uplouds/${clanek.pdf_name}" type="application/pdf" width="100%" height="1000px">` : '<p>Full text není dostupný.</p>'}
+        </div>
+    `;
+
+    // Zobraz první záložku
+    showTab(event, 'informace');
+}
+
+
+
+function showTab(event, tabId) {
+// Skryj všechny tab-content divy
+var tabContents = document.getElementsByClassName('tab-content');
+for (var i = 0; i < tabContents.length; i++) {
+    tabContents[i].style.display = 'none';
+}
+// Zobraz vybraný tab-content
+document.getElementById(tabId).style.display = 'block';
+}
+
+function confirmDelete(clanekId) {
+
+    if (confirm("Opravdu chcete smazat tento článek?")) {
+        // Zde přidejte AJAX požadavek pro smazání
+        let url = `/publication_delete_from_system/${clanekId}`;
+        fetch(url, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {                
+                location.reload(); // Obnoví stránku, aby se seznam aktualizoval
+            } else {
+                alert("Došlo k chybě při mazání článku.");
+            }
+        })
+        .catch(error => console.error('Chyba při mazání článku:', error));
+    }
+}
+
+function editArticle(clanekId) {
+    // Zde přidejte AJAX požadavek pro načtení dat článku a otevření formuláře
+    fetch(`/get-article-detail/${clanekId}`)
+        .then(response => response.json())
+        .then(clanek => {
+            // Naplňte formulář daty článku
+            document.getElementById('pdf_soubor').value = clanek.nazev_pdf; // Naplňte další pole podle potřeby
+            // Otevřete formulář pro editaci
+            // Můžete použít modal nebo jiný způsob zobrazení
+        })
+        .catch(error => console.error('Chyba při načítání detailu článku:', error));
+}
+
+function applyFilters() {
+    const filterForm = document.getElementById('filter-form');
+    const formData = new FormData(filterForm);
+
+    const queryParams = new URLSearchParams();
+
+    for (const [key, value] of formData.entries()) {
+        if (value) {  // Přidá jen neprázdné hodnoty
+            queryParams.append(key, value);
+        }
+    }
+    // Načti filtraci
+    window.location.href = `/publication_all?${queryParams.toString()}`;
+    saveFormState()
+}
+
+function toggleColumn(columnClass) {
+
+    // Získá všechny buňky (th a td) pro daný sloupec podle třídy
+    const colElements = document.getElementsByClassName(columnClass);
+    // ID checkboxu a checkbox samotny
+    const checkboxId = 'col_' + columnClass;
+    const checkbox = document.getElementById(checkboxId);
+
+
+     // Pokud je checkbox zaškrtnutý, zobrazí sloupec, jinak ho skryje
+     for (let i = 0; i < colElements.length; i++) {
+        if (checkbox.checked) {
+            colElements[i].style.display = '';  // Zobrazí sloupec
+        } else {
+            colElements[i].style.display = 'none';  // Skryje sloupec
+        }
+    }
+    // Ulozit stav checkboxu
+    saveFormState()
+
+}
+
+// Funkce, která nastaví viditelnost sloupců při načtení stránky
+function initializeColumns() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    checkboxes.forEach(checkbox => {
+        const columnClass = checkbox.id.replace('col_', '');  // Získání třídy sloupce z ID checkboxu
+        toggleColumn(columnClass);  // Změní viditelnost sloupce na základě checkboxu
+    });
+}
+
+
+function saveFormState() {
+    const formState = {};
+
+    // Uloží stav checkboxů
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        formState[checkbox.id] = checkbox.checked;
+    });
+
+    // Uloží stav selectů
+    document.querySelectorAll('select').forEach(select => {
+        formState[select.id] = select.value;
+    });
+
+    // Uloží stav do localStorage
+    localStorage.setItem('formState', JSON.stringify(formState));
+}
+
+
+
+function loadFormState() {
+    const formState = JSON.parse(localStorage.getItem('formState'));
+
+    if (formState) {
+        // Obnovení stavu checkboxů
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            if (formState.hasOwnProperty(checkbox.id)) {
+                checkbox.checked = formState[checkbox.id];
+            }
+        });
+
+        // Zobrazeni sloupcu v seznamu clanku
+        initializeColumns();
+
+        // Obnovení stavu selectů
+        document.querySelectorAll('select').forEach(select => {
+            if (formState.hasOwnProperty(select.id)) {
+                select.value = formState[select.id];
+            }
+        });
+    }
+}
+
+function toggleView(view) {
+    const leftSection = document.querySelector('.left-section');
+    const rightSection = document.querySelector('.right-section');
+
+    const buttons = document.querySelectorAll('.button-option');
+    buttons.forEach(button => {
+        button.classList.remove('active');
+    });
+
+    if (view === 'list') {
+        // Zobrazit jen seznam (levou sekci)
+        document.querySelector('.button-option:nth-child(1)').classList.add('active');
+        leftSection.style.display = '';
+        leftSection.style.width = '100%';
+        rightSection.style.display = 'none';
+    } else if (view === 'detail') {
+        // Zobrazit jen detail (pravou sekci)
+        document.querySelector('.button-option:nth-child(2)').classList.add('active');
+        rightSection.style.display = '';
+        rightSection.style.width = '100%';
+        leftSection.style.display = 'none';
+        
+    } else if (view === 'both') {
+        // Zobrazit obě sekce
+        document.querySelector('.button-option:nth-child(3)').classList.add('active');
+        leftSection.style.display = '';
+        leftSection.style.width = '60%';
+        rightSection.style.display = '';
+        rightSection.style.width = '40%';
+    }
+}
+
+function exportToJSON() {
+
+    // Získáme ID vybraných článků (checkboxy)
+    const selectedIds = Array.from(document.querySelectorAll('input[name="UseInReview"]:checked')).map(cb => cb.value);
+
+    // Filtrovat články podle vybraných ID
+    const selectedArticles = clankyData.filter(article => selectedIds.includes(String(article.ID)));
+    
+    // Načteme hodnotu z inputu s id "RozsahGenerovanehoTextu"
+    const rozsahTextu = document.getElementById('RozsahGenerovanehoTextu').value;
+
+    // Vytvoření JSON struktury
+    const articlesJson = selectedArticles.map(article => ({
+        'ID': article.ID,
+        'NazevClanku': article.NazevClanku,
+        'APlikace': article.Aplikace,
+        'KlicovePoznatky': article.KlicovePoznatky,
+        'Vyhody': article.Vyhody,
+        'Nevyhody': article.Nevyhody,
+        'Kategorie': article.Kategorie,
+        'Podkategorie': article.Podkategorie,
+        'MerenaVelicina': article.MerenaVelicina,
+        'Citlivost': article.Citlivost,
+        'Presnost': article.Presnost,
+        'citaceBib': article.CitaceBib,
+        'RozsahGenerovanehoTextu': rozsahTextu
+    }));
+    // Pridani parametru RozsahGenerovanehoTextu
+
+
+    // Zobrazení výsledku JSON v textové oblasti
+    const jsonText = JSON.stringify(articlesJson, null, 4);
+    const textarea = document.getElementById('exportedText');
+    textarea.style.display = 'block';  // Zobrazíme textové pole
+    textarea.value = jsonText;  // Vložíme JSON do textového pole
+
+    // Odeslání požadavku pro aktualizaci stavu článků na server
+    updateUsedInReview(selectedIds);
+}
+
+// Deprecated
+function updateUsedInReview(selectedIds) {
+    // AJAX požadavek na aktualizaci UsedInReview
+    fetch('/publication_update_UsedInReview', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ selectedIds: selectedIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch(error => console.error('Chyba při aktualizaci stavu:', error));
+}
+
+
+
+// Načti stav checkboxů při načtení stránky
+//window.onload = loadFormState;
+//document.addEventListener('DOMContentLoaded', loadFormState);
+// Přidání posluchače změny pro všechny selecty na stránce
+function attachSelectListeners() {
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        //select.addEventListener('change', saveFormState);
+    });
+}
+// Aktualizace  UsedInReview v databazi pri zmene hodnoty
+document.querySelectorAll('input[name="UseInReview"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const articleId = this.value;  // Získá ID článku
+        const status = this.checked ? 'ANO' : 'NE';  // Získá nový stav ANO/NE
+
+        // Odeslání požadavku na server
+        fetch('/update_used_in_review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ articleId: articleId, usedInReview: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Úspěšně uloženo:', data);
+        })
+        .catch(error => console.error('Chyba při ukládání:', error));
+    });
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadFormState();  // Načtení uloženého stavu
+
+    // Uložení stavu při změně checkboxů
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', saveFormState);
+    });
+
+    // Uložení stavu při změně selectů
+    document.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', saveFormState);
+    });
+});
+
+
+
+</script>{% endblock %}

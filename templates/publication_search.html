@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form id="search_form">
+    <input type="text" id="search_query" name="search_query" placeholder="Zadejte klíčová slova (např. vlak*, +vlak, -auto)" oninput="searchArticles()">
+    <button type="submit">Hledat</button>
+</form>
+
+<table border="1" id="searchResultsTable">
+    <thead>
+        <tr>
+            <th width="50%">Název článku</th>
+            <th width="20%">Journal</th>
+            <th width="10%">Rok publikace</th>
+            <th width="20%">Autori</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div id="search_results"></div> <!-- Sem se budou vkládat výsledky -->
+
+<script>
+    async function searchArticles() {
+        const query = document.getElementById('search_query').value;
+        
+        if (query.length === 0) {
+            document.getElementById('search_results').innerHTML = '';
+            return;
+        }
+        
+        const response = await fetch(`/publication_search`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ search_query: query })
+        });
+    
+        const results = await response.json();
+        displayResults(results);
+    }
+    
+
+    function displayResults(results) {
+        const searchResultsDiv = document.getElementById('search_results');
+        searchResultsDiv.innerHTML = '';
+        console.log('Mazu obsah. pocet zaznamu ', results.length)
+
+        // Získání reference na tbody pro pozdější plnění
+        const tableBody = document.querySelector("#searchResultsTable tbody");
+        deleteChilds(tableBody);
+
+        if (results.length === 0) {
+            //searchResultsDiv.innerHTML = '<p>Nebyly nalezeny žádné výsledky.</p>';
+            return;
+        }
+
+        
+
+        // Naplnění tabulky výsledky
+        results.forEach(result => {
+            const row = document.createElement('tr');
+            
+            // Přidání zvýraznění, pokud je název přesný
+            if (result.is_exact_match) {
+                row.style.backgroundColor = 'yellow'; // nebo jiná barva
+            }
+
+            row.innerHTML = `
+                <td  width='50%''>${result.publication_name}</td>                
+                <td  width='20%''>${result.journal}</td>                
+                <td  width='10%''>${result.year_publication}</td>
+                <td  width='20%'>${result.authors}</td>
+            `;
+            
+            // Přidání řádku do těla tabulky
+            tableBody.appendChild(row);
+        });
+    }
+
+    function deleteChilds(element) {
+        while (element.firstChild) {
+            console.log("MAZU ", element.firstChild)
+            element.removeChild(element.firstChild);
+        }
+    }
+    </script>
+
+{% endblock %}
