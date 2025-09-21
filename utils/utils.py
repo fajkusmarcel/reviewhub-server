@@ -1,27 +1,38 @@
 import os
 import requests
-
 from functools import wraps
 
-from flask import session, redirect, url_for, flash, session, current_app
+from flask import request, session, redirect, url_for, flash, current_app
+
+
 
 import bcrypt
 
 from db.sql_query import *
 
-# Dekorátor pro ověření přihlášení uživatele
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print("=== login_required check ===")
+        print("Request path:", request.path)
+        print("Session keys:", list(session.keys()))
+        print("Session content:", dict(session))
+        cookie_name = current_app.config.get('SESSION_COOKIE_NAME', 'session')  # Flask 3
+        print("Cookie name:", cookie_name)
+        print("Cookie in request:", request.cookies.get(cookie_name))
+
         if current_app.config.get('DEBUG_MODE', False):
-            # Pokud je aplikace v debug režimu, přeskočíme kontrolu přihlášení
             return f(*args, **kwargs)
-        
+
         if 'user_id' not in session:
-            #flash('Musíte být přihlášeni, abyste měli přístup k této stránce.', 'warning')
-            return redirect(url_for('login'))  # Přesměrování na přihlašovací stránku
+            print(">> user_id NOT in session -> redirect /login")
+            return redirect(url_for('login'))
+        print(">> user_id OK, pokračuju")
         return f(*args, **kwargs)
     return decorated_function
+
+
 
 
 # Dekorátor pro ověření, zda je vybraný projekt

@@ -36,3 +36,4 @@ app.config["SESSION_COOKIE_SECURE"] = False  # na HTTPS přepni na True
 # socketio.init_app(app, async_mode="eventlet")
 
 # Exportovaný objekt `app` je entry-point pro Gunicorn: wsgi:app
+
