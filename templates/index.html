@@ -43,7 +43,8 @@
                 <li><a href="{{ url_for('publication.publication') }}">Články</a></li>
                 <li><a href="{{ url_for('publication.publication_add') }}">Přidat článek</a></li>                 
                 <li><a href="{{ url_for('project.project') }}">Projekty</a></li>
-                
+                <li><a href="{{ url_for('publication.publication_all') }}">Seznam článků</a></li>.
+
                 {% if session['user_role'] == 'admin' %}
                          
                     <li class="left_menu_section">Skryté funkce</li>                                   

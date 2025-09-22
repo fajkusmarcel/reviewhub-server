@@ -6,6 +6,13 @@ import subprocess
 from datetime import datetime
 import mysql.connector
 
+
+# --- DOPLNIT NA ZAČÁTEK SOUBORU ---
+import re
+from flask import send_file
+from typing import Iterable, List
+from collections import deque
+
 # Knihovny třetích stran (nainstalované přes pip)
 from flask import Flask, Blueprint, render_template, current_app, request, redirect, url_for, jsonify, session, flash  
 from flask_mysqldb import MySQL
@@ -19,6 +26,21 @@ from .gpt import *
 
 # Definice blueprintu pro uživatele
 settings_bp = Blueprint('settings', __name__)
+
+
+
+
+
+LOG_FILE = "/var/log/virtualserver/reviewhub.log"
+ROTATED_COUNT = 5  # odpovídá backupCount=5 v RotatingFileHandler
+
+LOG_LINE_RE = re.compile(
+    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) '(?P<user>[^']*)' "
+    r"\[(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL)\] "
+    r"\[(?P<etype>[^\]]*)\] (?P<msg>.*)$"
+)
+
+
 
 @settings_bp.route('/settings', methods=['GET'])
 @login_required
@@ -182,3 +204,161 @@ def update_publications_from_scopus():
     
     # Zobrazíme stránku s výsledky
     return render_template('publication_scopus_update_results.html', publications=result_publications)
+
+
+
+# --- DOPLNIT ROUTY ---
+
+@settings_bp.route('/logs', methods=['GET'])
+@login_required
+@project_required
+@admin_required
+def logs():
+    # Parametry z URL (GET) – pohodlnější pro sdílení odkazu
+    lines = max(int(request.args.get('lines', 200)), 1)
+    level = request.args.get('level', 'ALL').upper()        # ALL|INFO|WARNING|ERROR|DEBUG|CRITICAL
+    event_type = request.args.get('event_type', '').strip() # substring match (case-insensitive)
+    query = request.args.get('q', '').strip()               # fulltext v message i user
+    include_archived = request.args.get('archived', '0') == '1'
+    order = request.args.get('order', 'newest')             # newest|oldest
+    autoreload = request.args.get('autoreload', '0')        # v sekundách (string), '0' = off
+
+    raw_lines = _collect_log_lines(include_archived, lines * 4)  # trošku nadvýběr, ať mají filtry z čeho ořezat
+
+    filtered: List[dict] = []
+    q_low = query.lower()
+    et_low = event_type.lower()
+
+    for line in reversed(raw_lines):  # začneme od nejnovějších
+        m = LOG_LINE_RE.match(line)
+        if not m:
+            # neparsovatelný řádek taky zobrazíme (může jít o traceback)
+            rec = {"raw": line, "ts": "", "user": "", "level": "", "etype": "", "msg": line}
+        else:
+            rec = {
+                "raw": line,
+                "ts": m.group("ts"),
+                "user": m.group("user"),
+                "level": m.group("level"),
+                "etype": m.group("etype"),
+                "msg": m.group("msg"),
+            }
+
+        # Filtr LEVEL
+        if level != 'ALL' and rec.get("level") != level:
+            continue
+        # Filtr event_type (substring, case-insensitive)
+        if et_low and et_low not in rec.get("etype", "").lower():
+            continue
+        # Fulltext (user + msg + etype)
+        if q_low and (q_low not in rec.get("msg", "").lower()
+                      and q_low not in rec.get("user", "").lower()
+                      and q_low not in rec.get("etype", "").lower()):
+            continue
+
+        filtered.append(rec)
+        if len(filtered) >= lines:
+            break
+
+    # Řazení
+    if order == 'oldest':
+        filtered = list(reversed(filtered))
+
+    return render_template(
+        'settings_logs.html',
+        site_name="Logs",
+        logs=filtered,
+        form={
+            "lines": lines,
+            "level": level,
+            "event_type": event_type,
+            "q": query,
+            "archived": '1' if include_archived else '0',
+            "order": order,
+            "autoreload": autoreload,
+        }
+    )
+
+@settings_bp.route('/logs-download', methods=['GET'])
+@login_required
+@project_required
+@admin_required
+def logs_download():
+    # jen aktuální log; případně můžeš rozšířit ?i=1..5 pro archiv
+    return send_file(LOG_FILE, as_attachment=True, download_name='reviewhub.log')
+
+
+def _safe_tail(path: str, max_lines: int):
+    """
+    Efektivní tail z konce souboru s ošetřením seek před začátek.
+    """
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, os.SEEK_END)
+            pos = f.tell()
+            buf = b""
+            lines = []
+
+            # Čti po blocích z konce, ale nikdy nejdi před 0
+            block_size = 4096
+            while len(lines) <= max_lines and pos > 0:
+                read_size = block_size if pos >= block_size else pos
+                pos -= read_size
+                f.seek(pos, os.SEEK_SET)
+                chunk = f.read(read_size)
+                buf = chunk + buf
+                lines = buf.splitlines()
+
+            # Vezmi posledních N
+            tail_bytes = lines[-max_lines:]
+            return [b.decode("utf-8", errors="replace") for b in tail_bytes]
+    except FileNotFoundError:
+        return []
+    except PermissionError:
+        return [f"!!! PermissionError: {path} (zkontroluj práva čtení pro uživatele, pod kterým běží app)"]
+    except Exception as e:
+        return [f"!!! ReadError {path}: {e}"]
+
+
+def _safe_tail2(path: str, max_lines: int):
+    """
+    Robustní tail: přečte soubor po řádcích a nechá si jen posledních N.
+    U logu do 5 MB je to v pohodě a bez seek chyb.
+    """
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            dq = deque(f, maxlen=max_lines)
+        return [line.rstrip("\n") for line in dq]
+    except FileNotFoundError:
+        return []
+    except PermissionError:
+        return [f"!!! PermissionError: {path} (zkontroluj práva čtení pro uživatele, pod kterým běží app)"]
+    except Exception as e:
+        return [f"!!! ReadError {path}: {e}"]
+
+
+def _collect_log_lines(include_archived: bool, need_lines: int) -> List[str]:
+    """
+    Posbírá poslední řádky z current + (volitelně) rotated logů; pořadí od nejnovějších.
+    """
+    files = [LOG_FILE]
+    if include_archived:
+        # Rotované logy jsou číslované od .1 (nejnovější) po .5 (nejstarší)
+        for i in range(1, ROTATED_COUNT + 1):
+            files.append(f"{LOG_FILE}.{i}")
+
+    # Načteme z current nejvíc, pak případně doplníme z .1, .2, ...
+    collected: List[str] = []
+    for p in files:
+        need = max(need_lines - len(collected), 0)
+        if need <= 0:
+            break
+        chunk = _safe_tail(p, need)
+        # u current tail přinese nejnovější řádky; u .1 také koncové (nejnovější v tom souboru)
+        # chceme výsledně NEWEST first → zatím budeme skládat: nejdřív current, pak .1, ...
+        # ale protože chunk je chronologicky od staršího k novějšímu, necháme tak.
+        collected = chunk + collected  # posouváme starší dolů
+    # nyní collected je vzestupně (od starších k novějším); rozumné pro následné omezení a řazení
+    return collected[-need_lines:]
+
+

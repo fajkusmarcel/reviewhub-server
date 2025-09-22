@@ -561,6 +561,37 @@ def sql_get_project_name_by_id(project_id):
 # ***********************************************************************************************************************
 #      PUBLICATIONS
 # ***********************************************************************************************************************
+def sql_get_categories():
+    """
+    Získá seznam unikátních kategorií z tabulky publication.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT DISTINCT category FROM publication ORDER BY category ASC")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Vrátíme seznam jen hodnot (ne dicty), např. ["FBG", "DAS", "Interferometry"]
+    categories = [row['category'] for row in rows if row['category']]
+    return categories
+
+def sql_get_subcategories():
+    """
+    Získá seznam unikátních podkategorií z tabulky publication.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT DISTINCT subcategory FROM publication ORDER BY category ASC")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Vrátíme seznam jen hodnot (ne dicty), např. ["FBG", "DAS", "Interferometry"]
+    subcategories = [row['subcategory'] for row in rows if row['subcategory']]
+    return subcategories
+
+
 def sql_get_citation_by_id_article(pub_id):
     """
     Získá citaci BibTeX z publikace podle jejího ID.
@@ -927,6 +958,131 @@ def sql_get_filtered_publications(project_id, search_terms, search_option, filte
 def sql_get_all_publications(search_terms, search_option, filters, selected_project, sort):
     """
     Načte všechny publikace v databázi s vyhledávacím dotazem a filtry.
+    Vždy vrací list (může být prázdný).
+    """
+    query = '''
+        SELECT p.*, ur.used_in_review
+        FROM publication p
+        LEFT JOIN publicationproject pp ON p.publication_id = pp.publication_id
+        LEFT JOIN usedinreview ur       ON p.publication_id = ur.publication_id
+        WHERE 1=1
+    '''
+    query_filters = []
+
+    # Vyhledávání
+    if search_terms:
+        cols = (
+            "p.publication_name", "p.journal", "p.year_publication",
+            "p.sensor_type", "p.sensor_principle", "p.encapsulation",
+            "p.implementation", "p.category", "p.subcategory",
+            "p.note", "p.key_knowledge", "p.applications",  # sjednoceno na 'applications'
+            "p.doi", "p.authors"
+        )
+        # počet sloupců pro násobení placeholderů
+        N = len(cols)
+
+        if search_option == 'all':
+            # all = každý termín musí být nalezen (AND)
+            query += ' AND (' + ' AND '.join(
+                ['(' + ' OR '.join([f"{c} LIKE %s" for c in cols]) + ')' for _ in search_terms]
+            ) + ')'
+            for term in search_terms:
+                query_filters.extend(['%' + term + '%'] * N)
+        else:
+            # any = alespoň jeden termín (OR)
+            query += ' AND (' + ' OR '.join(
+                ['(' + ' OR '.join([f"{c} LIKE %s" for c in cols]) + ')' for _ in search_terms]
+            ) + ')'
+            for term in search_terms:
+                query_filters.extend(['%' + term + '%'] * N)
+
+    # Filtry
+    if filters.get('filter_Casopis'):
+        query += ' AND p.journal = %s'
+        query_filters.append(filters['filter_Casopis'])
+
+    if filters.get('filter_RokVydani'):
+        query += ' AND p.year_publication = %s'
+        query_filters.append(filters['filter_RokVydani'])
+
+    if filters.get('filter_TypSenzoru'):
+        query += ' AND p.sensor_type LIKE %s'
+        query_filters.append('%' + filters['filter_TypSenzoru'] + '%')
+
+    if filters.get('filter_PrincipSenzoru'):
+        query += ' AND p.sensor_principle = %s'
+        query_filters.append(filters['filter_PrincipSenzoru'])
+
+    if filters.get('filter_Velicina'):
+        query += ' AND p.measured_value LIKE %s'
+        query_filters.append('%' + filters['filter_Velicina'] + '%')
+
+    if filters.get('filter_ZpusobZapouzdreni'):
+        query += ' AND p.encapsulation = %s'
+        query_filters.append(filters['filter_ZpusobZapouzdreni'])
+
+    if filters.get('filter_ZpusobImplementace'):
+        query += ' AND p.implementation = %s'
+        query_filters.append(filters['filter_ZpusobImplementace'])
+
+    if filters.get('filter_Kategorie'):
+        query += ' AND p.category = %s'
+        query_filters.append(filters['filter_Kategorie'])
+
+    if filters.get('filter_Podkategorie'):
+        query += ' AND p.subcategory = %s'
+        query_filters.append(filters['filter_Podkategorie'])
+
+    # Použití v review
+    if filters.get('filter_UsedInReview'):
+        query += ' AND ur.used_in_review = %s'
+        query_filters.append(filters['filter_UsedInReview'])
+
+    # Přiřazení k projektu
+    if filters.get('filter_UsedInProject') == 'ANO':
+        query += ' AND pp.project_id = %s'
+        query_filters.append(selected_project)
+    elif filters.get('filter_UsedInProject') == 'NE':
+        query += '''
+            AND p.publication_id NOT IN (
+                SELECT publication_id
+                FROM publicationproject
+                WHERE project_id = %s
+            )
+        '''
+        query_filters.append(selected_project)
+
+    # GROUP BY a ORDER BY
+    query += " GROUP BY p.publication_id"
+
+    if sort and sort.get('sort_column_name') and sort.get('sort_order'):
+        query += f" ORDER BY {sort['sort_column_name']} {sort['sort_order']}"
+    else:
+        query += " ORDER BY p.publication_id DESC"
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(query, query_filters)
+        publications = cursor.fetchall() or []   # nikdy None
+        return publications
+
+    except Exception as e:
+        # Zaloguju a vrátím prázdný list
+        return []
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def sql_get_all_publications2(search_terms, search_option, filters, selected_project, sort):
+    """
+    Načte všechny publikace v databázi s vyhledávacím dotazem a filtry.
     """
     query = '''
         SELECT p.*, ur.used_in_review
@@ -1016,16 +1172,13 @@ def sql_get_all_publications(search_terms, search_option, filters, selected_proj
         # defaultni razeni od nejnovejsiho
         query += f" ORDER BY publication_id DESC"
 
-
+    print(query)
     # Vykonání dotazu
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    print(query)
-    print(query_filters)
     cursor.execute(query, query_filters)
     publications = cursor.fetchall()
     cursor.close()
-    return publications
 
 def sql_get_all_publications_without_filters():
     """

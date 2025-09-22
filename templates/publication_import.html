@@ -389,22 +389,26 @@
                     </td>
                     <td class='akce'>
                         {% if clanek.assigned %}
-                            
+
                         {% else %}
-                            <a href="{{ url_for('publication.publication_import', clanek_id=clanek.publication_id) }}" class="btn btn-primary"><img src="/static/icon-import.svg" width="20px"></a>
+                            <a href="{{ url_for('publication.publication_import', clanek_id=clanek.publication_id) }}" class="btn btn-primary"><img src="/reviewhub/static/icon-import.svg" width="20px"></a>
+                            {% if session['user_role'] == 'admin' %}
+                                <a href="" onclick="confirmDelete({{ clanek.publication_id }}); return false;" class="btn btn-primary"><img src="/reviewhub/static/icon-delete.svg"  width="20px"></a>
+                            {% endif %}
+
                         {% endif %}  
-                        <a href="" onclick="confirmDelete({{ clanek.publication_id }}); return false;" class="btn btn-primary"><img src="/static/icon-delete.svg"  width="20px"></a>                        
-                    </td>            
-                </tr>           
-            {% endfor %}         
-        
-        
+
+                    </td>
+                </tr>
+            {% endfor %}
+
+
         </table> 
-            
-      
 
 
-    </div>    
+
+
+    </div>
 
 
 
@@ -684,7 +688,7 @@ function applyFilters() {
         }
     }
     // Načti filtraci
-    window.location.href = `/publication_all?${queryParams.toString()}`;
+    window.location.href = `/reviewhub/publication_all?${queryParams.toString()}`;
     saveFormState()
 }
 

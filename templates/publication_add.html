@@ -47,15 +47,33 @@
         <input type="text" id="rok_vydani" name="rok_vydani">
     </div>
 
+
+
+
+
     <div class="form-group">
-        <label for="kategorie">Kategorie:</label>
-        <input type="text" id="kategorie" name="kategorie">
+        <label for="kategorie_select">Kategorie:</label>
+        <select id="kategorie_select" name="kategorie_select">
+            <option value="__NEW__">Nová…</option>
+                {% for k in kategorie %}
+                <option value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+        </select>
+        <input type="text" id="kategorie" name="kategorie" placeholder="Zadej novou kategorii">
     </div>
 
     <div class="form-group">
-        <label for="podkategorie">Podkategorie:</label>
-        <input type="text" id="podkategorie" name="podkategorie">
+        <label for="podkategorie_select">Podkategorie:</label>
+        <select id="podkategorie_select" name="podkategorie_select">
+            <option value="__NEW__">Nová…</option>
+                {% for k in podkategorie %}
+                <option value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+        </select>
+        <input type="text" id="podkategorie" name="podkategorie" placeholder="Zadej novou podkategorii">
     </div>
+
+
 
     <hr>
 
@@ -204,7 +222,7 @@ document.getElementById('importButton').addEventListener('click', function() {
         document.getElementById('zpusob_zapouzdreni').value = articleJson.ZpusobZapouzdreni || '';
         document.getElementById('zpusob_implementace').value = articleJson.ZpusobImplementace || '';
         document.getElementById('kategorie').value = articleJson.Kategorie || '';
-        document.getElementById('podkategorie').value = articleJson.Subkategorie || '';
+        document.getElementById('podkategorie').value = articleJson.Podkategorie || '';
         document.getElementById('merena_velicina').value = articleJson.MerenaVelicina || '';
         document.getElementById('rozsah_merani').value = articleJson.RozsahMereni || '';
         document.getElementById('citlivost').value = articleJson.Citlivost || '';

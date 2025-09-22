@@ -1,0 +1,165 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1 class="mb-3">Aplikační logy</h1>
+
+<form method="get" action="{{ url_for('settings.logs') }}" class="mb-4" style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end">
+
+  <div>
+    <label for="lines">Počet řádků</label>
+    <input type="number" id="lines" name="lines" value="{{ form.lines }}" min="1" class="form-control">
+  </div>
+
+  <div>
+    <label for="level">Úroveň</label>
+    <select id="level" name="level" class="form-control">
+      {% for lvl in ['ALL','DEBUG','INFO','WARNING','ERROR','CRITICAL'] %}
+      <option value="{{lvl}}" {% if form.level==lvl %}selected{% endif %}>{{lvl}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label for="event_type">Event type</label>
+    <input type="text" id="event_type" name="event_type" value="{{ form.event_type }}" placeholder="např. AUTH, DB, IMPORT..." class="form-control">
+  </div>
+
+  <div>
+    <label for="q">Hledat (fulltext)</label>
+    <input type="text" id="q" name="q" value="{{ form.q }}" placeholder="text ve zprávě/uživateli" class="form-control">
+  </div>
+
+  <div>
+    <label for="order">Pořadí</label>
+    <select id="order" name="order" class="form-control">
+      <option value="newest" {% if form.order=='newest' %}selected{% endif %}>Nejnovější nahoře</option>
+      <option value="oldest" {% if form.order=='oldest' %}selected{% endif %}>Nejstarší nahoře</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="archived">Zahrnout archiv</label>
+    <select id="archived" name="archived" class="form-control">
+      <option value="0" {% if form.archived=='0' %}selected{% endif %}>Ne</option>
+      <option value="1" {% if form.archived=='1' %}selected{% endif %}>Ano (.1–.5)</option>
+    </select>
+  </div>
+
+
+
+<div>
+  <label class="d-block">Auto-refresh</label>
+
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" id="autoreload_on"
+           {% if form.autoreload|int > 0 %}checked{% endif %}
+           onchange="syncAutorefresh(this)">
+    <label class="form-check-label" for="autoreload_on">Zapnout</label>
+  </div>
+
+  <div class="input-group mt-1" style="max-width:220px;">
+    <input type="number" class="form-control" id="autoreload_secs" name="autoreload"
+           min="1" step="1"
+           value="{{ form.autoreload if form.autoreload|int > 0 else 5 }}"
+           onblur="changeAutorefreshSecs(this)"
+           onkeydown="if(event.key==='Enter'){changeAutorefreshSecs(this)}">
+    <span class="input-group-text">s</span>
+  </div>
+</div>
+
+  <div>
+    <button type="submit" class="btn btn-primary">Zobrazit</button>
+    <a class="btn btn-secondary" href="{{ url_for('settings.logs') }}">Reset filtrů</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('settings.logs_download') }}">Stáhnout aktuální log</a>
+  </div>
+</form>
+
+
+<script>
+  // Při načtení stránky nastav čitelnost/readonly podle checkboxu
+  (function initAutorefresh() {
+    const cb = document.getElementById('autoreload_on');
+    const secs = document.getElementById('autoreload_secs');
+    if (!cb || !secs) return;
+    if (cb.checked) {
+      secs.readOnly = false;
+      if (!secs.value || parseInt(secs.value,10) < 1) secs.value = 5;
+    } else {
+      secs.readOnly = true;
+      secs.value = 0;  // pošleme 0 => vypnuto
+    }
+  })();
+
+  // Přepnutí checkboxu: přepni readonly/výchozí hodnotu a hned odešli formulář
+  function syncAutorefresh(cb) {
+    const secs = document.getElementById('autoreload_secs');
+    secs.readOnly = !cb.checked;
+    if (!cb.checked) { secs.value = 0; }
+    else if (!secs.value || parseInt(secs.value,10) < 1) { secs.value = 5; }
+    cb.form.submit();
+  }
+
+  // Změna sekund: když je zapnuto, rovnou odešli formulář
+  function changeAutorefreshSecs(inp) {
+    const cb = document.getElementById('autoreload_on');
+    if (cb && cb.checked) inp.form.submit();
+  }
+</script>
+
+{% if form.autoreload and form.autoreload|int > 0 %}
+<script>
+  setTimeout(() => {
+    const url = new URL(window.location.href);
+    window.location.href = url.toString();
+  }, {{ form.autoreload|int }} * 1000);
+</script>
+{% endif %}
+
+
+
+
+
+<style>
+  .loglist { max-height: 65vh; overflow:auto; display:flex; flex-direction:column; gap:2px; padding:6px }
+  .logline {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 12px; line-height: 1.25;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding: 2px 6px; border-left: 3px solid transparent;
+  }
+  .lvl-INFO     { border-left-color:#6c757d; }
+  .lvl-WARNING  { border-left-color:#ffc107; background:#fff8e1; }
+  .lvl-ERROR    { border-left-color:#dc3545; background:#f9c6c0; }
+  .lvl-DEBUG    { border-left-color:#0d6efd; background:#e7f1ff; }
+  .lvl-CRITICAL { border-left-color:#6610f2; background:#f3e8ff; }
+  .meta { color:#666; margin-right:8px; }
+  .msg  { color:#111; }
+</style>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="loglist">
+      {% if logs %}
+        {% for r in logs %}
+          {% if r.level %}
+            <div class="logline lvl-{{ r.level }}"
+                 title="{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}] {{ r.msg }}">
+              <span class="meta">{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}]</span>
+              <span class="msg">{{ r.msg }}</span>
+            </div>
+          {% else %}
+            <!-- neparsovatelné řádky (např. traceback) -> zploštíme newliny -->
+            <div class="logline"
+                 title="{{ r.raw }}">{{ r.raw|replace('\n', ' ⏎ ') }}</div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="logline"><span class="meta">–</span><span class="msg text-muted">Žádné záznamy neodpovídají filtrům.</span></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

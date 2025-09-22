@@ -8,10 +8,12 @@ from functools import wraps
 import config
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash  # Flask moduly
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, session, flash  # Flask moduly
 from flask_mysqldb import MySQL  # Flask-MySQL pro práci s databází
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
+from utils.logger import setup_logging, log_info, log_warning, log_error
 
 from flask_socketio import SocketIO, send, emit
 from socketio_instance import socketio
@@ -29,47 +31,30 @@ from blueprints.publication import publication_bp
 from blueprints.settings import settings_bp
 from blueprints.gpt import gpt_bp
 
-
-
 app = Flask(__name__)
-#app.secret_key = os.urandom(24)  # Generuje náhodný klíč
 app.secret_key = os.environ.get("REVIEWHUB_SECRET_KEY")
-
-# po vytvoření app
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
-
-# URL prefix a cookies – budeš-li nasazovat pod /reviewhub
-#app.config['APPLICATION_ROOT'] = '/reviewhub'
-#app.config['SESSION_COOKIE_PATH'] = '/reviewhub'
-
-
 app.config.update(
-    APPLICATION_ROOT="/reviewhub",
-    SESSION_COOKIE_NAME="reviewhub_session",   # unikátní název
+    SECRET_KEY=os.getenv("GREENSTATS_SECRET_KEY", "dev-change-me/reviewhub"),
+    SESSION_COOKIE_NAME="reviewhub_session",
     SESSION_COOKIE_PATH="/reviewhub",
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False,  # na HTTPS přepnout na True
+    SESSION_COOKIE_SECURE=False,
+    REMEMBER_COOKIE_NAME="reviewhub_remember",
+    REMEMBER_COOKIE_PATH="/reviewhub",
+    REMEMBER_COOKIE_SAMESITE="Lax",
+    REMEMBER_COOKIE_SECURE=False,
+    APPLICATION_ROOT="/reviewhub",
 )
 
-
-
-
-#socketio = SocketIO(app)
-# Inicializace SocketIO s aplikací
-socketio.init_app(app)
-
+# Databaze MySQL
 mysql = None
-
-# Pro DEBIAN
-#app.config['SESSION_COOKIE_SECURE'] = False  # pokud používáš HTTP
-#app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-#app.config['SESSION_COOKIE_PATH'] = '/'
 
 # Inicializace limiteru - omeyuje pocet prihlaseni/login za minutu
 limiter = Limiter(key_func=get_remote_address)
 
 # Použití limiteru na aplikaci
-limiter.init_app(app)
+#limiter.init_app(app)
 
 # Registrace blueprintů
 app.register_blueprint(dashboard_bp)
@@ -80,11 +65,25 @@ app.register_blueprint(settings_bp)
 app.register_blueprint(gpt_bp)
 
 
+
+limiter.init_app(app)
+socketio.init_app(app)
+
+# SOuvisi s logovanim
+@app.before_request
+def _inject_user_into_logs():
+    full_name = " ".join(x for x in [session.get("user_name"), session.get("user_surname")] if x)
+    g.user_login = session.get("user_login") or full_name or session.get("user_id") or "-"
+
+
+
+
 # Existující cesta (route) pro hlavní stránku
 @app.route('/')
 @login_required
 @project_required
 def index():
+
     # Připojení k databázi a načtení projektů
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT project_id, project_name FROM project")
@@ -107,19 +106,15 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        print("=== LOGIN POST ===")
-        print("Form username:", username)
 
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute('SELECT user_id, name, surname, login, password, role FROM user WHERE login = %s ', (username, ))
         user = cursor.fetchone()
         cursor.close()
-        print(user)
 
-        print("User from DB:", user is not None)
         if not user:
-            print(">> USER NOT FOUND -> redirect /login")
+            log_info("auth", f"user '{username}' neni registrovany uzivatel {request.remote_addr}")
             flash('Nesprávné uživatelské jméno nebo heslo.')
             return redirect(url_for('login'))
 
@@ -129,38 +124,25 @@ def login():
         try:
             ok = bcrypt.checkpw(password.encode('utf-8'), passwordInDB_HASH.encode('utf-8'))
         except Exception as e:
-            print("bcrypt exception:", repr(e))
             ok = False
 
-        print("Password check OK?:", ok)
-
-
         if ok:
+            # Login - spravne zadane heslo
+            log_info("auth", f"user '{username}' logged in from {request.remote_addr}")
             session['user_id'] = user['user_id']
+            session['user_login'] = username
             session['user_name'] = user['name']
             session['user_surname'] = user['surname']
             session['user_role'] = user['role']
             session['ModeApp'] = app.config.get('ModeApp')
-            print("Session after set:", dict(session))
-
             resp = redirect(url_for('dashboard.dashboard'))
-            print("Redirecting to:", resp.location)
             return resp
         else:
-            print(">> BAD PASSWORD -> redirect /login")
+            # Login - chybne zadane heslo
+            log_warning("auth", f"user '{username}' zadal nespravne heslo {request.remote_addr} ")
             flash('Nesprávné uživatelské jméno nebo heslo.')
             return redirect(url_for('login'))
 
-        if bcrypt.checkpw(password.encode('utf-8'), passwordInDB_HASH.encode('utf-8')):  # Ověření hashovaného hes
-            session['user_id'] = user['user_id']
-            session['user_name'] = user['name']
-            session['user_surname'] = user['surname']
-            session['user_role'] = user['role']
-            session['ModeApp'] = app.config['ModeApp']
-            return redirect(url_for('dashboard.dashboard'))
-        else:
-            flash('Nesprávné uživatelské jméno nebo heslo.')
-            return redirect(url_for('login'))
 
     return render_template('login.html', site_name="Login")  # Vytvoříme šablonu login.html
 
@@ -192,6 +174,7 @@ def handle_getConfigGPTB():
     configGPTB = load_ai_b_config()
     emit("configGPTB", configGPTB)
 
+
 def save_config(mode):
     if(mode == 'test'):
         print('Nastavuji mode ', mode)
@@ -210,18 +193,27 @@ def save_config(mode):
         app.config['MYSQL_DB'] = config.MYSQL_DB
         app.config['ModeApp'] = 'production'
     else:
-        print("Musi vybrat mode: text nebo production")
-    
+        print("Musi vybrat mode: test nebo production")
+
+    app.config["MAX_CONTENT_LENGTH"] = getattr(config, "MAX_CONTENT_LENGTH", 50 * 1024 * 1024)
+    app.config["ALLOWED_EXTENSIONS"] = getattr(config, "ALLOWED_EXTENSIONS", {"pdf"})
+
     app.config['AI_A_file_path'] = config.AI_A_file_path
     app.config['AI_B_file_path'] = config.AI_B_file_path
-    
 
 
 def init_app(mode='production'):
     global mysql
     save_config(mode)           # nastaví app.config z config.py
+
+    limiter.init_app(app)
+    socketio.init_app(app)
+
     mysql = MySQL(app)          # nebo jiný klient podle tvého kódu
     app.config['mysql'] = mysql # pokud na to ve zbytku kódu spoléháš
+
+    setup_logging(log_dir="/var/log/virtualserver")
+
     return app
 
 

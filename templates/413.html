@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-danger">
+  <h4>Chyba 413 – Soubor je příliš velký</h4>
+  <p>Povolený limit je 20&nbsp;MB.</p>
+  <a href="{{ url_for('publication.publication_pdf2text') }}">Zpět na nahrávání</a>
+</div>
+{% endblock %}

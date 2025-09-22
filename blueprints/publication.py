@@ -14,6 +14,7 @@ from files.files import *
 from db.sql_query import *
 from utils.utils import *
 from .gpt import *
+from utils.logger import log_info, log_warning, log_error
 
 
 
@@ -245,7 +246,7 @@ def publication_search():
     # Fulltextové vyhledávání pomocí MATCH a AGAINST
     cursor.execute('''
         SELECT publication_id, publication_name, journal, year_publication, authors
-            FROM Publication 
+            FROM publication 
             WHERE MATCH(publication_name) AGAINST (%s IN BOOLEAN MODE);
     ''', (search_query,))
     #ORDER BY exact_match DESC, MATCH(publication_name) AGAINST(%s IN BOOLEAN MODE) DESC
@@ -271,7 +272,7 @@ def publication_import(clanek_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
-        SELECT * FROM PublicationProject WHERE publication_id = %s AND project_id = %s
+        SELECT * FROM publicationproject WHERE publication_id = %s AND project_id = %s
     ''', (clanek_id, selected_project))
     existing_assignment = cursor.fetchone()
     
@@ -281,13 +282,13 @@ def publication_import(clanek_id):
 
     # Vložení záznamu do tabulky PublicationProject
     cursor.execute('''
-        INSERT INTO PublicationProject (publication_id, project_id) 
+        INSERT INTO publicationproject (publication_id, project_id) 
         VALUES (%s, %s)
     ''', (clanek_id, selected_project))
     conn.commit()
 
     cursor.execute('''
-        SELECT * FROM PublicationTracking
+        SELECT * FROM publicationtracking
         WHERE publication_id = %s AND project_id = 1            
     ''', (clanek_id, ))
     tracking = cursor.fetchone()
@@ -295,12 +296,12 @@ def publication_import(clanek_id):
 
     if(tracking is None):
         cursor.execute('''
-            INSERT INTO PublicationTracking (publication_id, project_id, user_id_added, user_id_last_modified, user_id_completed) 
+            INSERT INTO publicationtracking (publication_id, project_id, user_id_added, user_id_last_modified, user_id_completed) 
             VALUES (%s, %s, %s, %s, %s)
         ''', (clanek_id, selected_project, user_id, user_id, user_id))
     else:
         cursor.execute('''
-            INSERT INTO PublicationTracking (publication_id, project_id, user_id_added, added_at, user_id_last_modified, last_modified_at, user_id_completed, completed_at) 
+            INSERT INTO publicationtracking (publication_id, project_id, user_id_added, added_at, user_id_last_modified, last_modified_at, user_id_completed, completed_at) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ''', (clanek_id, selected_project, tracking['user_id_added'], tracking['added_at'], tracking['user_id_last_modified'], tracking['last_modified_at'], tracking['user_id_completed'], tracking['completed_at']))
     conn.commit()
@@ -354,11 +355,19 @@ def publication_add():
         scopus_data = get_article_info_from_SCOPUS(form_data['nazev_clanku'], next_id)
         
         if 'error' in scopus_data: 
-            # Informace z formulare   
+            # Informace z formulare
+
+            # Vyber kategorie z roletkoveho menu nebo zapsane
+
+            selected = request.form.get('kategorie_select')
+            category = request.form.get('kategorie') if selected == '__NEW__' else selected
+            selected = request.form.get('podkategorie_select')
+            subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
+
             publication_id = sql_insert_publication(selected_project, form_data['nazev_clanku'], form_data['abstract'], form_data['casopis'],
                                 form_data['rok_vydani'], form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
                                 form_data['typ_optickeho_vlakna'], form_data['zpusob_zapouzdreni'], form_data['zpusob_implementace'],
-                                form_data['kategorie'], form_data['podkategorie'], form_data['merena_velicina'],
+                                category, subcategory, form_data['merena_velicina'],
                                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
                                 form_data['poznamky'], pdf_filename, form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'], 0)
@@ -366,7 +375,7 @@ def publication_add():
             # Informace ze SCOPUS - ověření a ošetření hodnot
             title = scopus_data["title"] if scopus_data.get("title") != 'N/A' else form_data['nazev_clanku']
             journal = scopus_data["journal_or_conference"] if scopus_data.get("journal_or_conference") != 'N/A' else form_data['casopis']
-            
+
             # Pokud rok není číslo, nastavíme na form_data nebo 2024 jako výchozí hodnotu
             try:
                 year = int(scopus_data["year"]) if scopus_data.get("year") and scopus_data["year"] != 'N/A' else int(form_data['rok_vydani'])
@@ -379,11 +388,20 @@ def publication_add():
             bibtex_citation = scopus_data.get("bibtex_citation", form_data['citaceBib'])
 
             # Vložení záznamu do databáze s kontrolovanými hodnotami
+
+
+            # Vyber kategorie z roletkoveho menu nebo zapsane
+
+            selected = request.form.get('kategorie_select')
+            category = request.form.get('kategorie') if selected == '__NEW__' else selected
+            selected = request.form.get('podkategorie_select')
+            subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
+
             publication_id = sql_insert_publication(
                 selected_project, title, form_data['abstract'], journal,
                 year, form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
                 form_data['typ_optickeho_vlakna'], form_data['zpusob_zapouzdreni'], form_data['zpusob_implementace'],
-                form_data['kategorie'], form_data['podkategorie'], form_data['merena_velicina'],
+                category, subcategory, form_data['merena_velicina'],
                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
                 form_data['poznamky'], pdf_filename, form_data['obrazky'], authors, doi, bibtex_citation, 1)
@@ -406,11 +424,17 @@ def publication_add():
 
         
         # Přesměrování po úspěšném vložení
+        title = form_data['nazev_clanku']
+        log_info("pub_add", f"uzivatel vlozil clanek {title} do databaze")
+
         return redirect(url_for('publication.publication'))
 
     # Při GET načteme seznam projektů pro roletkové menu ve formuláři
     projekty = sql_get_projects()
-    return render_template('publication_add.html', projekty=projekty, site_name="Add publication")
+    kategorie = sql_get_categories()
+    podkategorie = sql_get_subcategories()
+
+    return render_template('publication_add.html', projekty=projekty, kategorie=kategorie, podkategorie=podkategorie, site_name="Add publication")
 
 
 
@@ -473,7 +497,7 @@ def publication_pdf2text():
         if session['user_role'] == 'admin':
             ai_a_config_text = load_ai_a_config()
         
-        with open("./static/export.txt", "w", encoding="utf-8") as file:
+        with open("./static/uplouds/tmp/export.txt", "w", encoding="utf-8") as file:
             file.write(text)
 
         # Vrácení textu jako JSON odpověď
