@@ -314,6 +314,7 @@ def publication_import(clanek_id):
     return redirect(url_for('publication.publication_all'))
 
 
+
 @publication_bp.route('/publication_add', methods=['GET', 'POST'])
 @login_required
 @project_required
@@ -365,8 +366,16 @@ def publication_add():
             selected = request.form.get('podkategorie_select')
             subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
 
+            # Pokud neni rok vydani vyplnen - prevedeme prazdny retezec na 1900
+            rok_raw = form_data['rok_vydani']
+            try:
+                rok_vydani = int(rok_raw) if rok_raw else 1900
+            except ValueError:
+                rok_vydani = 1990
+
+
             publication_id = sql_insert_publication(selected_project, form_data['nazev_clanku'], form_data['abstract'], form_data['casopis'],
-                                form_data['rok_vydani'], form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
+                                rok_vydani, form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
                                 form_data['typ_optickeho_vlakna'], form_data['zpusob_zapouzdreni'], form_data['zpusob_implementace'],
                                 category, subcategory, form_data['merena_velicina'],
                                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],

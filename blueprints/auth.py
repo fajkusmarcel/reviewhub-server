@@ -22,25 +22,16 @@ def login():
         password = request.form['password']
 
         conn = get_db_connection()
-        cursor = None
-        try:
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute('SELECT user_id, name, surname, login, password, role FROM user WHERE login = %s ', (username, ))
-            user = cursor.fetchone()
-        finally:
-            try:
-                if cursor:
-                    cursor.close()
-            except: pass
-            try:
-                if conn:
-                    conn.close()
-            except: pass
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute('SELECT user_id, name, surname, login, password, role FROM user WHERE login = %s ', (username, ))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
         if not user:
             log_info("auth", f"user '{username}' neni registrovany uzivatel {request.remote_addr}")
             flash('Nesprávné uživatelské jméno nebo heslo.')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
 
         passwordInDB_HASH = user['password']
@@ -70,7 +61,7 @@ def login():
             # Login - chybne zadane heslo
             log_warning("auth", f"user '{username}' zadal nespravne heslo {request.remote_addr} ")
             flash('Nesprávné uživatelské jméno nebo heslo.')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
 
     return render_template('login.html', site_name="Login")  # Vytvoříme šablonu login.html
