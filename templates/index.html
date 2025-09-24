@@ -23,9 +23,9 @@
         <div class="top-bar-right">
             {% if 'user_id' in session %}
                 <span>{{ session['user_name'] }} {{ session['user_surname'] }} ({{ session['user_role'] }})</span>
-                <a href="{{ url_for('logout') }}">Odhlásit</a>
+                <a href="{{ url_for('auth.logout') }}">Odhlásit</a>
             {% else %}
-                <a href="{{ url_for('login') }}">LOGIN</a>
+                <a href="{{ url_for('auth.login') }}">LOGIN</a>
             {% endif %}
         </div>
         

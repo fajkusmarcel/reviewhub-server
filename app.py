@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 import bcrypt
 from functools import wraps
-import config
+from time import time
 
 # Knihovny třetích stran (nainstalované přes pip)
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, session, flash  # Flask moduly
@@ -14,6 +14,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from utils.logger import setup_logging, log_info, log_warning, log_error
+from utils.middleware import register_session_guard  # po přejmenování
+import config
 
 from flask_socketio import SocketIO, send, emit
 from socketio_instance import socketio
@@ -23,17 +25,23 @@ socketio = SocketIO(async_mode='eventlet')  # nebo 'gevent'
 import config  # Konfigurace aplikace
 from db.sql_query import *
 from utils.utils import *
-
+from utils.extensions import limiter
+from utils.middleware import register_session_guard
+from utils.decorators import *
 from blueprints.dashboard import dashboard_bp
 from blueprints.project import project_bp
 from blueprints.user import user_bp
 from blueprints.publication import publication_bp
 from blueprints.settings import settings_bp
 from blueprints.gpt import gpt_bp
+from blueprints.auth import auth_bp
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("REVIEWHUB_SECRET_KEY")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
+app.config.from_object(config)
+register_session_guard(app)
+
 app.config.update(
     SECRET_KEY=os.getenv("GREENSTATS_SECRET_KEY", "dev-change-me/reviewhub"),
     SESSION_COOKIE_NAME="reviewhub_session",
@@ -54,7 +62,7 @@ mysql = None
 limiter = Limiter(key_func=get_remote_address)
 
 # Použití limiteru na aplikaci
-#limiter.init_app(app)
+limiter.init_app(app)
 
 # Registrace blueprintů
 app.register_blueprint(dashboard_bp)
@@ -63,8 +71,10 @@ app.register_blueprint(user_bp)
 app.register_blueprint(publication_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(gpt_bp)
+app.register_blueprint(auth_bp)
 
-
+# Zaregistruj guard po vytvoření app
+register_session_guard(app)
 
 limiter.init_app(app)
 socketio.init_app(app)
@@ -76,6 +86,12 @@ def _inject_user_into_logs():
     g.user_login = session.get("user_login") or full_name or session.get("user_id") or "-"
 
 
+@app.context_processor
+def inject_timeouts():
+    return dict(
+        INACTIVITY_SEC=app.config.get('INACTIVITY_LIMIT_SECONDS', 3600),
+        ABSOLUTE_SEC=app.config.get('ABSOLUTE_LIMIT_SECONDS', 8*3600),
+    )
 
 
 # Existující cesta (route) pro hlavní stránku
@@ -99,61 +115,6 @@ def index():
 
     return render_template('index.html', projekty=projekty, user_count=user_count, site_name="Home")
 
-
-@app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("10 per minute")
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT user_id, name, surname, login, password, role FROM user WHERE login = %s ', (username, ))
-        user = cursor.fetchone()
-        cursor.close()
-
-        if not user:
-            log_info("auth", f"user '{username}' neni registrovany uzivatel {request.remote_addr}")
-            flash('Nesprávné uživatelské jméno nebo heslo.')
-            return redirect(url_for('login'))
-
-
-        passwordInDB_HASH = user['password']
-
-        try:
-            ok = bcrypt.checkpw(password.encode('utf-8'), passwordInDB_HASH.encode('utf-8'))
-        except Exception as e:
-            ok = False
-
-        if ok:
-            # Login - spravne zadane heslo
-            log_info("auth", f"user '{username}' logged in from {request.remote_addr}")
-            session['user_id'] = user['user_id']
-            session['user_login'] = username
-            session['user_name'] = user['name']
-            session['user_surname'] = user['surname']
-            session['user_role'] = user['role']
-            session['ModeApp'] = app.config.get('ModeApp')
-            resp = redirect(url_for('dashboard.dashboard'))
-            return resp
-        else:
-            # Login - chybne zadane heslo
-            log_warning("auth", f"user '{username}' zadal nespravne heslo {request.remote_addr} ")
-            flash('Nesprávné uživatelské jméno nebo heslo.')
-            return redirect(url_for('login'))
-
-
-    return render_template('login.html', site_name="Login")  # Vytvoříme šablonu login.html
-
-
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    session.pop('user_name', None)
-    session.pop('user_role', None)
-    session.pop('selected_project', None)
-    return redirect(url_for('dashboard.dashboard'))  # Nebo jinou cílovou stránku
 
 @app.route('/select_mode/<string:mode>', methods=['GET', 'POST'])
 @login_required

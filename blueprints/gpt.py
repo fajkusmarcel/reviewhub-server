@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename  # Zajištění bezpečných názvů 
 from functools import wraps
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Flask, Blueprint, render_template, current_app, request, redirect, url_for, jsonify, session, flash  # Flask moduly
+from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
 from flask_mysqldb import MySQL
 
 from openai import OpenAI
@@ -13,6 +13,7 @@ from socketio_instance import socketio  # Importujeme socketio
 # Vlastní moduly (část tvé aplikace)
 import config  # Konfigurace aplikace
 from utils.utils import *
+from utils.decorators import *
 from db.sql_query import *
 
 # Definice blueprintu pro uživatele

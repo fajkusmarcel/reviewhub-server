@@ -11,60 +11,6 @@ import bcrypt
 from db.sql_query import *
 
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        print("=== login_required check ===")
-        print("Request path:", request.path)
-        print("Session keys:", list(session.keys()))
-        print("Session content:", dict(session))
-        cookie_name = current_app.config.get('SESSION_COOKIE_NAME', 'session')  # Flask 3
-        print("Cookie name:", cookie_name)
-        print("Cookie in request:", request.cookies.get(cookie_name))
-
-        if current_app.config.get('DEBUG_MODE', False):
-            return f(*args, **kwargs)
-
-        if 'user_id' not in session:
-            print(">> user_id NOT in session -> redirect /login")
-            return redirect(url_for('login'))
-        print(">> user_id OK, pokračuju")
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-
-
-# Dekorátor pro ověření, zda je vybraný projekt
-def project_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_app.config.get('DEBUG_MODE', False):
-            # Pokud je aplikace v debug režimu, přeskočíme kontrolu přihlášení
-            return f(*args, **kwargs)
-                
-        if 'selected_project' not in session:
-            #flash('Musíte vybrat projekt, abyste měli přístup k této stránce.', 'warning')
-            return redirect(url_for('project.project_select'))  # Přesměrování na výběr projektu
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-# Dekorátor pro ověření, zda je uživatel administrátor
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_app.config.get('DEBUG_MODE', False):
-            # Pokud je aplikace v debug režimu, přeskočíme kontrolu přihlášení
-            return f(*args, **kwargs)
-                
-        if session.get('user_role') != 'admin':
-            flash('Nemáte administrátorská práva.', 'danger')
-            return redirect(url_for('index'))  # Přesměrování na hlavní stránku
-        return f(*args, **kwargs)
-    return decorated_function
-
-
 def load_ai_a_config():
     """
     Načte textový soubor definovaný v config.py a uloží obsah do proměnné.

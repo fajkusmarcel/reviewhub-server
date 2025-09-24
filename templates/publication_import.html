@@ -393,7 +393,7 @@
                         {% else %}
                             <a href="{{ url_for('publication.publication_import', clanek_id=clanek.publication_id) }}" class="btn btn-primary"><img src="/reviewhub/static/icon-import.svg" width="20px"></a>
                             {% if session['user_role'] == 'admin' %}
-                                <a href="" onclick="confirmDelete({{ clanek.publication_id }}); return false;" class="btn btn-primary"><img src="/reviewhub/static/icon-delete.svg"  width="20px"></a>
+                                <a href="" onclick="confirmDelete({{ clanek.publication_id}}, '{{clanek.publication_name }}'); return false;" class="btn btn-primary"><img src="/reviewhub/static/icon-delete.svg"  width="20px"></a>
                             {% endif %}
 
                         {% endif %}  
@@ -547,6 +547,25 @@
         </form>    
     </div>
 </div>
+
+<!-- Překryvný div pro zobrazení výsledku / potvrzení -->
+<div id="overlay" style="display:none;">
+  <div id="overlayContent">
+    <h3>Výsledek kontroly</h3>
+    <p id="overlayMessage"></p>
+
+    <!-- původní tlačítko -->
+
+    <!-- NOVÉ: akce pro potvrzení smazání (defaultně schované) -->
+    <div id="overlayActions" style="display:none; gap:.5rem; margin-top:.75rem;">
+      <button type="button" id="overlayConfirmBtn" class="btn btn-danger">Ano, smazat</button>
+      <button type="button" id="overlayCancelBtn"  class="btn">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- JavaScript pro načítání detailu článku -->
 <script>
 
@@ -624,7 +643,7 @@ function showArticleDetail(clanekId) {
             <p><strong>Poznámky:</strong> ${clanek.note}</p>
         </div>
         <div class="tab-content" id="fulltext" style="display:none;">
-            ${clanek.pdf_name ? `<embed src="/static/uplouds/${clanek.pdf_name}" type="application/pdf" width="100%" height="1000px">` : '<p>Full text není dostupný.</p>'}
+            ${clanek.pdf_name ? `<embed src="/reviewhub/static/uplouds/${clanek.pdf_name}" type="application/pdf" width="100%" height="1000px">` : '<p>Full text není dostupný.</p>'}
         </div>
     `;
 
@@ -644,11 +663,63 @@ for (var i = 0; i < tabContents.length; i++) {
 document.getElementById(tabId).style.display = 'block';
 }
 
-function confirmDelete(clanekId) {
+function closeOverlay() {
+  const overlay = document.getElementById('overlay');
+  const actions = document.getElementById('overlayActions');
+  if (actions) actions.style.display = 'none';   // schovej confirm akce
+  overlay.style.display = 'none';
+}
+
+function confirmDelete(clanekId, name) {
+  const overlay  = document.getElementById('overlay');
+  const titleEl  = document.querySelector('#overlayContent h3');
+  const message  = document.getElementById('overlayMessage');
+  const actions  = document.getElementById('overlayActions');
+  const btnOk    = document.getElementById('overlayConfirmBtn');
+  const btnNo    = document.getElementById('overlayCancelBtn');
+
+  // Texty do overlaye
+  if (titleEl)  titleEl.textContent = 'Potvrzení smazání';
+  message.textContent = `Opravdu chcete smazat článek "${name}"?`;
+  message.textContent = 'Opravdu chcete smazat článek "' + name + '"?';
+
+  message.className = 'red-text'; // případně necháš vlastní třídu
+
+  // Zapni confirm režim (zobraz dvě tlačítka)
+  actions.style.display = 'inline-flex';
+
+  // Přivážeme jednoduché akce (přepsáním onclick nezůstávají staré handler-y)
+  btnOk.onclick = function () {
+    const url = `/reviewhub/publication_delete_from_system/${clanekId}`;
+    fetch(url, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          location.reload(); // jednoduše obnov seznam
+        } else {
+          alert('Došlo k chybě při mazání článku.');
+          closeOverlay();
+        }
+      })
+      .catch(error => {
+        console.error('Chyba při mazání článku:', error);
+        alert('Chyba při mazání článku.');
+        closeOverlay();
+      });
+  };
+
+  btnNo.onclick = closeOverlay;
+
+  // Otevři overlay
+  overlay.style.display = 'block';
+}
+
+
+
+function confirmDelete2(clanekId) {
 
     if (confirm("Opravdu chcete smazat tento článek?")) {
         // Zde přidejte AJAX požadavek pro smazání
-        let url = `/publication_delete_from_system/${clanekId}`;
+        let url = `/reviewhub/publication_delete_from_system/${clanekId}`;
         fetch(url, {
             method: 'DELETE'
         })

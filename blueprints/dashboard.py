@@ -5,12 +5,13 @@ from functools import wraps
 import json
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Flask, Blueprint, render_template, current_app, request, redirect, url_for, jsonify, session, flash  # Flask moduly
+from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
 from flask_mysqldb import MySQL
 
 # Vlastní moduly (část tvé aplikace)
 import config  # Konfigurace aplikace
 from utils.utils import *
+from utils.decorators import *
 from db.sql_query import *
 
 # Definice blueprintu pro uživatele
