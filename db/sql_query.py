@@ -388,7 +388,6 @@ def sql_get_articles_grouped_by_sensor_type_in_review(project_id):
             publication p
             JOIN publicationproject pp ON p.publication_id = pp.publication_id
             JOIN usedinreview uir ON p.publication_id = uir.publication_id
-            
         WHERE
             uir.project_id = %s AND pp.project_id = %s
         GROUP BY
@@ -484,9 +483,7 @@ def sql_statistics():
     ''')
 
     stat = cursor.fetchone()
-    
     cursor.close()
-
     return stat
 
 def sql_statistics_for_project(project_id):
@@ -874,6 +871,27 @@ def sql_get_filtered_publications(project_id, search_terms, search_option, filte
         LEFT JOIN usedinreview ur ON p.publication_id = ur.publication_id AND ur.project_id = pp.project_id
         WHERE pp.project_id = %s
     '''
+
+    query = '''
+        SELECT
+            p.*,
+            ur.used_in_review,
+            CASE WHEN EXISTS (
+                SELECT 1
+                FROM publicationtracking pt
+                WHERE pt.project_id = pp.project_id
+                    AND pt.publication_id = p.publication_id
+                    AND pt.completed_at IS NOT NULL
+            ) THEN 1 ELSE 0 END AS state
+            FROM publication p
+            JOIN publicationproject pp
+                ON p.publication_id = pp.publication_id
+            LEFT JOIN usedinreview ur
+                ON ur.publication_id = p.publication_id
+                AND ur.project_id = pp.project_id
+        WHERE pp.project_id = %s
+    '''
+
     query_filters = [project_id]
 
     if search_terms:
@@ -934,7 +952,7 @@ def sql_get_filtered_publications(project_id, search_terms, search_option, filte
         query += f" ORDER BY {sort['sort_column_name']} {sort['sort_order']}"
     else:
         # defaultni razeni od nejnovejsiho
-        query += f" ORDER BY publication_id DESC"
+        query += f" ORDER BY p.publication_id DESC"
 
     # Vykonání dotazu
     conn = get_db_connection()
@@ -942,6 +960,11 @@ def sql_get_filtered_publications(project_id, search_terms, search_option, filte
     cursor.execute(query, query_filters)
     publications = cursor.fetchall()
     cursor.close()
+
+    if publications is None:
+        publications = []
+    elif not isinstance(publications, list):
+        publications = list(publications)
 
     # Nahrazení odřádkování (\n) v `key_knowledge` za <hr>
     for publication in publications:        

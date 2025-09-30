@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename  # Zajištění bezpečných názvů 
 from functools import wraps
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash, jsonify
 from flask_mysqldb import MySQL
 
 from openai import OpenAI
@@ -18,14 +18,15 @@ from db.sql_query import *
 
 # Definice blueprintu pro uživatele
 gpt_bp = Blueprint('gpt', __name__)
-#api_key = os.getenv("OPENAI_API_KEY")  # Načtení klíče z proměnné prostředí
-client = OpenAI()   # ← načte OPENAI_API_KEY z prostředí
+api_key = os.getenv("OPENAI_API_KEY")  # Načtení klíče z proměnné prostředí
+#client = OpenAI()   # ← načte OPENAI_API_KEY z prostředí
 
 
 @gpt_bp.route('/gpt', methods=['GET', 'POST'])
 @login_required
 @project_required
 def gpt():
+    print(api_key)
     try:
         data = request.get_json(force=True) or {}
         configGPT  = data.get('configGPT', '')
@@ -33,6 +34,7 @@ def gpt():
         gptModel   = data.get('gptModel') or 'gpt-4o-mini'
 
         prompt = f"{configGPT}\n{textForGPT}"
+        client = OpenAI(api_key=api_key)  # vytvoř klienta teď
 
         # --- Rozlišení API podle modelu ---
         if gptModel.startswith("o1"):
@@ -74,7 +76,7 @@ def gpt():
         }), 200
 
     except Exception as e:
-        traceback.print_exc()
+        #traceback.print_exc()
         current_app.logger.exception("GPT route failed")
         return jsonify({"error": str(e)}), 500
 
@@ -118,6 +120,8 @@ def gpts():
 @project_required
 def gpt_backup():
 
+    api_key = os.getenv("OPENAI_API_KEY")  # Načtení klíče z proměnné prostředí
+    print(api_key)
     client = OpenAI(api_key=api_key)  # Předání klíče při inicializaci klienta
 
     available_models = client.models.list()
@@ -129,7 +133,7 @@ def gpt_backup():
     gptModel = data.get('gptModel')
     prompt = f"{configGPT}\n{textForGPT}"
 
-    
+
     completion = client.chat.completions.create(
         model=gptModel,
         messages=[
@@ -155,5 +159,7 @@ def gpt_backup():
     return jsonify({'generatedText': result, 'model_used': model_used, 'input_tokens':input_tokens, 'output_tokens': output_tokens})
 
 def getGPTModels():
+    api_key = os.getenv("OPENAI_API_KEY")  # Načtení klíče z proměnné prostředí
+
     client = OpenAI(api_key=api_key)  # Předání klíče při inicializaci klienta
     return [model.id for model in client.models.list().data]

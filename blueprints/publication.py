@@ -37,7 +37,7 @@ def publication():
     search_query = request.args.get('search_query', '')
     search_option = request.args.get('search_option', 'any')
     search_terms = search_query.split() if search_query else []
-    
+
     # Načtení filtrů z požadavku
     filters = {
         'filter_Casopis': request.args.get('filter_Casopis'),
@@ -74,9 +74,7 @@ def publication():
     kategorie = sql_get_unique_values(selected_project, 'category')
     podkategorie = sql_get_unique_values(selected_project, 'subcategory')
     usedInReview = ['ANO', 'NE']
-    
-    
-            
+
     sorting = [
         {'column_name': 'publication_id', 'display_name': 'Inserted'},
         {'column_name': 'publication_name', 'display_name': 'Publication name'},        
@@ -90,7 +88,6 @@ def publication():
         {'column_name': 'sensor_principle', 'display_name': 'Sensor principle'},
         {'column_name': 'construction_principle', 'display_name': 'Construction principle'},
         {'column_name': 'measured_value', 'display_name': 'Measured value'}
-        
     ]
     sorting_order = [
         {'order': 'desc', 'display_name': 'Sestupně'},
@@ -355,7 +352,7 @@ def publication_add():
 
         # Informace z databaze SCOPUS
         scopus_data = get_article_info_from_SCOPUS(form_data['nazev_clanku'], next_id)
-        
+
         if 'error' in scopus_data: 
             # Informace z formulare
 

@@ -46,7 +46,7 @@
             document.getElementById('file_type').value = type;
 
             // Odeslání požadavku na server k načtení příslušného souboru
-            fetch('/load_ai_config/' + type)
+            fetch('/reviewhub/load_ai_config/' + type)
             .then(response => response.json())
             .then(data => {
                 // Načteme obsah souboru do textového pole

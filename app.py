@@ -16,6 +16,7 @@ from flask_limiter.util import get_remote_address
 from utils.logger import setup_logging, log_info, log_warning, log_error
 from utils.middleware import register_session_guard  # po přejmenování
 import config
+from utils.extensions import limiter
 
 from flask_socketio import SocketIO, send, emit
 from socketio_instance import socketio
@@ -39,8 +40,10 @@ from blueprints.auth import auth_bp
 app = Flask(__name__)
 app.secret_key = os.environ.get("REVIEWHUB_SECRET_KEY")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
+
+# Načte všechny hodnoty z vašeho config.py do app.config (vč. INACTIVITY_LIMIT_SECONDS, ABSOLUTE_LIMIT_SECONDS...).
+# Dávejte ideálně hned za `app = Flask(__name__)`, aby další inicializační kroky už viděly správné hodnoty.
 app.config.from_object(config)
-register_session_guard(app)
 
 app.config.update(
     SECRET_KEY=os.getenv("GREENSTATS_SECRET_KEY", "dev-change-me/reviewhub"),
@@ -58,10 +61,9 @@ app.config.update(
 # Databaze MySQL
 mysql = None
 
-# Inicializace limiteru - omeyuje pocet prihlaseni/login za minutu
-limiter = Limiter(key_func=get_remote_address)
 
-# Použití limiteru na aplikaci
+# Propojí limiter s konkrétní Flask aplikací (zaregistruje middleware, čte config).
+# Po tomhle volání začnou fungovat @limiter.limit(...) dekorátory i globální limity.
 limiter.init_app(app)
 
 # Registrace blueprintů
@@ -73,10 +75,10 @@ app.register_blueprint(settings_bp)
 app.register_blueprint(gpt_bp)
 app.register_blueprint(auth_bp)
 
-# Zaregistruj guard po vytvoření app
+# Zaregistruje "before_request" guard, který hlídá neaktivitu a absolutní timeout sezení.
+# Musí se volat až PO načtení configu (aby měl k dispozici INACTIVITY_LIMIT_SECONDS atd.).
 register_session_guard(app)
 
-limiter.init_app(app)
 socketio.init_app(app)
 
 # SOuvisi s logovanim

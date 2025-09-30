@@ -39,7 +39,7 @@
 
         <div class="tab-content" id="obrazky">
             <h2>Obrázky</h2>
-            
+
             {% for obrazek in obrazky %}
                 <img src="{{ url_for('static', filename='uploads/' + obrazek) }}" alt="Obrázek článku" style="width:100px; height:auto;">
             {% endfor %}

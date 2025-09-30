@@ -405,15 +405,10 @@
                         {% else %}
                             <input type="checkbox" name="UseInReview" value="{{ clanek['publication_id'] }}"> 
                         {% endif %}          
-                        
                     </td>            
                 </tr>           
             {% endfor %}         
-        
-        
         </table> 
-            
-      
 
         <!-- Tlačítko pro export do textové oblasti -->
         <br>
@@ -427,14 +422,13 @@
             <div id="article-detail-views" class="article-detail-views">
                 <button onclick="showTab(event, 'fulltext')">Full Text</button>
                 <button onclick="showTab(event, 'informace')">Detailní informace</button>
-                <button onclick="showTab(event, 'klicove_informace')">Klíčové informace</button>                
+                <button onclick="showTab(event, 'klicove_informace')">Klíčové informace</button>
             </div>
             <div id="article-detail-content" class="article-detail-content">  
-                
             </div>
         </div>
 
-        <div id="article-export-bib" class="article-export-bib" style="display:none">            
+        <div id="article-export-bib" class="article-export-bib" style="display:none">
             <form id="extract-form">
                 <p>BIB reference</p>
                 <textarea id="bib" rows="30" cols="100"></textarea>   
@@ -443,24 +437,22 @@
         </div>    
 
         <div id="article-export" class="article-export" style="display:none;">  
-            
             <div id="article-export-left">
                 <h3>Příprava dat pro GPT</h3>
                 <form id="extract-form">
                     <div class="form-group">
                         <label for="RozsahGenerovanehoTextu">Doporuceny rozsah</label>
-                        <input type="text" id="RozsahGenerovanehoTextu" name="RozsahGenerovanehoTextu"  value="3000">                
+                        <input type="text" id="RozsahGenerovanehoTextu" name="RozsahGenerovanehoTextu"  value="3000">
                     </div>
 
                     <div class="form-group">
                         <label for="Instrukce">Instrukce</label>
-                        <textarea id="Instrukce" rows="3" cols="100">Připrav text pro kapitolu TODO</textarea>              
+                        <textarea id="Instrukce" rows="3" cols="100">Připrav text pro kapitolu TODO</textarea>
                     </div>
 
-                    
 
                     <!-- Textová oblast pro zobrazení výsledku JSON -->
-                    <div class="filter-group checkbox-container">                    
+                    <div class="filter-group checkbox-container">
                         <div class="checkbox-item">
                             <label for="col_extract_NazevClanku">Název článku</label>
                             <input type="checkbox" id="col_extract_NazevClanku" checked>
@@ -565,7 +557,7 @@
                     </div>
                     <textarea id="exportedText" rows="20" cols="100">{{ json_data }}</textarea>
                     
-                </form>       
+                </form>
             </div>   
             <div id="article-export-right">
                 <h3>Vygenerovaný text</h3>
@@ -585,8 +577,7 @@
                 </div>
                 <textarea id="generatedText" rows="47" cols="100"></textarea>
             </div>
-                 
-        </div>    
+        </div>
     </div>
 </div>
 <!-- Modální okno pro editaci -->
@@ -595,16 +586,16 @@
         <span class="close" onclick="closeModal()">&times;
         </span>        <h2>Editace Článku</h2>        
         <form id="edit-form" action="{{ url_for('publication.publication_add') }}" method="post" enctype="multipart/form-data">            
-            <!-- Obsah formuláře se stejnými poli jako při vytváření článku -->            
-            <div class="form-group">                
+            <!-- Obsah formuláře se stejnými poli jako při vytváření článku -->
+            <div class="form-group">
                 <label for="edit_nazev_clanku">Název článku:
-                </label>                
-                <input type="text" id="edit_nazev_clanku" name="nazev_clanku" required>            
+                </label>
+                <input type="text" id="edit_nazev_clanku" name="nazev_clanku" required>
             </div>            
-            <!-- Přidej další pole zde... -->            
+            <!-- Přidej další pole zde... -->
             <button type="submit">Uložit změny
-            </button>        
-        </form>    
+            </button>
+        </form>
     </div>
 </div>
 
@@ -631,16 +622,13 @@ document.querySelectorAll('input[name="UsedInReview"]').forEach(checkbox => {
         const articleId = this.value;  // Získá ID článku
         const status = this.checked ? 'ANO' : 'NE';  // Získá nový stav ANO/NE
         const usedInReviewText = this.parentNode.querySelector(".UsedInReviewText");
-        
 
         // V pripade ze uzivatel odskrtne pouziti v review, odskrtne se i checkbox useInReview
         const useInReviewCheckbox = document.querySelector(`input[name="UseInReview"][value="${articleId}"]`);
         if(status === "NE") {
             console.log('checked=false')
             useInReviewCheckbox.checked = false;
-        } 
-        
-
+        }
 
         // Volání samostatné funkce pro odeslání požadavku na server
         updateUsedInReview(articleId, status);
@@ -831,7 +819,7 @@ function showArticleDetail(clanekId) {
             <div class="publication-detail-param-container">
                 <div class="publication-detail-param-name">Abstrakt</div> 
                 <div class="publication-detail-param-value"> ${clanek.abstract}</div>
-            </div>                    
+            </div>
             <div class="publication-detail-param-container">
                 <div class="publication-detail-param-name">Aplikace</div> 
                 <div class="publication-detail-param-value"> ${clanek.application}</div>
@@ -840,10 +828,6 @@ function showArticleDetail(clanekId) {
                 <div class="publication-detail-param-name">Klíčové poznatky</div> 
                 <div class="publication-detail-param-value"> ${clanek.key_knowledge}</div>
             </div>
-            <h1>Klicove</h1>
-            <div>${clanek.key_knowledge}</div>
-            <h1>Summary</h1>
-            <div>${clanek.summary}</div>
             <div class="publication-detail-param-container">
                 <div class="publication-detail-param-name">Shrnutí</div> 
                 <div class="publication-detail-param-value"> ${clanek.summary}</div>
@@ -853,9 +837,8 @@ function showArticleDetail(clanekId) {
                 <div class="publication-detail-param-value"> ${clanek.note}</div>
             </div>
         </div>
-        
     `;
-    
+
     // Zobraz první záložku
     showTab(event, 'fulltext');
 }

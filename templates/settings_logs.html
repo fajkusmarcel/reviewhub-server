@@ -120,20 +120,67 @@
 
 
 <style>
-  .loglist { max-height: 65vh; overflow:auto; display:flex; flex-direction:column; gap:2px; padding:6px }
-  .logline {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    font-size: 12px; line-height: 1.25;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    padding: 2px 6px; border-left: 3px solid transparent;
-  }
-  .lvl-INFO     { border-left-color:#6c757d; }
-  .lvl-WARNING  { border-left-color:#ffc107; background:#fff8e1; }
-  .lvl-ERROR    { border-left-color:#dc3545; background:#f9c6c0; }
-  .lvl-DEBUG    { border-left-color:#0d6efd; background:#e7f1ff; }
-  .lvl-CRITICAL { border-left-color:#6610f2; background:#f3e8ff; }
-  .meta { color:#666; margin-right:8px; }
-  .msg  { color:#111; }
+/* Jeden řádek logu – NESMÍ se shrinkovat ve flexu */
+.logline {
+  flex: 0 0 auto;            /* klíčové: žádné zmenšování výšky řádku */
+  display: flex;             /* meta + zpráva pěkně vedle sebe */
+  align-items: baseline;
+  gap: 8px;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.25;
+  padding: 2px 6px;
+  border-left: 3px solid transparent;
+  background: #fff;
+}
+
+/* Sloupec s metadaty je fixní – neřeže se ellipsisem */
+.logline .meta {
+  flex: 0 0 auto;
+  color: #666;
+  white-space: nowrap;
+  opacity: 0.95;
+}
+
+/* Vlastní zpráva – roztáhne se, ale přetečení řeší ellipsis */
+.logline .msg {
+  flex: 1 1 auto;
+  min-width: 0;              /* nutné pro fungující ellipsis ve flexu */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #111;
+}
+
+/* Zvýraznění po přejetí – lepší sledovatelnost */
+.logline:hover {
+  background: #f7f7f9;
+}
+
+/* Barevné levé orámování podle úrovně */
+.lvl-INFO     { border-left-color: #6c757d; }
+.lvl-WARNING  { border-left-color: #ffc107; background: #fff8e1; }
+.lvl-ERROR    { border-left-color: #dc3545; background: #f9c6c0; }
+.lvl-DEBUG    { border-left-color: #0d6efd; background: #e7f1ff; }
+.lvl-CRITICAL { border-left-color: #6610f2; background: #f3e8ff; }
+
+/* Volitelné: decentní scrollbar (nevadí, když prohlížeč ignoruje) */
+.loglist::-webkit-scrollbar { width: 8px; }
+.loglist::-webkit-scrollbar-thumb { background: #d0d0d5; border-radius: 8px; }
+.loglist::-webkit-scrollbar-thumb:hover { background: #b9b9bf; }
+
+/* Volitelné: kompaktnější font na extra malých displejích */
+@media (max-width: 420px) {
+  .logline { font-size: 11px; }
+}
+
+/* Volitelné: „wrap“ varianta, když chceš místo ellipsis zalamovat (přidej .loglist--wrap na kontejner) */
+.loglist.loglist--wrap .msg {
+  white-space: normal;     /* povolí více řádků */
+  overflow: visible;
+  text-overflow: clip;
+}
 </style>
 
 <div class="card">
