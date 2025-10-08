@@ -752,7 +752,7 @@ def sql_insert_publication(projekt_id, nazev_clanku, abstract, casopis, rok_vyda
                            princip_senzoru, konstrukce_senzoru, typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace,
                            kategorie, podkategorie, merena_velicina, rozsah_merani, citlivost,
                            presnost, frekvencni_rozsah, vyhody, nevyhody, aplikace_studie,
-                           klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state):
+                           klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type):
     """
     Vloží novou publikaci do databáze.
     """
@@ -765,14 +765,14 @@ def sql_insert_publication(projekt_id, nazev_clanku, abstract, casopis, rok_vyda
             sensor_principle, construction_principle, optical_fiber, encapsulation, implementation, 
             category, subcategory, measured_value, measuring_range, sensitivity, 
             accuracy, frequency_range, advantages, disadvantages, application, 
-            key_knowledge, summary, note, pdf_name, figure, authors, doi, citation, scopus
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            key_knowledge, summary, note, pdf_name, figure, authors, doi, citation, scopus, pub_type
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ''', (
         nazev_clanku, abstract, casopis, rok_vydani, typ_senzoru,
         princip_senzoru, konstrukce_senzoru, typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace,
         kategorie, podkategorie, merena_velicina, rozsah_merani, citlivost,
         presnost, frekvencni_rozsah, vyhody, nevyhody, aplikace_studie,
-        klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state
+        klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type
     ))
     publication_id = cursor.lastrowid
     conn.commit()
@@ -906,7 +906,11 @@ def sql_get_filtered_publications(project_id, search_terms, search_option, filte
     if filters.get('filter_Casopis'):
         query += ' AND p.journal = %s'
         query_filters.append(filters['filter_Casopis'])
-    
+
+    if filters.get('filter_Pubtype'):
+        query += ' AND p.pub_type = %s'
+        query_filters.append(filters['filter_Pubtype'])
+
     if filters.get('filter_RokVydani'):
         query += ' AND p.year_publication = %s'
         query_filters.append(filters['filter_RokVydani'])
@@ -1303,7 +1307,7 @@ def sql_update_publication(clanek_id, nazev_clanku, abstract, casopis, rok_vydan
                            typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace, kategorie,
                            podkategorie, merena_velicina, rozsah_merani, citlivost, presnost,
                            frekvencni_rozsah, vyhody, nevyhody, aplikace_studie, klicove_poznatky, summary, 
-                           poznamky, obrazky, autori, doi, citaceBib, stav, projekt_id, pdf_name_new):
+                           poznamky, obrazky, autori, doi, citaceBib, stav, projekt_id, pdf_name_new, pub_type):
     """
     Aktualizuje publikaci v databázi.
     """
@@ -1316,14 +1320,14 @@ def sql_update_publication(clanek_id, nazev_clanku, abstract, casopis, rok_vydan
             implementation = %s, category = %s, subcategory = %s, measured_value = %s,
             measuring_range = %s, sensitivity = %s, accuracy = %s, frequency_range = %s, advantages = %s,
             disadvantages = %s, application = %s, key_knowledge = %s, summary = %s, note = %s, figure = %s, authors = %s, 
-            doi = %s, citation = %s, pdf_name = %s
+            doi = %s, citation = %s, pdf_name = %s, pub_type = %s
         WHERE publication_id = %s
     ''', (nazev_clanku, abstract, casopis, rok_vydani, typ_senzoru, princip_senzoru, konstrukce_senzoru, 
           typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace, 
           kategorie, podkategorie, merena_velicina, rozsah_merani, 
           citlivost, presnost, frekvencni_rozsah, vyhody, nevyhody, 
           aplikace_studie, klicove_poznatky, summary, poznamky, obrazky, autori, doi, citaceBib,
-          pdf_name_new, clanek_id))
+          pdf_name_new, pub_type, clanek_id))
     conn.commit()
     cursor.close()
 

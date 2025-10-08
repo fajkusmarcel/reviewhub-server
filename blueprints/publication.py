@@ -49,7 +49,9 @@ def publication():
         'filter_ZpusobImplementace': request.args.get('filter_ZpusobImplementace'),
         'filter_Kategorie': request.args.get('filter_Kategorie'),
         'filter_Podkategorie': request.args.get('filter_Podkategorie'),
-        'filter_UsedInReview': request.args.get('filter_UsedInReview')
+        'filter_UsedInReview': request.args.get('filter_UsedInReview'),
+        'filter_Pubtype': request.args.get('filter_Pubtype')
+
     }
 
     # Razeni vysledku
@@ -74,10 +76,13 @@ def publication():
     kategorie = sql_get_unique_values(selected_project, 'category')
     podkategorie = sql_get_unique_values(selected_project, 'subcategory')
     usedInReview = ['ANO', 'NE']
+    pub_types = ['article', 'review', 'patent', 'UV', 'FVZ', 'poloprovoz', 'Zenodo', 'URL', 'book', 'chapter']
+
+
 
     sorting = [
         {'column_name': 'publication_id', 'display_name': 'Inserted'},
-        {'column_name': 'publication_name', 'display_name': 'Publication name'},        
+        {'column_name': 'publication_name', 'display_name': 'Publication name'},
         {'column_name': 'journal', 'display_name': 'Journal'},
         {'column_name': 'year_publication', 'display_name': 'Year of publication'},
         {'column_name': 'category', 'display_name': 'Category'},
@@ -95,6 +100,7 @@ def publication():
     ]
 
     projekt = sql_get_project(selected_project)
+
     # Předání dat šabloně
     return render_template('publication.html', 
                            clanky=clanky, 
@@ -110,6 +116,7 @@ def publication():
                            kategorie=kategorie,
                            podkategorie=podkategorie,
                            usedInReview=usedInReview,
+                           pub_types=pub_types,
                            sorting=sorting,
                            sorting_order=sorting_order,
                            projekt=projekt,
@@ -318,9 +325,9 @@ def publication_import(clanek_id):
 def publication_add():
     """
     Pridani publikace
-    """       
+    """
     # ID vybraneho projektu
-    selected_project = session['selected_project'] 
+    selected_project = session['selected_project']
 
 
     if request.method == 'POST':
@@ -362,6 +369,7 @@ def publication_add():
             category = request.form.get('kategorie') if selected == '__NEW__' else selected
             selected = request.form.get('podkategorie_select')
             subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
+            pub_type = request.form.get('pubtype_select')
 
             # Pokud neni rok vydani vyplnen - prevedeme prazdny retezec na 1900
             rok_raw = form_data['rok_vydani']
@@ -377,7 +385,7 @@ def publication_add():
                                 category, subcategory, form_data['merena_velicina'],
                                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
-                                form_data['poznamky'], pdf_filename, form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'], 0)
+                                form_data['poznamky'], pdf_filename, form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'], 0, pub_type)
         else:
             # Informace ze SCOPUS - ověření a ošetření hodnot
             title = scopus_data["title"] if scopus_data.get("title") != 'N/A' else form_data['nazev_clanku']
@@ -403,6 +411,8 @@ def publication_add():
             category = request.form.get('kategorie') if selected == '__NEW__' else selected
             selected = request.form.get('podkategorie_select')
             subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
+            pub_type = request.form.get('pubtype_select')
+
 
             publication_id = sql_insert_publication(
                 selected_project, title, form_data['abstract'], journal,
@@ -411,15 +421,15 @@ def publication_add():
                 category, subcategory, form_data['merena_velicina'],
                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
-                form_data['poznamky'], pdf_filename, form_data['obrazky'], authors, doi, bibtex_citation, 1)
+                form_data['poznamky'], pdf_filename, form_data['obrazky'], authors, doi, bibtex_citation, 1, pub_type)
 
         # Vložení do tabulky ArticleTracking
         user_id = session['user_id']  # ID přihlášeného uživatele
-        
+
 
         # Volání funkcí pro vložení a nastavení stavu v tabulce PublicationTracking        
         sql_insert_publication_to_project(publication_id, selected_project)  # Vložení nové publikace
-        
+
         # Pokud je selected_project různé od 1, vloží publikaci i do projektu s ID 1
         #if int(selected_project) != 1:
         #    sql_insert_publication_to_project(publication_id, 1)
@@ -429,7 +439,7 @@ def publication_add():
         sql_update_publication_tracking(publication_id, selected_project, user_id)  # Aktualizace s časem poslední změny
         sql_complete_publication_tracking(publication_id, selected_project, user_id, form_data['stav'])
 
-        
+
         # Přesměrování po úspěšném vložení
         title = form_data['nazev_clanku']
         log_info("pub_add", f"uzivatel vlozil clanek {title} do databaze")
@@ -440,8 +450,9 @@ def publication_add():
     projekty = sql_get_projects()
     kategorie = sql_get_categories()
     podkategorie = sql_get_subcategories()
+    pub_types = {'article', 'book', 'chapter'}
 
-    return render_template('publication_add.html', projekty=projekty, kategorie=kategorie, podkategorie=podkategorie, site_name="Add publication")
+    return render_template('publication_add.html', projekty=projekty, kategorie=kategorie, podkategorie=podkategorie, pub_types=pub_types, site_name="Add publication")
 
 
 
@@ -464,6 +475,8 @@ def publication_edit(clanek_id):
     # Načtení všech projektů
     projekty = sql_get_projects()
 
+    pub_types = ['article', 'review', 'patent', 'UV', 'FVZ', 'poloprovoz', 'Zenodo', 'URL', 'book', 'chapter']
+
     # Zkontroluj, zda PDF soubor existuje
     pdf_name = f"{clanek_id}_{secure_filename(clanek_dict['publication_name'])}.pdf" 
     projekt_dir = os.path.join(current_app.config['UPLOAD_FOLDER'])    
@@ -471,7 +484,7 @@ def publication_edit(clanek_id):
     pdf_exists = os.path.exists(file_path)
 
     # Předání dat do šablony
-    return render_template('publication_edit.html', clanek=clanek_dict, projekty=projekty, pdf_exists=pdf_exists, site_name="Edit publication")
+    return render_template('publication_edit.html', clanek=clanek_dict, projekty=projekty, pdf_exists=pdf_exists, pub_types=pub_types,site_name="Edit publication")
 
 
 @publication_bp.route('/publication_pdf2text', methods=['GET', 'POST'])
@@ -553,7 +566,9 @@ def publication_update(clanek_id):
                 pdf_name_new = f"{clanek_id}_{secure_filename(nazev_clanku)}.pdf"   
                 file_path_new = os.path.join(projekt_dir, pdf_name_new)
                 rename_file(file_path_old, file_path_new)
-               
+
+    pub_type = form_data['pubtype_select']
+
     # Aktualizace článku
     sql_update_publication(clanek_id, form_data['nazev_clanku'], form_data['abstract'], form_data['casopis'],
                         form_data['rok_vydani'], form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
@@ -562,7 +577,7 @@ def publication_update(clanek_id):
                         form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'],
                         form_data['frekvencni_rozsah'], form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'],
                         form_data['klicove_poznatky'], form_data['summary'], form_data['poznamky'], form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'],
-                        form_data['stav'], selected_project, pdf_name_new)
+                        form_data['stav'], selected_project, pdf_name_new, pub_type)
     
 
 

@@ -26,13 +26,13 @@ AI_A_file_path = './config/AI_reviewA.txt'            # soubor s konfiguraci AI
 AI_B_file_path = './config/AI_reviewB.txt'            # soubor s konfiguraci AI
 
 
-MAX_CONTENT_LENGTH = 20 * 1024 * 1024                 # maximální velikost uploadu (50 MB)
+MAX_CONTENT_LENGTH = 100 * 1024 * 1024                 # maximální velikost uploadu (50 MB)
 ALLOWED_EXTENSIONS = {"pdf"}                          # povolené přípony uploadů
 
 # ===== Bezpečnost a session =======================================================================
 SESSION_COOKIE_NAME = "session"                       # Session cookie název
 SESSION_REFRESH_EACH_REQUEST = True                   # Obnova expirace při každém requestu – posouvá timeout při aktivitě
-PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)    # Session životnost
+PERMANENT_SESSION_LIFETIME = timedelta(minutes=60)    # Session životnost
 
 # Vlastní hlídače
 INACTIVITY_LIMIT_SECONDS = 60 * 60                    # server-side neaktivita: odhlásit po 60 min bez akce

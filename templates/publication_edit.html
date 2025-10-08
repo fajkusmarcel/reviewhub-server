@@ -5,7 +5,8 @@
     <!-- Levá část: Filtraci a seznam článků -->    
     <div class="left-section">   
         <form action="{{ url_for('publication.publication_update', clanek_id=clanek.publication_id) }}" method="post" enctype="multipart/form-data">
-            
+
+
             <div class="form-group">
                 <label for="nazev_clanku">Název článku:</label>
                 <input type="text" id="nazev_clanku" name="nazev_clanku" value="{{ clanek.publication_name }}" required>
@@ -33,6 +34,16 @@
             <div class="form-group">
                 <label for="podkategorie">Podkategorie:</label>
                 <input type="text" id="podkategorie" name="podkategorie" value="{{ clanek.subcategory }}">
+            </div>
+
+
+            <div class="form-group">
+                <label for="pubtype_select">Typ zaznamu:</label>
+                <select id="pubtype_select" name="pubtype_select">
+                    {% for pt in pub_types %}
+                    <option value="{{ pt }}" {% if pt == clanek.pub_type %}selected{% endif %}>{{ pt }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <hr>

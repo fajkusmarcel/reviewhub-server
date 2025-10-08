@@ -55,15 +55,15 @@
                         </option>                    {% endfor %}                 
                     </select>            
                 </div>     
-                <div class="filter-group">                
-                    <label for="filter_UsedInReview">Used in review:</label>                
+                <div class="filter-group">
+                    <label for="filter_UsedInReview">Used in review:</label>
                     <select id="filter_UsedInReview" name="filter_UsedInReview">    
                         <option value="">Vše</option>
-                        {% for used in usedInReview %}                         
+                        {% for used in usedInReview %}
                         <option value="{{ used }}" {% if used == request.args.get('filter_UsedInReview') %}selected{% endif %}>{{ used }}</option>
-                        {% endfor %}                                           
-                    </select>            
-                </div>    
+                        {% endfor %}
+                    </select>
+                </div>
             </div>        
             <div class="filter-row">            
                 <div class="filter-group">                
@@ -83,10 +83,19 @@
                         <option value="">Vše
                         </option>                    {% for podkat in podkategorie %}                         
                         <option value="{{ podkat.subcategory }}" {% if podkat.subcategory == request.args.get('filter_Podkategorie') %}selected{% endif %}>{{ podkat.subcategory }}
-                        </option>                    {% endfor %}                 
-                    </select>            
-                </div>        
-            </div>        
+                        </option>                    {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter_Pubtype">Typ zaznamu:</label>
+                    <select id="filter_Pubtype" name="filter_Pubtype">
+                        <option value="">Vše</option>
+                        {% for pt in pub_types %}
+                        <option value="{{ pt }}" {% if pt == request.args.get('filter_Pubtypes') %}selected{% endif %}>{{ pt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
             <div class="filter-row">            
                 <div class="filter-group">                
                     <label for="filter_TypSenzoru">Typ senzoru:
@@ -252,6 +261,11 @@
                 </div>
 
                 <div class="checkbox-item">
+                    <label for="col_Pubtype">Typ zaznamu</label>
+                    <input type="checkbox" id="col_Pubtype" checked onchange="toggleColumn('Pubtype')">
+                </div>
+
+                <div class="checkbox-item">
                     <label for="col_MerenaVelicina">Veličina</label>
                     <input type="checkbox" id="col_MerenaVelicina" onchange="toggleColumn('MerenaVelicina')">
                 </div>
@@ -332,17 +346,18 @@
         <table border="1" class="article-table">            
             <tr>                
                 <th class='publication_id'>    ID</th>  
-                <th class='NazevClanku'>       Článek</th>                
-                <th class='Casopis' style="display: none">           Časopis</th>                
-                <th class='RokVydani' style="display: none">         Rok Vydání</th>                
-                <th class='TypSenzoru'>        Typ sen.</th>                
-                <th class='PrincipSenzoru'>    Princip sen.</th>                
+                <th class='NazevClanku'>       Článek</th>
+                <th class='Casopis' style="display: none">           Časopis</th>
+                <th class='RokVydani' style="display: none">         Rok Vydání</th>
+                <th class='TypSenzoru'>        Typ sen.</th>
+                <th class='PrincipSenzoru'>    Princip sen.</th>
                 <th class='KonstrukceSenzoru' style="display: none"> Konstrukce senzoru</th> 
-                <th class='TypOptickehoVlakna' style="display: none">Vlakno</th>                
-                <th class='ZpusobZapouzdreni' style="display: none"> Zapouzdření</th>                
-                <th class='ZpusobImplementace' style="display: none">Implementace</th>                                              
+                <th class='TypOptickehoVlakna' style="display: none">Vlakno</th>
+                <th class='ZpusobZapouzdreni' style="display: none"> Zapouzdření</th>
+                <th class='ZpusobImplementace' style="display: none">Implementace</th>
                 <th class='Kategorie'>         Kategorie</th>                
                 <th class='Podkategorie'>      Podkategorie</th>                 
+                <th class='Pubtype'>           Typ zaznamu</th>
                 <th class='MerenaVelicina' style="display: none">    Veličina</th>  
                 <!-- <th class='RozsahMereni'>      Rozsah mereni</th>  --> 
                 <!-- <th class='Citlivost'>         Ciltivost</th>  --> 
@@ -358,9 +373,9 @@
                 <th class='Stav' style="display: none">              Stav</th>  
                 <th class='CitaceBib' style="display: none">         CitaceBib</th>  
                 <th class='UsedInReview' style="display: none">      In review</th>
-                
-                <th class='akce'>Akce</th>             
-            </tr>            
+
+                <th class='akce'>Akce</th>
+            </tr>
 
             {% for clanek in clanky %}   
                 <tr id="article-{{clanek.publication_id}}" onclick="showArticleDetail({{ clanek.publication_id }})">   
@@ -376,6 +391,7 @@
                     <td class='ZpusobImplementace' style="display: none">{{ clanek.implementation }}</td>                                              
                     <td class='Kategorie'>         {{ clanek.category }}         </td>                
                     <td class='Podkategorie'>      {{ clanek.subcategory }}      </td>                 
+                    <td class='Pubtype'> {{ clanek.pub_type }}      </td>
                     <td class='MerenaVelicina' style="display: none">    {{ clanek.measured_value }}    </td>  
                     <!--<td class='RozsahMereni'>      {{ clanek.measuring_range }}      </td>  --> 
                     <!--<td class='Citlivost'>         {{ clanek.sensitivity }}         </td>-->   
@@ -472,6 +488,11 @@
                         <div class="checkbox-item">
                             <label for="col_extract_Podkategorie">Podkategorie</label>
                             <input type="checkbox" id="col_extract_Podkategorie" >
+                        </div>
+
+                        <div class="checkbox-item">
+                            <label for="col_extract_Pubtype">Typ zaznamu</label>
+                            <input type="checkbox" id="col_extract_Pubtype" >
                         </div>
                         <div class="checkbox-item">
                             <label for="col_extract_TypSenzoru">Typ senzoru</label>
@@ -716,6 +737,11 @@ function showArticleDetail(clanekId) {
                 <div class="publication-detail-param-name">Podkategorie</div> 
                 <div class="publication-detail-param-value"> ${clanek.subcategory}</div>
             </div>
+            <div class="publication-detail-param-container">
+                <div class="publication-detail-param-name">Typ zaznamu</div>.
+                <div class="publication-detail-param-value">${clanek.pub_type}</div>
+            </div>
+
             <hr>
             <div class="publication-detail-param-container">
                 <div class="publication-detail-param-name">Typ senzoru</div> 
@@ -836,6 +862,11 @@ function showArticleDetail(clanekId) {
                 <div class="publication-detail-param-name">Poznámky</div> 
                 <div class="publication-detail-param-value"> ${clanek.note}</div>
             </div>
+            <div class="publication-detail-param-container">
+                <div class="publication-detail-param-name">Typ zaznamu</div>.
+                <div class="publication-detail-param-value"> ${clanek.pub_type}</div>
+            </div>
+
         </div>
     `;
 

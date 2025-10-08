@@ -122,7 +122,6 @@ def index():
 @login_required
 @project_required
 def select_mode(mode):
-    print('Pozadavek na zmenu mode ', mode)
     # Nastavení hodnoty do session v rámci požadavku
     if mode == 'test':
         session['ModeApp'] = 'test'
@@ -140,7 +139,6 @@ def handle_getConfigGPTB():
 
 def save_config(mode):
     if(mode == 'test'):
-        print('Nastavuji mode ', mode)
         app.config['UPLOAD_FOLDER'] = config.pdf_path_test
         app.config['MYSQL_HOST'] = config.MYSQL_HOST
         app.config['MYSQL_USER'] = config.MYSQL_USER
@@ -148,15 +146,12 @@ def save_config(mode):
         app.config['MYSQL_DB'] = config.MYSQL_DB_test
         app.config['ModeApp'] = 'test'
     elif(mode == 'production'):
-        print('Nastavuji mode ', mode)
         app.config['UPLOAD_FOLDER'] = config.pdf_path
         app.config['MYSQL_HOST'] = config.MYSQL_HOST
         app.config['MYSQL_USER'] = config.MYSQL_USER
         app.config['MYSQL_PASSWORD'] = config.MYSQL_PASSWORD
         app.config['MYSQL_DB'] = config.MYSQL_DB
         app.config['ModeApp'] = 'production'
-    else:
-        print("Musi vybrat mode: test nebo production")
 
     app.config["MAX_CONTENT_LENGTH"] = getattr(config, "MAX_CONTENT_LENGTH", 50 * 1024 * 1024)
     app.config["ALLOWED_EXTENSIONS"] = getattr(config, "ALLOWED_EXTENSIONS", {"pdf"})
@@ -185,3 +180,5 @@ if __name__ == '__main__':
 
     init_app(mode='production')           # nebo 'test'
     app.run(host='0.0.0.0', port=5002, debug=True)
+
+

@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 
+
 {% block content %}
 
     <div id="article-export" class="article-export" style="display: flex;">  
@@ -42,17 +43,15 @@
                             <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
                             <option value="gpt-4">gpt-4</option>
                             <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
-                            <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>                            
+                            <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
                         </select>
                         <button type="button" onclick="exportPaperToStructureByGPT()">GPT</button>
-                    </div>            
+                    </div>
                     <textarea id="dataForAI" rows="10" cols="130" placeholder="Sem bude vložen celý příkaz pro zpracování AI ..."></textarea>
                     {% endif %}
                 </form>
             </div>
-            
-            
-                
+
             <div id="article-export-right">
                 <h3>Vygenerovaný text</h3>
                 <div class="form-group">
@@ -76,21 +75,18 @@
     </div>
 </div>
 
-    
-
-
-
 
 <!-- Textarea pro zobrazení extrahovaného textu -->
 
 
 <script>
-function importPublication() {
+function importPublication2() {
   const json_data = document.getElementById("generatedText").value;
+  const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   fetch('/reviewhub/publication_add', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json'},
     credentials: 'same-origin',              // pošli session cookie (máš @login_required)
     body: JSON.stringify({
       mode: 'preview',                       // << řekni backendu, že má vrátit stránku

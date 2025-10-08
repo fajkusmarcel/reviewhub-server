@@ -46,8 +46,8 @@ def register_session_guard(app):
         login_time = session.get('login_time', now)
 
         # 4) Načti limity z configu, s rozumnými defaulty pro případ, že chybí
-        ina = current_app.config.get('INACTIVITY_LIMIT_SECONDS', 5600)
-        abs_ = current_app.config.get('ABSOLUTE_LIMIT_SECONDS', 8*3600)
+        ina = current_app.config.get('INACTIVITY_LIMIT_SECONDS', 3600)
+        abs_ = current_app.config.get('ABSOLUTE_LIMIT_SECONDS', 10*3600)
 
         # 5) Kontrola neaktivity – uživatel nic neudělal déle než limit?
         if now - last_seen > ina:
