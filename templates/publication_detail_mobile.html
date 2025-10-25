@@ -1,0 +1,83 @@
+{% extends "layout_mobile.html" %}
+{% block title %}Detail článku (Mobile){% endblock %}
+
+{% block content %}
+
+  <section class="d-card">
+    <h1 class="d-title">{{ pub.publication_name }}</h1>
+
+    <div class="d-meta">
+      {% if pub.journal %}<div><b>Journal:</b> {{ pub.journal }}</div>{% endif %}
+      {% if pub.year_publication %}<div><b>Year:</b> {{ pub.year_publication }}</div>{% endif %}
+      {% if pub.category %}<div><b>Category:</b> {{ pub.category }}</div>{% endif %}
+      {% if pub.subcategory %}<div><b>Sub-category:</b> {{ pub.subcategory }}</div>{% endif %}
+      {% if pub.doi %}<div><b>DOI:</b> {{ pub.doi }}</div>{% endif %}
+    </div>
+
+    <div class="d-actions">
+      {% if pdf_url %}
+        <button class="btn primary" id="btn-open-pdf">Zobrazit PDF</button>
+      {% else %}
+        <button class="btn" disabled>PDF není k dispozici</button>
+      {% endif %}
+      <a class="btn ghost" href="{{ href('publication.publication') }}">Zpět na seznam</a>
+    </div>
+  </section>
+
+  {% if key_points %}
+    <section class="d-card">
+      <h2 class="d-h2">Klíčové informace</h2>
+      <div class="d-text">{{ key_points|safe }}</div>
+    </section>
+  {% endif %}
+
+  {% if abstract %}
+    <section class="d-card">
+      <h2 class="d-h2">Abstrakt</h2>
+      <div class="d-text">{{ abstract|safe }}</div>
+    </section>
+  {% endif %}
+
+  <!-- FULLSCREEN PDF OVERLAY -->
+  <div id="pdf-overlay" class="pdf-overlay" hidden>
+    <div class="pdf-bar">
+      <button id="btn-close-pdf" class="pdf-close">✕</button>
+      <div class="pdf-title">{{ pub.publication_name }}</div>
+    </div>
+    {% if pdf_url %}
+      <iframe class="pdf-frame" src="{{ pdf_url }}" title="PDF"></iframe>
+    {% endif %}
+  </div>
+
+{% endblock %}
+
+{% block head_extra %}
+<style>
+  /* detail cards */
+  .d-card{background:#fff;border:1px solid var(--border);border-radius:var(--card-radius);
+          box-shadow:var(--card-shadow);padding:14px;margin-bottom:12px}
+  .d-title{font-size:18px;line-height:1.3;margin:0 0 8px 0}
+  .d-h2{font-size:16px;margin:0 0 8px 0}
+  .d-meta{display:grid;row-gap:6px;font-size:13px;color:#475569}
+  .d-text{font-size:14px;color:var(--text)}
+  .d-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+  /* fullscreen PDF */
+  .pdf-overlay{position:fixed;inset:0;z-index:1200;background:#111}
+  .pdf-bar{position:sticky;top:0;height:48px;background:#111;color:#fff;
+           display:flex;align-items:center;gap:10px;padding:0 8px;border-bottom:1px solid #222}
+  .pdf-close{width:36px;height:36px;border:0;border-radius:8px;background:#222;color:#fff;font-size:18px}
+  .pdf-title{color:#e5e7eb;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pdf-frame{display:block;width:100%;height:calc(100dvh - 48px);border:0}
+</style>
+{% endblock %}
+
+<script>
+(function(){
+  const o = document.getElementById('pdf-overlay');
+  const open = document.getElementById('btn-open-pdf');
+  const close = document.getElementById('btn-close-pdf');
+  if (open && o) open.addEventListener('click', ()=>{ o.hidden=false; document.body.classList.add('m-no-scroll'); });
+  if (close && o) close.addEventListener('click', ()=>{ o.hidden=true; document.body.classList.remove('m-no-scroll'); });
+})();
+</script>

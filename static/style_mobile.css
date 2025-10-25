@@ -1,0 +1,696 @@
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║  ScienceHub – Mobile CSS                                             ║
+   ║  Jediný mobilní stylesheet (bez závislosti na původních stylech).    ║
+   ║  Struktura: Variables → Reset → Layout → Navigation → Toolbar         ║
+   ║             → Results info → Cards (articles) → Utilities → Media.    ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   1) CSS VARIABLES (téma)
+   ──────────────────────────────────────────────────────────────────── */
+:root {
+  /* barvy */
+  --bg:            #f6f7f9;
+  --bg-elev:       #ffffff;
+  --text:          #0f172a;   /* slate-900 */
+  --text-muted:    #64748b;   /* slate-500 */
+  --border:        #e5e7eb;   /* gray-200 */
+  --brand:         #2c7a7b;   /* teal-700 */
+  --brand-weak:    #ecfdf5;   /* teal-50 */
+  --accent:        #1e40af;   /* indigo-800 */
+
+  /* karty */
+  --card-radius:   14px;
+  --card-shadow:   0 1px 2px rgba(0,0,0,.05);
+
+  /* typografie */
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+
+  /* rozměry */
+  --header-h:      52px;
+  --toolbar-h:     56px; /* approx input+padding */
+}
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   2) RESET & BASE
+   ──────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  overflow: auto;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  color: black;
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus { outline: 2px solid #94a3b8; outline-offset: 2px; }
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+.mobile-body { background: var(--bg); }
+.m-no-scroll { overflow: hidden !important; }
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   3) LAYOUT: Header, Content, Drawer
+   ──────────────────────────────────────────────────────────────────── */
+/* Header bar */
+.m-header {
+  position: sticky; top: 0; z-index: 1000;
+  display: flex; align-items: center; gap: 12px;
+
+  height: var(--header-h);
+/*padding: 0 12px;*/
+  background: var(--brand);
+  color: #fff;
+}
+
+.m-burger {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  font-size: 20px; line-height: 1;
+  background: transparent; color: #fff;
+  border: 0; border-radius: 8px;
+}
+.m-burger:active { opacity: .8; }
+
+.m-brand { font-weight: 600; font-size: var(--fs-15); }
+
+/* Content wrapper */
+.m-content {
+  padding: 10px 12px 24px 12px;
+  min-height: calc(100dvh - var(--header-h));
+}
+
+/* Drawer (hamburger menu) */
+.m-drawer {
+  position: fixed; inset: 0; z-index: 1001;
+  background: rgba(0,0,0,.35);
+}
+.m-drawer[hidden] { display: none !important; }
+
+.m-drawer__inner {
+  width: min(82vw, 320px);
+  height: 100%;
+  background: #fff;
+  padding: 16px 14px;
+  box-shadow: 2px 0 16px rgba(0,0,0,.2);
+}
+.m-drawer a {
+  display: block; padding: 10px 8px; margin: 2px 0;
+  color: #1f2937; border-radius: 10px;
+}
+.m-drawer a:hover { background: #f1f5f9; }
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   4) TOOLBAR (vyhledávání, filtry)
+   ──────────────────────────────────────────────────────────────────── */
+.m-toolbar {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 900;
+  background: var(--bg);
+  padding: 8px 0 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.m-input, .m-select {
+  width: 100%; min-width: 0;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font-size: var(--fs-15);
+  color: var(--text);
+}
+.m-select { margin-top: 8px; }
+
+/* 2 sloupce input+select, když bude filtr aktivní */
+.m-toolbar.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.m-toolbar.grid .m-select { margin-top: 0; }
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   5) RESULT INFO (počty výsledků)
+   ──────────────────────────────────────────────────────────────────── */
+.m-result-info {
+  position: sticky;
+  top: calc(var(--header-h) + var(--toolbar-h));
+  z-index: 800;
+  background: var(--bg);
+  font-size: var(--fs-12);
+  color: #475569;
+  padding: 6px 0;
+  border-bottom: 1px solid #edf2f7;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   6) ARTICLE LIST AS CARDS
+   ──────────────────────────────────────────────────────────────────── */
+/* Kontejner seznamu */
+.m-card-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 8px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Kompatibilita s tvým současným HTML:
+   ul#m-list.m-simple-list > li.m-simple-item → card vzhled */
+#m-list.m-simple-list { list-style: none; padding: 0; margin: 8px 0 0 0; }
+.m-simple-item {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 12px 12px;
+}
+
+/* Titulek v kartě */
+.m-simple-title {
+  display: block;
+  font-size: var(--fs-16);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  word-break: break-word;
+  margin: 2px 0 6px 0;
+}
+.m-simple-title:active { opacity: .8; }
+
+/* Meta řádek: kategorie • podkategorie • rok */
+.m-simple-meta {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center;
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+/* Malé pilulky pro kategorii a podkategorii (volitelné) */
+.pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: #334155;
+  font-size: var(--fs-12);
+  line-height: 1;
+}
+
+/* Stavy při dotyku */
+.m-simple-item:active { background: #f8fafc; }
+
+/* prázdný stav */
+.m-empty {
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: var(--card-radius);
+  color: var(--text-muted);
+  padding: 12px;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Overlay pro detail clanku
+   ──────────────────────────────────────────────────────────────────── */
+
+.d-ovl {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: #fff;
+
+  /* klíčové: flex layout → horní lišta napevno, tělo scrolluje */
+  display: flex;
+  flex-direction: column;
+
+  /* zabrání “propadávání” scrollu na pozadí (Android/iOS) */
+  overscroll-behavior: contain;
+}
+.d-ovl[hidden] { display: none !important; }
+
+
+.d-topbar {
+  position: sticky;
+  top: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #2c7a7b; /* brand */
+  color: #fff;
+  padding: 0 8px;
+  border-bottom: 1px solid #1f554f;
+}
+
+.d-topbar {
+  flex: 0 0 48px;           /* fixní výška lišty */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.d-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: #1f766e;
+  color: #fff;
+  font-size: 18px;
+}
+
+.d-top-title {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.d-body {
+  flex: 1 1 auto;           /* zabere zbytek výšky */
+  overflow: auto;           /* <— DŮLEŽITÉ */
+  -webkit-overflow-scrolling: touch;  /* plynulé na iOS */
+  padding: 12px;
+}
+.d-title { font-size: 18px; margin: 6px 0 10px 0; }
+.d-meta { display: grid; row-gap: 8px; font-size: 13px; color: #475569; }
+.d-meta div {margin-top: 10px;}
+.d-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+
+
+/* ── PDF overlay (fullscreen) ─────────────────────────────────── */
+
+/* PDF overlay */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: #111;
+}
+.pdf-overlay[hidden] { display: none !important; }
+
+.pdf-bar {
+  position: sticky;
+  top: 0;
+  height: 48px;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  border-bottom: 1px solid #222;
+}
+
+.pdf-close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: #222;
+  color: #fff;
+  font-size: 18px;
+}
+
+.pdf-title {
+  color: #e5e7eb;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pdf-frame {
+  display: block;
+  width: 100%;
+  height: calc(100dvh - 48px);
+  border: 0;
+}
+
+/* Usability: ať je vidět, že je titulek klikací */
+.m-simple-title { cursor: pointer; }
+
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   7) BUTTONS (pro budoucí použití – PDF, akce)
+   ──────────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 38px; padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff; color: var(--text);
+  font-size: var(--fs-14);
+}
+.btn:active { transform: translateY(1px); }
+.btn.primary {
+  border-color: transparent;
+  background: var(--brand);
+  color: #fff;
+}
+.btn.ghost {
+  background: transparent;
+  border-color: var(--border);
+}
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   Prihlaseni
+   ──────────────────────────────────────────────────────────────────── */
+
+.auth-wrap{
+  min-height: calc(100dvh - var(--header-h, 0px));
+  display: grid;
+  place-items: center;
+  padding: 24px 12px;
+}
+
+.auth-card{
+  width: min(420px, 92vw);
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--card-radius, 12px);
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.05));
+  padding: 18px;
+}
+
+.auth-card .form-group{
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.auth-card label{
+  font-size: 13px;
+  color: #475569;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="password"]{
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fff;
+}
+
+.auth-submit{
+  width: 100%;
+  min-height: 42px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   Volba projektu
+   ──────────────────────────────────────────────────────────────────── */
+/* ═════════ PROJECT SELECT – vzhled formuláře obdobně jako login ═════════ */
+.project-wrap{
+  min-height: calc(100dvh - var(--header-h, 0px));
+  display: grid;
+  place-items: center;
+  padding: 24px 12px;
+}
+
+.project-card{
+  width: min(520px, 92vw);
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--card-radius, 12px);
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.05));
+  padding: 18px;
+}
+
+.project-card .form-group{
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.project-card label{
+  font-size: 13px;
+  color: #475569;
+}
+
+/* sjednocení vzhledu selectu s .m-input */
+.project-card select{
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 15px;
+  appearance: none;              /* bez nativní šipky, pokud chceš vlastní */
+  background-image: linear-gradient(45deg, transparent 50%, #64748b 50%),
+                    linear-gradient(135deg, #64748b 50%, transparent 50%),
+                    linear-gradient(to right, #d1d5db, #d1d5db);
+  background-position: calc(100% - 18px) 55%, calc(100% - 12px) 55%, calc(100% - 42px) 50%;
+  background-size: 6px 6px, 6px 6px, 1px 60%;
+  background-repeat: no-repeat;
+}
+
+.project-actions{
+  margin-top: 10px;
+}
+
+.project-submit{
+  width: 100%;
+  min-height: 42px;
+}
+
+/* drobná pomoc pro úzké displeje */
+@media (max-width: 360px){
+  .project-card{ padding: 16px; }
+}
+
+
+
+/* =========================================================
+   DASHBOARD (FLEX/GRID, BEZ TABULEK)
+   ========================================================= */
+
+.db-wrap { display: block; }
+
+.db-section { margin: 12px 0 16px; }
+
+/* --- METRIKY (karty) --- */
+.db-metrics{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.metric-card{
+  flex: 1 1 calc(50% - 10px);
+  min-width: 150px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 12px;
+}
+.metric-value{
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: #0f172a;
+}
+.metric-label{
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* --- GRAFY (karty) --- */
+.chart-grid{
+  display: grid;
+  grid-template-columns: 1fr;      /* mobil: 1 sloupec */
+  gap: 12px;
+}
+.chart-card{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+.chart-head{
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+.chart-title{
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.chart-body{
+  padding: 8px 8px 12px;
+}
+.chart-body canvas{
+  display: block;
+  width: 100% !important;
+  height: auto !important;      /* Chart.js si výšku dopočítá */
+  min-height: 220px;
+}
+
+/* --- List (např. poslední články) --- */
+.list-card{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 6px 0;
+}
+.list-plain{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.list-row{
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.list-row:last-child{ border-bottom: 0; }
+.list-title{
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f172a;
+}
+.list-meta{
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+.list-empty{
+  padding: 12px;
+  color: #64748b;
+}
+
+/* =========================================================
+   DASHBOARD – KPI karty + karty grafů (mobile / tablet)
+   ========================================================= */
+
+/* Nadpis sekce (pro jistotu) */
+.m-h1 { font-size: 24px; font-weight: 800; margin: 12px 0 10px; }
+.m-h2 { font-size: 18px; font-weight: 700; margin: 14px 0 10px; }
+
+/* ---- KPI GRID ---- */
+.m-kpi-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* dva sloupce na mobilu */
+  gap: 10px;
+}
+
+.m-kpi{
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--card-radius, 12px);
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.05));
+  padding: 12px;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.m-kpi__value{
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.m-kpi__label{
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* širší obrazovky: 4 karty v řadě */
+@media (min-width: 768px){
+  .m-kpi-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---- KARTY GRAFŮ (pro jistotu, kdyby ještě nebyly) ---- */
+.m-card{
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--card-radius, 12px);
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(0,0,0,.05));
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.m-card__title{
+  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #eef2f7;
+  background: #f8fafc;
+}
+.m-chart{ padding: 8px 8px 12px; }
+.m-chart canvas{
+  display:block;
+  width:100% !important;
+  height:auto !important;
+  min-height: 220px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   8) UTILITIES
+   ──────────────────────────────────────────────────────────────────── */
+.mt-0 { margin-top: 0 !important; }
+.mt-4 { margin-top: 4px !important; }
+.mt-8 { margin-top: 8px !important; }
+.mt-12 { margin-top: 12px !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-4 { margin-bottom: 4px !important; }
+.mb-8 { margin-bottom: 8px !important; }
+.mb-12 { margin-bottom: 12px !important; }
+
+.text-muted { color: var(--text-muted) !important; }
+.text-center { text-align: center !important; }
+.hidden { display: none !important; }
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   9) MEDIA QUERIES
+   ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .m-simple-title { font-size: var(--fs-15); }
+}
+@media (min-width: 560px) {
+  /* větší mobily – mírně větší karty */
+  .m-simple-item { padding: 14px 14px; }
+}

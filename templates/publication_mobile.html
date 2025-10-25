@@ -1,0 +1,110 @@
+{% extends "layout_mobile.html" %}
+{% block title %}Články (Mobile){% endblock %}
+
+{% block content %}
+
+
+  <!-- Vyhledávání -->
+  <div class="m-toolbar">
+    <input id="m-search" class="m-input" type="search"
+           placeholder="Hledat v názvu, kategorii, roce…" autocomplete="off">
+  </div>
+
+  <!-- Počítadlo -->
+  <div class="m-result-info">
+    <span id="m-count"></span>
+  </div>
+
+  <!-- Seznam článků (každá položka nese JSON s daty) -->
+  <ul id="m-list" class="m-simple-list">
+    {% for it in clanky %}
+      <li class="m-simple-item">
+        <!-- Titulek, klik otevírá detail -->
+        <a class="m-simple-title js-open-detail" href="#">{{ it.publication_name }}</a>
+
+        <!-- Meta (volně upravitelné) -->
+        <div class="m-simple-meta">
+          {% if it.category %}<span class="pill">{{ it.category }}</span>{% endif %}
+          {% if it.subcategory %}<span class="pill">{{ it.subcategory }}</span>{% endif %}
+          {% if it.year_publication %}<span class="pill" style="background:#ecfdf5;border-color:#d1fae5;color:#065f46;">{{ it.year_publication }}</span>{% endif %}
+        </div>
+
+        <!-- Skrytý JSON s daty článku (AUTO-BIND) -->
+{# ---- Robustní detekce PDF jména a URL (zkus více polí) ---- #}
+{% set pdf_name = (
+  it.pdf_name if it.pdf_name is defined else
+  it.fulltext_name if it.fulltext_name is defined else
+  it.fulltext if it.fulltext is defined else
+  it.file_pdf if it.file_pdf is defined else
+  it.file_name if it.file_name is defined else
+  it.filename if it.filename is defined else
+  ''
+) %}
+
+{% set pdf_url = (
+  it.pdf_url if it.pdf_url is defined else
+  it.file_url if it.file_url is defined else
+  ''
+) %}
+
+<script type="application/json" class="js-data">
+  {{ {
+    "id": it.publication_id,
+    "title": it.publication_name,
+    "year": it.year_publication,
+    "category": it.category,
+    "subcategory": it.subcategory,
+    "journal": it.journal if it.journal is defined else "",
+    "doi": it.doi if it.doi is defined else "",
+    "abstract": it.abstract if it.abstract is defined else "",
+    "key_knowledge": it.key_knowledge if it.key_knowledge is defined else "",
+    "application": it.application if it.application is defined else "",
+    "pdf_name": pdf_name,
+    "pdf_url": pdf_url
+  } | tojson }}
+</script>
+
+      </li>
+    {% else %}
+      <li class="m-empty">Žádné záznamy k zobrazení.</li>
+    {% endfor %}
+  </ul>
+
+  <!-- DETAIL OVERLAY (AUTO-BIND) -->
+  <div id="detail-overlay" class="d-ovl" hidden>
+    <div class="d-topbar">
+      <button id="d-close" class="d-btn">✕</button>
+      <div id="d-top-title" class="d-top-title" data-bind="title"></div>
+    </div>
+
+    <div class="d-body">
+      <h1 class="d-title" data-bind="title"></h1>
+
+      <div class="d-meta">
+        <div><b>Rok:</b> <span data-bind="year"></span></div>
+        <div><b>Kategorie:</b> <span data-bind="category"></span></div>
+        <div><b>Podkategorie:</b> <span data-bind="subcategory"></span></div>
+        <div><b>Journal:</b> <span data-bind="journal"></span></div>
+        <div><b>DOI:</b> <span data-bind="doi"></span></div>
+        <div><b>Abstrakt:</b> <span data-bind="abstract"></span></div>
+        <div><b>Klicove:</b> <span data-bind="key_knowledge"></span></div>
+        <div><b>Aplikace:</b> <span data-bind="application"></span></div>
+      </div>
+
+      <div class="d-actions">
+        <button id="d-open-pdf" class="btn primary" disabled>Zobrazit PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN PDF -->
+  <div id="pdf-overlay" class="pdf-overlay" hidden>
+    <div class="pdf-bar">
+      <button id="btn-close-pdf" class="pdf-close">✕</button>
+      <div class="pdf-title" id="pdf-title"></div>
+    </div>
+    <iframe id="pdf-frame" class="pdf-frame" src="" title="PDF"></iframe>
+  </div>
+
+{% endblock %}
+

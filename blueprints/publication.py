@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename  # Zajištění bezpečných názvů 
 from functools import wraps
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash, jsonify
+from flask import Blueprint, render_template, make_response, request, redirect, url_for, session, current_app, flash, jsonify
 from flask_mysqldb import MySQL
 
 
@@ -21,6 +21,25 @@ from utils.logger import log_info, log_warning, log_error
 
 # Definice blueprintu pro uživatele
 publication_bp = Blueprint('publication', __name__)
+
+
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
 
 
 @publication_bp.route('/publication', methods=['GET'])
@@ -102,7 +121,7 @@ def publication():
     projekt = sql_get_project(selected_project)
 
     # Předání dat šabloně
-    return render_template('publication.html', 
+    return render_responsive('publication.html', 'publication_mobile.html',
                            clanky=clanky, 
                            pocetClanku=pocetClanku,
                            pocetClankuCelkem=pocetClankuCelkem,

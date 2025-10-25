@@ -1,7 +1,28 @@
 from functools import wraps
 from flask import current_app, session, redirect, url_for, flash
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+from flask import Blueprint, render_template, make_response, request, redirect, url_for, session, current_app, flash
+
+
+
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
 
 
 

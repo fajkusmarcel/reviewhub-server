@@ -3,12 +3,13 @@ import os
 from werkzeug.utils import secure_filename  # Zajištění bezpečných názvů souborů
 from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.routing import BuildError
 import bcrypt
 from functools import wraps
 from time import time
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Flask, render_template, request, redirect, url_for, jsonify, g, session, flash  # Flask moduly
+from flask import Flask, render_template, make_response, request, redirect, url_for, jsonify, g, session, flash  # Flask moduly
 from flask_mysqldb import MySQL  # Flask-MySQL pro práci s databází
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -115,7 +116,8 @@ def index():
     user_count = result[0]
     cursor.close()
 
-    return render_template('index.html', projekty=projekty, user_count=user_count, site_name="Home")
+    #return render_template('index.html', projekty=projekty, user_count=user_count, site_name="Home")
+    return render_responsive('index.html', 'index_mobile.html', projekty=projekty, user_count=user_count, site_name="Home")
 
 
 @app.route('/select_mode/<string:mode>', methods=['GET', 'POST'])
@@ -159,6 +161,39 @@ def save_config(mode):
     app.config['AI_A_file_path'] = config.AI_A_file_path
     app.config['AI_B_file_path'] = config.AI_B_file_path
 
+#Pomocná funkce pro výběr mobil/desktop šablony
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
+
+@app.context_processor
+def utility_processor():
+    def href(*endpoints, **values):
+        """
+        Zkusí postupně více endpointů; když žádný neexistuje, vrátí '#'
+        místo 500 chyby.
+        """
+        for ep in endpoints:
+            try:
+                return url_for(ep, **values)
+            except BuildError:
+                continue
+        return '#'
+    return dict(href=href)
 
 def init_app(mode='production'):
     global mysql

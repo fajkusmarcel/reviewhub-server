@@ -1,0 +1,13 @@
+{% extends "layout_mobile.html" %}
+
+{% block content %}
+<form action="{{ url_for('project.project_select') }}" method="post">
+    <select name="project_id">
+        {% for projekt in projekty %}
+            <option value="{{ projekt[0] }}" {% if projekt[0] == session.get('selected_project') | int %}selected{% endif %}>{{ projekt[1] }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Vybrat Projekt</button>
+</form>
+{% endblock %}
+

@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename  # Zajištění bezpečných názvů 
 from functools import wraps
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+from flask import Blueprint, render_template, make_response, request, redirect, url_for, session, current_app, flash
 from flask_mysqldb import MySQL
 
 # Vlastní moduly (část tvé aplikace)
@@ -15,6 +15,28 @@ from db.sql_query import *
 
 # Definice blueprintu pro uživatele
 project_bp = Blueprint('project', __name__)
+
+
+
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
+
 
 
 ## *****************************************************************************
@@ -37,7 +59,7 @@ def project():
     else:
         projekty = sql_get_projects_by_user(user_id)  # Autor vidí pouze své projekty
         
-    return render_template('project.html', projekty=projekty, user_role=user_role, site_name="Projects")
+    return render_responsive('project.html','project_mobile.html',  projekty=projekty, user_role=user_role, site_name="Projects")
 
 
 @project_bp.route('/project_select', methods=['GET', 'POST'])
@@ -53,7 +75,7 @@ def project_select():
         project_id = request.form.get('project_id')
         if project_id is None:
             return redirect(url_for('dashboard.dashboard'))  # Přesměrování na hlavní stránku
-        
+
         # Uložení ID vybraného projektu do session
         session['selected_project'] = project_id  
 
@@ -71,8 +93,8 @@ def project_select():
 
     if not projekty:
         flash('Nemáte přiřazené žádné projekty.', 'warning')
-
-    return render_template('project.html', projekty=projekty, site_name="Projects")
+    print(projekty)
+    return render_responsive('project.html','project_mobile.html', projekty=projekty, site_name="Projects")
 
 
 @project_bp.route('/project_add', methods=['GET', 'POST'])

@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, session, current_
 from time import time
 import bcrypt
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+from flask import Blueprint, render_template, make_response, request, redirect, url_for, session, current_app, flash
 
 # Vlastní moduly (část tvé aplikace)
 import config  # Konfigurace aplikace
@@ -13,6 +13,29 @@ from utils.extensions import limiter
 from utils.decorators import *
 
 auth_bp = Blueprint('auth', __name__)
+
+
+
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
+
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 @limiter.limit("10 per minute")
@@ -64,7 +87,7 @@ def login():
             return redirect(url_for('auth.login'))
 
 
-    return render_template('login.html', site_name="Login")  # Vytvoříme šablonu login.html
+    return render_responsive('login.html', 'login_mobile.html', site_name="Login")  # Vytvoříme šablonu login.html
 
 
 @auth_bp.route('/logout')

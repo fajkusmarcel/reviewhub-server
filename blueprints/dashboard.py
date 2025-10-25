@@ -5,7 +5,7 @@ from functools import wraps
 import json
 
 # Knihovny třetích stran (nainstalované přes pip)
-from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+from flask import Blueprint, render_template, make_response, request, redirect, url_for, session, current_app, flash
 from flask_mysqldb import MySQL
 
 # Vlastní moduly (část tvé aplikace)
@@ -17,13 +17,31 @@ from db.sql_query import *
 # Definice blueprintu pro uživatele
 dashboard_bp = Blueprint('dashboard', __name__)
 
+MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
+
+def wants_mobile() -> bool:
+    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
+    q = request.args.get("mobile")
+    if q == "1":
+        return True
+    if q == "0":
+        return False
+
+    ua = (request.user_agent.string or "").lower()
+    return any(k in ua for k in MOBILE_KEYWORDS)
+
+def render_responsive(desktop_template: str, mobile_template: str, **ctx):
+    if wants_mobile():
+        return render_template(mobile_template, **ctx)
+    return render_template(desktop_template, **ctx)
+
 @dashboard_bp.route('/dashboard')
 @login_required
 @project_required
 def dashboard():
     """
     Statisticka data pro dasboard
-    """        
+    """
     # ID vybraného projektu
     selected_project = session['selected_project']
     print("DASHBOARD check, session keys:", list(session.keys()))
@@ -33,7 +51,7 @@ def dashboard():
     total_articles = sql_get_total_articles_by_project(selected_project)
     total_entered = sql_get_total_articles_by_status(selected_project, "zavedeno") or 0
     total_processed = sql_get_total_articles_by_status(selected_project, "zpracovano") or 0
-    
+
     articles_in_review = sql_get_articles_in_review(selected_project)
     articles_by_year_in_review = sql_get_articles_grouped_by_year_in_review(selected_project)
     articles_by_category_in_review = sql_get_articles_grouped_by_category_in_review(selected_project)
@@ -49,7 +67,6 @@ def dashboard():
 
     processed_articles_by_day = sql_get_processed_articles_by_day(selected_project)
 
-
     # Statistika clanku v systemu
     stat_data = sql_statistics_for_project(selected_project)
     # Vytvoření slovníku 'stat' a zpracování JSON dat
@@ -63,7 +80,7 @@ def dashboard():
 
     NazevProjektu = sql_get_project_name(selected_project)
 
-    return render_template('dashboard.html',
+    return render_responsive('dashboard.html','dashboard_mobile.html',
                             NazevProjektu=NazevProjektu,
                             total_articles=total_articles,
                             total_entered=total_entered,
@@ -80,6 +97,6 @@ def dashboard():
                             processed_articles=processed_articles,
                             non_processed_articles=non_processed_articles,
                             processed_articles_by_day=processed_articles_by_day,
-                            stat=stat,                            
+                            stat=stat,
                             site_name="Dashboard")
 

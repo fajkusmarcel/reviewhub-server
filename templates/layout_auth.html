@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Přihlášení – ScienceHub{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_mobile.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="auth-body">
+  <main class="auth-page">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

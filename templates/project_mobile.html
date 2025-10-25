@@ -1,0 +1,31 @@
+{% extends "layout_mobile.html" %}
+
+
+{% block content %}
+<div class="project-wrap">
+  <section class="project-card">
+    <form action="{{ url_for('project.project_select') }}" method="post" class="project-form">
+
+      <div class="form-group">
+        <label for="project_id">Vyberte projekt:</label>
+        <select name="project_id" id="project_id" required>
+          {% for projekt in projekty %}
+            <option value="{{ projekt['project_id'] }}"
+              {% if projekt['project_id'] == (session.get('selected_project')|int) %}selected{% endif %}>
+              {{ projekt['project_name'] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="project-actions">
+        <button type="submit" class="btn primary project-submit">Vybrat projekt</button>
+      </div>
+
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+
+

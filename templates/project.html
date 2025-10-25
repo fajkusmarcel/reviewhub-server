@@ -28,13 +28,12 @@
                 {% for projekt in projekty %}
                 <tr>
                     <td style="width: 100px;">{{ projekt['project_id'] }}</td>
-                    <td>{{ projekt['project_name'] }}</td>                
+                    <td>{{ projekt['project_name'] }}</td>
                     <td style="width: 100px;">
                         <a href="{{ url_for('project.project_edit', project_id=projekt['project_id']) }}"><img src="/reviewhub/static/icon-edit.svg" height="20px"></a>
                         <a href="javascript:void(0);" onclick="openDeleteModal('{{ url_for('project.project_delete', project_id=projekt['project_id']) }}', '{{projekt.project_name}}')">
                             <img src="/reviewhub/static/icon-delete.svg" height="20px">
                         </a>
-                        
                     </td>
 
                 </tr>

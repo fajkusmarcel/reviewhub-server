@@ -1,0 +1,217 @@
+
+{% extends "layout_mobile.html" %}
+{% block title %}Dashboard (Mobile){% endblock %}
+
+{% block content %}
+
+  <!-- HLAVIČKA PROJEKTU (pokud chceš) -->
+  <section class="m-section">
+    <h1 class="m-h1">Přehled</h1>
+
+    <!-- KPI cards -->
+    <div class="m-kpi-grid">
+      <div class="m-kpi">
+        <div class="m-kpi__value">{{ total_articles }}</div>
+        <div class="m-kpi__label">Publikace celkem</div>
+      </div>
+      <div class="m-kpi">
+        <div class="m-kpi__value">{{ total_entered }}</div>
+        <div class="m-kpi__label">Zadané</div>
+      </div>
+      <div class="m-kpi">
+        <div class="m-kpi__value">{{ total_processed }}</div>
+        <div class="m-kpi__label">Zpracované</div>
+      </div>
+      <div class="m-kpi">
+        <div class="m-kpi__value">
+          {{ (total_articles - (articles_in_review[0].total if articles_in_review and articles_in_review[0] else 0)) }}
+        </div>
+        <div class="m-kpi__label">Čeká v review</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRAFY – rozdělené do “karet”, vždy 1 graf na řádek -->
+  <section class="m-section">
+    <h2 class="m-h2">Grafy</h2>
+
+    <!-- Celkový přehled + články/den -->
+    <div class="m-card">
+      <div class="m-card__title">Celkový přehled</div>
+      <div class="m-chart">
+        <canvas id="pieChart"></canvas> <!-- stejné ID jako desktop -->
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-card__title">Počet zadaných článků za den</div>
+      <div class="m-chart">
+        <canvas id="barChartDay"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <!-- Uživatelé -->
+    <div class="m-card">
+      <div class="m-card__title">Počet zpracovaných článků podle uživatelů</div>
+      <div class="m-chart">
+        <canvas id="barChartUsersProcessed"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-card__title">Počet nezpracovaných článků podle uživatelů</div>
+      <div class="m-chart">
+        <canvas id="barChartUsersNONProcessed"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <!-- Review statistiky -->
+    <div class="m-card">
+      <div class="m-card__title">Publikace podle roku (v review)</div>
+      <div class="m-chart">
+        <canvas id="barChartYearInReview"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-card__title">Kategorie (v review)</div>
+      <div class="m-chart">
+        <canvas id="barChartCategoryInReview"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-card__title">Podkategorie (v review)</div>
+      <div class="m-chart">
+        <canvas id="barChartSubcategoryInReview"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-card__title">Typy senzorů (v review)</div>
+      <div class="m-chart">
+        <canvas id="barChartSensorInReview"></canvas> <!-- stejné ID -->
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}  {# ← přitáhne hamburger skript z layoutu #}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // Mobil: trochu nižší výšky, aby byly grafy vidět
+    (function fixHeights(){
+      const H = 260;             // základní výška
+      const S = 220;             // menší
+      const setH = (id, h) => { const c = document.getElementById(id); if (c) c.height = h; };
+
+      setH('pieChart', 220);
+      setH('barChartDay', H);
+      setH('barChartUsersProcessed', H);
+      setH('barChartUsersNONProcessed', H);
+      setH('barChartYearInReview', H);
+      setH('barChartCategoryInReview', H);
+      setH('barChartSubcategoryInReview', H);
+      setH('barChartSensorInReview', H);
+    })();
+  </script>
+
+  <!-- Převzaté skripty/ID z desktop verze – bez zásahu do backendu -->
+  <script>
+    // === Pie (zadané vs. zpracované) ===
+    const ctxPie = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(ctxPie, {
+      type: 'pie',
+      data: {
+        labels: ['Zadané články', 'Zpracované články'],
+        datasets: [{
+          data: [{{ total_entered }}, {{ total_processed }}],
+          backgroundColor: ['#FF6384', '#36A2EB'],
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ position:'right'} } }
+    });
+  </script>
+
+  <script>
+    // === Sloupcový graf: počet zadaných článků za den ===
+    const processedArticlesByDay = {{ processed_articles_by_day | tojson }};
+    const labelsDay  = Object.keys(processedArticlesByDay);
+    const dataDay    = Object.values(processedArticlesByDay);
+
+    const ctxDay = document.getElementById('barChartDay').getContext('2d');
+    new Chart(ctxDay, {
+      type: 'bar',
+      data: { labels: labelsDay, datasets: [{ label: 'Počet zadaných článků za den', data: dataDay, backgroundColor: '#36A2EB' }] },
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+    });
+  </script>
+
+  <script>
+    // === Uživatelé – zpracované / nezpracované ===
+    const labelsUsersProcessed = {{ processed_articles|tojson|safe }}.map(i => i['full_name']);
+    const dataUsersProcessed   = {{ processed_articles|tojson|safe }}.map(i => i['processed_count']);
+
+    new Chart(document.getElementById('barChartUsersProcessed').getContext('2d'), {
+      type: 'bar',
+      data: { labels: labelsUsersProcessed, datasets: [{ label: 'Počet zpracovaných článků', data: dataUsersProcessed, backgroundColor:'#36A2EB' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const labelsUsersNONProcessed = {{ non_processed_articles|tojson|safe }}.map(i => i['full_name']);
+    const dataUsersNONProcessed   = {{ non_processed_articles|tojson|safe }}.map(i => i['non_processed_articles_count']);
+
+    new Chart(document.getElementById('barChartUsersNONProcessed').getContext('2d'), {
+      type: 'bar',
+      data: { labels: labelsUsersNONProcessed, datasets: [{ label: 'Počet ne-zpracovaných článků', data: dataUsersNONProcessed, backgroundColor:'#FF5733' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  </script>
+
+  <script>
+    // === Review: podle roku, kategorie, podkategorie, typ senzoru ===
+    const yearRows = {{ articles_by_year_in_review|tojson }};
+    const yearLabels = yearRows.map(r => r['RokVydani']);
+    const yearData   = yearRows.map(r => r['total']);
+
+    new Chart(document.getElementById('barChartYearInReview').getContext('2d'), {
+      type: 'bar',
+      data: { labels: yearLabels, datasets: [{ label: 'Počet článků podle roku', data: yearData, backgroundColor:'#FFCE56' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const catRows = {{ articles_by_category_in_review|tojson }};
+    const catLabels = catRows.map(r => r['Kategorie']);
+    const catData   = catRows.map(r => r['total']);
+
+    new Chart(document.getElementById('barChartCategoryInReview').getContext('2d'), {
+      type: 'bar',
+      data: { labels: catLabels, datasets: [{ label: 'Počet článků podle oblasti použití', data: catData, backgroundColor:'#36A2EB' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const subRows = {{ articles_by_subcategory_in_review|tojson }};
+    const subLabels = subRows.map(r => r['Podkategorie']);
+    const subData   = subRows.map(r => r['total']);
+
+    new Chart(document.getElementById('barChartSubcategoryInReview').getContext('2d'), {
+      type: 'bar',
+      data: { labels: subLabels, datasets: [{ label: 'Počet článků podle podkategorií', data: subData, backgroundColor:'#4BC0C0' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const sensorRows = {{ articles_by_sensor_type_in_review|tojson }};
+    const sensorLabels = sensorRows.map(r => r['TypSenzoru']);
+    const sensorData   = sensorRows.map(r => r['total']);
+
+    new Chart(document.getElementById('barChartSensorInReview').getContext('2d'), {
+      type: 'bar',
+      data: { labels: sensorLabels, datasets: [{ label: 'Počet článků podle typů senzorů', data: sensorData, backgroundColor:'#9966FF' }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  </script>
+{% endblock %}

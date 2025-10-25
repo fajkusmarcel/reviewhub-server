@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}ScienceHub{% endblock %}</title>
+
+  <!-- DŮLEŽITÉ pro mobilní měřítko -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Původní styly + mobilní nadstavba (přepíše jen nutné části) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_mobile.css') }}">
+
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="mobile-body">
+
+  <!-- Horní lišta s hamburgerem -->
+  <header class="m-header">
+    <button class="m-burger" aria-controls="m-drawer" aria-expanded="false">☰</button>
+    <div class="m-brand">ScienceHub</div>
+    {% block header_right %}{% endblock %}
+
+<div class="top-bar-right">
+            {% if 'user_id' in session %}
+                <span>{{ session['user_name'] }} {{ session['user_surname'] }} ({{ session['user_role'] }})</span>
+                <a href="{{ url_for('auth.logout') }}">Odhlásit</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">LOGIN</a>
+            {% endif %}
+        </div>
+
+
+  </header>
+
+  <!-- Vysouvací postranní menu (nahrazuje levý sidebar) -->
+  <nav id="m-drawer" class="m-drawer" hidden>
+    <div class="m-drawer__inner">
+      <!-- Tady jednoduchý seznam odkazů co máš v levém menu -->
+      <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('publication.publication') }}">Články</a>
+      <a href="{{ url_for('project.project') }}">Projekty</a>
+    </div>
+  </nav>
+
+  <!-- Hlavní obsah stránky -->
+  <main class="m-content">
+    {% block content %}{% endblock %}
+  </main>
+
+{% block scripts %}
+
+  <!-- Jednoduchý JS pro hamburger (žádná knihovna) -->
+  <script>
+    (function () {
+      const btn = document.querySelector('.m-burger');
+      const drawer = document.getElementById('m-drawer');
+      if (!btn || !drawer) return;
+
+      btn.addEventListener('click', () => {
+        const isHidden = drawer.hasAttribute('hidden');
+        if (isHidden) {
+          drawer.removeAttribute('hidden');
+          btn.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('m-no-scroll');
+        } else {
+          drawer.setAttribute('hidden', '');
+          btn.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('m-no-scroll');
+        }
+      });
+
+      // Zavření klikem mimo
+      drawer.addEventListener('click', (e) => {
+        if (e.target === drawer) {
+          drawer.setAttribute('hidden', '');
+          btn.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('m-no-scroll');
+        }
+      });
+    })();
+  </script>
+
+
+  <!-- Mobilní logika publikací -->
+  <script src="{{ url_for('static', filename='js_mobile.js') }}?v=3" defer></script>
+
+
+{% endblock %}
+</body>
+</html>
