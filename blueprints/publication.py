@@ -450,7 +450,7 @@ def publication_add():
     projekty = sql_get_projects()
     kategorie = sql_get_categories()
     podkategorie = sql_get_subcategories()
-    pub_types = {'article', 'book', 'chapter'}
+    pub_types = ['article', 'review', 'patent', 'UV', 'FVZ', 'poloprovoz', 'Zenodo', 'URL', 'book', 'chapter']
 
     return render_template('publication_add.html', projekty=projekty, kategorie=kategorie, podkategorie=podkategorie, pub_types=pub_types, site_name="Add publication")
 

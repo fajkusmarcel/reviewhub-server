@@ -30,7 +30,7 @@
 <div class="main-content-container">    
 
 
-    <!-- Levá část: Filtraci a seznam článků -->    
+    <!-- Levá část: Filtraci a seznam článků -->
     <div class="left-section">         
         <!-- Filtrační formulář -->     
         <form id="filter-form" class="formWidthMedium" style="display:none;">        
@@ -344,7 +344,7 @@
         </div>
         <!-- Seznam clanku  -->         
         <table border="1" class="article-table">            
-            <tr>                
+            <tr>
                 <th class='publication_id'>    ID</th>  
                 <th class='NazevClanku'>       Článek</th>
                 <th class='Casopis' style="display: none">           Časopis</th>
@@ -379,7 +379,8 @@
 
             {% for clanek in clanky %}   
                 <tr id="article-{{clanek.publication_id}}" onclick="showArticleDetail({{ clanek.publication_id }})">   
-                    <td class='publication_id'>    {{ clanek.publication_id }}</th>  
+
+                    <td class='publication_id type_{{ clanek.pub_type }}'>    {{ clanek.publication_id }}</th>  
                     <td class='NazevClanku'>       {{ clanek.publication_name }}       </td>                
                     <td class='Casopis' style="display: none">           {{ clanek.journal }}           </td>                
                     <td class='RokVydani' style="display: none">         {{ clanek.year_publication }}         </td>     

@@ -405,9 +405,41 @@ table tbody {
 /* Kontejner pro seznam a detail */
 .main-content-container {
     display: flex;
-
-
 }
+
+
+
+/* společné chování pro všechny typové proužky */
+.type_article,
+.type_review,
+.type_patent,
+.type_UV,
+.type_FVZ,
+.type_poloprovoz,
+.type_URL,
+.type_Zenodo,
+.type_book {
+    width: 10px;
+    border-left-width: 5px;
+    border-left-style: solid;
+}
+
+/* články */
+.type_article { border-left-color: #67a4d9; }  /* pale green */
+.type_review  { border-left-color: #0570cd; }  /* minty pale green */
+
+/* patent/UV/FVZ/poloprovoz */
+.type_patent      { border-left-color: #48d346; }  /* light blue */
+.type_UV          { border-left-color: #48d346; }  /* very light cyan-blue */
+.type_FVZ         { border-left-color: #48d346; }  /* soft blue */
+.type_poloprovoz  { border-left-color: #48d346; }  /* pale sky blue */
+
+/* URL/zenodo */
+.type_URL { border-left-color: #d34681; }        /* pale red */
+.type_Zenodo { border-left-color: #d34681; }     /* pale violet */
+
+/* kniha (nebyla specifikována barva) */
+.type_book { border-left-color: #d3c246; }       /* soft gray */
 
 
 /*  FILTRACE  */
