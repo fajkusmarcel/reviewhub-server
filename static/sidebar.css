@@ -1,0 +1,133 @@
+/* ============================
+   Sidebar – kompletní styl
+   (c) ScienceHub
+   ============================ */
+
+/* --- Layout kontejner (sidebar | obsah) --- */
+.container{
+  display:grid;
+  grid-template-columns:200px minmax(0,1fr); /* minmax u obsahu */
+}
+
+/* --- Sidebar --- */
+.sidebar{
+  position:sticky;
+  top:0;
+  align-self:start;
+  height:100%;
+  padding:0px 0px;
+  background:#ffffff;
+  border-right:1px solid #e5e7eb;
+  overflow:visible;                     /* kvůli toggle tlačítku přes okraj */
+  box-sizing:border-box;
+  z-index:2;
+}
+
+/* Seznam a položky */
+.sidebar ul{ list-style:none; margin:0; padding:0; }
+.sidebar li{ margin:0; }
+
+/* Sekční nadpisy */
+.left_menu_section{
+  margin:10px 8px 6px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#64748b;                        /* slate-500 */
+}
+
+/* Odkazy */
+.sidebar a{
+  display:block;
+  margin:0px 0px;
+  padding:0px 10px;
+  border-radius:10px;
+  color:#111827;                        /* gray-900 */
+  text-decoration:none;
+  line-height:1.25;
+  transition:background .12s ease, color .12s ease, transform .08s ease;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+.sidebar a:hover{ background:#f3f4f6; } /* gray-100 */
+
+/* Aktivní odkaz – přidej class="is-active" serverem */
+.sidebar a.is-active{
+  background:#eef2ff;                   /* indigo-50 */
+  color:#3730a3;                        /* indigo-700 */
+  font-weight:600;
+}
+
+/* Fokus pro přístupnost */
+.sidebar a:focus{
+  outline:2px solid #93c5fd;            /* blue-300 */
+  outline-offset:2px;
+  border-radius:10px;
+}
+
+/* --- Tlačítko sbalení/rozbalení (chevron) --- */
+.collapse-btn{
+  position:absolute;
+  right:-10px;                          /* mírně přes okraj */
+  top:0px;
+  width:28px; height:28px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid #e5e7eb;
+  border-radius:999px;
+  background:#ffffff;
+  cursor:pointer;
+  padding:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  transition:background .12s ease, transform .08s ease, left .18s ease, right .18s ease;
+}
+.collapse-btn:hover{ background:#f9fafb; }
+.collapse-btn:active{ transform:scale(.98); }
+.collapse-btn .chev{
+  font-size:16px;
+  line-height:1;
+  color:#111827; /* tmavý text, aby byl vidět */
+}
+
+/* --- Collapsed stav (třída na <body>) --- */
+/* sbaleno */
+body.sidebar-collapsed .container{
+  grid-template-columns:0 minmax(0,1fr);
+}
+body.sidebar-collapsed .sidebar{
+  width:0 !important;   /* zruší min-content choutky */
+  padding:0;
+  border:0;
+  overflow:hidden;
+}
+body.sidebar-collapsed .sidebar ul{
+  display:none;         /* ať nic neprosvítá */
+}
+
+/* Tlačítko zůstane viditelné u levého okraje okna */
+body.sidebar-collapsed .collapse-btn{
+  position:fixed;
+  left:10px; top:74px;                  /* uprav top podle výšky top baru */
+  right:auto;
+  z-index:50;
+}
+
+/* --- Responsivní chování --- */
+/* Na užších displejích může být sidebar defaultně sbalený
+   (pokud nechceš, klidně tenhle blok smaž) */
+@media (max-width: 1280px){
+  body:not(.sidebar-expanded) .container{ grid-template-columns:0 1fr; }
+  body:not(.sidebar-expanded) .sidebar{ padding:0; border-right:0; overflow:hidden; }
+}
+
+/* --- Volitelný dark mód (prefers-color-scheme) --- */
+@media (prefers-color-scheme: dark){
+  .sidebar{ background:#0b1020; border-right-color:#23304d; }
+  .left_menu_section{ color:#8ea1c7; }
+  .sidebar a{ color:#e6e9f2; }
+  .sidebar a:hover{ background:#1a2136; }
+  .sidebar a.is-active{ background:#111a30; color:#a5b4fc; }
+  .collapse-btn{ background:#0b1020; border-color:#23304d; color:#e6e9f2; }
+  .collapse-btn:hover{ background:#111a30; }
+}

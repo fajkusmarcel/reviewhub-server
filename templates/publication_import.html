@@ -191,121 +191,78 @@
 
 
                 <div class="checkbox-item">
-                    <label for="col_NazevClanku">Název článku</label>
                     <input type="checkbox" id="col_NazevClanku" checked onchange="toggleColumn('NazevClanku')">
+                    <label for="col_NazevClanku">Název článku</label>                    
                 </div>
 
                 <div class="checkbox-item">
+                    <input type="checkbox" id="col_Casopis" onchange="toggleColumn('Casopis')">
                     <label for="col_Casopis">Název časopisu</label>
-                    <input type="checkbox" id="col_Casopis"  onchange="toggleColumn('Casopis')">
                 </div>
 
                 <div class="checkbox-item">
+                    <input type="checkbox" id="col_RokVydani" onchange="toggleColumn('RokVydani')">
                     <label for="col_RokVydani">Rok vydání</label>
-                    <input type="checkbox" id="col_RokVydani"  onchange="toggleColumn('RokVydani')">
                 </div>
 
+                
+                <!-- 
+                
                 <div class="checkbox-item">
-                    <label for="col_TypSenzoru">Typ senzoru</label>
-                    <input type="checkbox" id="col_TypSenzoru" checked onchange="toggleColumn('TypSenzoru')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_PrincipSenzoru">Princip senzoru</label>
-                    <input type="checkbox" id="col_PrincipSenzoru" checked onchange="toggleColumn('PrincipSenzoru')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_PrincipKonstrukce">Konstrukce senzoru</label>
-                    <input type="checkbox" id="col_PrincipKonstrukce" onchange="toggleColumn('PrincipKonstrukce')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_TypOptickehoVlakna">Vlakno</label>
-                    <input type="checkbox" id="col_TypOptickehoVlakna" onchange="toggleColumn('TypOptickehoVlakna')">
-                </div>
-
-                <div class="checkbox-item">
-                    <label for="col_ZpusobZapouzdreni">Zapouzdreni</label>
-                    <input type="checkbox" id="col_ZpusobZapouzdreni"  onchange="toggleColumn('ZpusobZapouzdreni')">
-                </div>
-                <div class="checkbox-item">
+                    <input type="checkbox" id="col_ZpusobImplementace" onchange="toggleColumn('ZpusobImplementace')">
                     <label for="col_ZpusobImplementace">Implementace</label>
-                    <input type="checkbox" id="col_ZpusobImplementace"  onchange="toggleColumn('ZpusobImplementace')">
                 </div>
+                
+                -->
 
                 <div class="checkbox-item">
-                    <label for="col_Kategorie">Kategorie</label>
                     <input type="checkbox" id="col_Kategorie" checked onchange="toggleColumn('Kategorie')">
+                    <label for="col_Kategorie">Kategorie</label>
                 </div>
 
                 <div class="checkbox-item">
-                    <label for="col_Podkategorie">Podkategorie</label>
                     <input type="checkbox" id="col_Podkategorie" checked onchange="toggleColumn('Podkategorie')">
+                    <label for="col_Podkategorie">Podkategorie</label>
                 </div>
 
                 <div class="checkbox-item">
+                    <input type="checkbox" id="col_MerenaVelicina" onchange="toggleColumn('MerenaVelicina')">
                     <label for="col_MerenaVelicina">Veličina</label>
-                    <input type="checkbox" id="col_MerenaVelicina"  onchange="toggleColumn('MerenaVelicina')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_RozsahMereni">Rozsah měření</label>
-                    <input type="checkbox" id="col_RozsahMereni"  onchange="toggleColumn('RozsahMereni')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_Citlivost">Citlivost</label>
-                    <input type="checkbox" id="col_Citlivost"  onchange="toggleColumn('Citlivost')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_Presnost">Přesnost</label>
-                    <input type="checkbox" id="col_Presnost"  onchange="toggleColumn('Presnost')">
                 </div>
 
                 <div class="checkbox-item">
-                    <label for="col_FrekvencniRozsah">Frekvencni rozsah</label>
-                    <input type="checkbox" id="col_FrekvencniRozsah"  onchange="toggleColumn('FrekvencniRozsah')">
+                    <input type="checkbox" id="col_TypSenzoru" checked onchange="toggleColumn('TypSenzoru')">
+                    <label for="col_TypSenzoru">Typ senzoru</label>
                 </div>
                 <div class="checkbox-item">
-                    <label for="col_Vyhody">Výhody</label>
-                    <input type="checkbox" id="col_Vyhody"  onchange="toggleColumn('Vyhody')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_Nevyhody">Nevýhody</label>
-                    <input type="checkbox" id="col_Nevyhody"  onchange="toggleColumn('Nevyhody')">
+                    <input type="checkbox" id="col_PrincipSenzoru" checked onchange="toggleColumn('PrincipSenzoru')">
+                    <label for="col_PrincipSenzoru">Princip senzoru</label>
                 </div>
 
                 <div class="checkbox-item">
-                    <label for="col_AplikaceStudie">Aplikace</label>
-                    <input type="checkbox" id="col_AplikaceStudie"  onchange="toggleColumn('AplikaceStudie')">
+                    <input type="checkbox" id="col_KonstrukceSenzoru" onchange="toggleColumn('KonstrukceSenzoru')">
+                    <label for="col_KonstrukceSenzoru">Konstrukce senzoru</label>
                 </div>
+
                 <div class="checkbox-item">
-                    <label for="col_KlicovePoznamky">Klíčové poznámky</label>
-                    <input type="checkbox" id="col_KlicovePoznamky"  onchange="toggleColumn('KlicovePoznamky')">
+                    <input type="checkbox" id="col_ZpusobZapouzdreni" onchange="toggleColumn('ZpusobZapouzdreni')">
+                    <label for="col_ZpusobZapouzdreni">Zapouzdreni</label>
                 </div>
+
+
                 <div class="checkbox-item">
-                    <label for="col_Poznamky">Poznámky</label>
-                    <input type="checkbox" id="col_Poznamky"  onchange="toggleColumn('Poznamky')">
+                    <input type="checkbox" id="col_Pubtype" checked onchange="toggleColumn('Pubtype')">
+                    <label for="col_Pubtype">Typ zaznamu</label>
                 </div>
+
+                
                 <div class="checkbox-item">
-                    <label for="col_NazevPDF">PDF</label>
-                    <input type="checkbox" id="col_NazevPDF"  onchange="toggleColumn('NazevPDF')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_Obrazky">Obrazky</label>
-                    <input type="checkbox" id="col_Obrazky"  onchange="toggleColumn('Obrazky')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_Stav">Stav</label>
                     <input type="checkbox" id="col_Stav"  onchange="toggleColumn('Stav')">
+                    <label for="col_Stav">Stav</label>
                 </div>
                 <div class="checkbox-item">
-                    <label for="col_CitaceBib">CitaceBib</label>
-                    <input type="checkbox" id="col_CitaceBib"  onchange="toggleColumn('CitaceBib')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_UsedInReview">Used in review</label>
                     <input type="checkbox" id="col_UsedInReview"  onchange="toggleColumn('UsedInReview')">
-                </div>
-                <div class="checkbox-item">
-                    <label for="col_UsedInProject">Used in project</label>
-                    <input type="checkbox" id="col_UsedInProject"  onchange="toggleColumn('UsedInProject')">
+                    <label for="col_UsedInReview">Used in review</label>
                 </div>
 
 

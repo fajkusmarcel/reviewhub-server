@@ -8,6 +8,8 @@
         <div id="article-export-left">
 
             <form id="pdfForm" enctype="multipart/form-data">
+
+                <!-- Vložení článku -->
                 <div class="form-group">
                     <label for="file-upload">Název PDF souboru:</label>
                     <div id="file-upload" class="file-upload">
@@ -15,25 +17,31 @@
                         <input type="file" id="pdf_soubor" name="pdf_soubor" accept=".pdf" style="display:none;" onchange="updateFileName()">
                     </div>
                 </div>
-                
 
-
-                
                 <button type="button" id="uploadButton">Nahrát a extrahovat text</button>
 
                 <br>
-                <div class="form-group"></div>
-                    <div class="checkbox-item">
-                        <label for="extractedText">Extrahovaný text:</label><button type="button" onclick="downloadTextFromTextarea('extractedText')">Stáhnout jako soubor</button>
-                    </div>        
-                    <textarea id="extractedText" rows="10" cols="130" placeholder="Sem bude vložen extrahovaný text ..."></textarea>
-                    <br>
-                    {% if session['user_role'] == 'admin' %}
-                    <div class="checkbox-item">
-                        <label for="configAI">Konfigurace AI:</label><button type="button" onclick="downloadTextFromTextarea('configAI')">Stáhnout jako soubor</button>
-                    </div>        
-                    <textarea id="configAI" rows="10" cols="130" placeholder="Sem bude vložena konfigurace AI ..."></textarea>
-                    <br>
+
+                <!-- Extrahovaný text z článku -->
+                <div class="checkbox-item">
+                    <label for="extractedText">Extrahovaný text:</label><button type="button" onclick="downloadTextFromTextarea('extractedText')">Stáhnout jako soubor</button>
+                </div>                
+                <textarea id="extractedText" rows="10" cols="130" placeholder="Sem bude vložen extrahovaný text ..."></textarea>
+                
+                <br>
+
+                <!-- Konfigurace AI -->
+                <div class="checkbox-item">
+                    <label for="configAI">Konfigurace AI:</label><button type="button" onclick="downloadTextFromTextarea('configAI')">Stáhnout jako soubor</button>
+                </div>        
+                <textarea id="configAI" rows="10" cols="130" placeholder="Sem bude vložena konfigurace AI ..."></textarea>
+
+                <br>
+
+                <!-- AI dotazovaná jen pro administratora -->
+                {% if session['user_role'] == 'admin' %}
+
+                    <!-- Příkaz pro AI -->
                     <div class="checkbox-item">
                         <label for="dataForAI">Příkaz pro AI:</label>
                         <button type="button" onclick="downloadTextFromTextarea('dataForAI')">Stáhnout jako soubor</button>
@@ -44,40 +52,48 @@
                             <option value="gpt-4">gpt-4</option>
                             <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
                             <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
-                        </select>
-                        <button type="button" onclick="exportPaperToStructureByGPT()">GPT</button>
-                    </div>
+                        </select>                        
+                        <button type="button" onclick="exportPaperToStructureByGPT()">GPT process</button>
+                    </div>                
                     <textarea id="dataForAI" rows="10" cols="130" placeholder="Sem bude vložen celý příkaz pro zpracování AI ..."></textarea>
-                    {% endif %}
-                </form>
-            </div>
 
-            <div id="article-export-right">
-                <h3>Vygenerovaný text</h3>
-                <div class="form-group">
-                    <div class="form-item">
-                        <label>Model</label>
-                        <input type="text" id="usedModel"></textarea>
+                    <!-- Text z AI -->
+                    <h3>Vygenerovaný text</h3>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Model</label>
+                            <input type="text" id="usedModel"></textarea>
+                        </div>
+                        <div class="form-item">
+                            <label>Input tokens</label>
+                            <input type="text" id="inputTokens"></textarea>
+                        </div>
+                        <div class="form-item">
+                            <label>Output tokens</label>
+                            <input type="text" id="outputTokens"></textarea>
+                        </div>
                     </div>
-                    <div class="form-item">
-                        <label>Input tokens</label>
-                        <input type="text" id="inputTokens"></textarea>
+
+                    <div class="form-item">                
+                        <textarea id="generatedText" rows="10" cols="130" placeholder="Sem bude vložena exportovaná struktura článku ..."></textarea>
                     </div>
+
                     <div class="form-item">
-                        <label>Output tokens</label>
-                        <input type="text" id="outputTokens"></textarea>
+                        <button type="button" onclick="importPublication()">Importovat článek</button>
                     </div>
-                </div>
-                <button type="button" onclick="importPublication()">Importovat článek</button>
-                <textarea id="generatedText" rows="10" cols="130" placeholder="Sem bude vložena exportovaná struktura článku ..."></textarea>
-            </div>
+
+                {% endif %}
+                    
+            </form>
         </div>
+
+        <div id="article-export-right">                
+        </div>
+
     </div>
-</div>
 
 
 <!-- Textarea pro zobrazení extrahovaného textu -->
-
 
 <script>
 function importPublication2() {

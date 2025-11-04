@@ -1,0 +1,92 @@
+/* ---- Kompaktní vzhled karet pro seznam publikací ---- */
+
+/* Mřížka karet: menší mezery */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  gap:10px;                 /* z 14 -> 10 */
+}
+
+/* Karta: menší padding, menší radius, jemný stín */
+.card{
+  padding:10px 12px;        /* z 14 -> 10/12 */
+  border:1px solid #e5e7eb;
+  border-radius:10px;       /* z 12 -> 10 */
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+  cursor:pointer;
+  background:#fff;
+}
+
+.card.highlighted{
+  border-color:#4f46e5;
+  box-shadow:0 0 0 2px rgba(79,70,229,.18);
+  background: red;
+}
+
+/* Titulek: menší font a line-height, dvouřádkový clamp */
+.card-title{
+  font-weight:700;
+  font-size:1rem;           /* ≈ 16px, dřív bývá 18–20 */
+  line-height:1.25;         /* těsnější řádkování */
+  margin:0 0 6px 0;         /* z 8 -> 6 */
+  display:-webkit-box;      /* dvouřádkový ořez */
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* Pilulky: menší výška, menší font, těsnější mezery */
+.card-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;                  /* z 6 -> 4 */
+  margin:0;                 /* odstranění extra mezery */
+}
+
+.pill{
+  display:inline-block;
+  padding:1px 8px;          /* z 2x10 -> 1x8 */
+  border-radius:999px;
+  font-size:.78rem;         /* z ~.85 -> .78 */
+  line-height:1.2;
+  background:#f3f4f6;
+  white-space:nowrap;
+}
+
+.pill-year{ background:#eef6ff; }
+.pill-outline{ background:transparent; border:1px solid #d0d5dd; }
+.pill-type{ background:#f9f5ff; }
+
+/* Akce: jedna úzká řádka, malé ikony, minimální odsazení */
+.card-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:6px;           /* z 8 -> 6 */
+  font-size:0;              /* odstraní whitespace mezi inline prvky */
+}
+
+.card-actions img{
+  height:16px;              /* z 20 -> 16 */
+  width:auto;
+  display:inline-block;
+}
+
+.card-actions input[type="checkbox"]{
+  width:14px; height:14px;  /* menší checkbox */
+  transform:translateY(-1px);
+}
+
+/* Hover (jemný, ať nic nepřeskakuje) */
+.card:hover{
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  border-color:#dfe3e8;
+}
+
+/* Malé obrazovky / pravý sloupec s detailem – vertikální stacking beze zbytečných mezer */
+@media (max-width: 1200px){
+  .cards{ gap:8px; }
+  .card{ padding:8px 10px; }
+  .card-title{ margin-bottom:4px; }
+  .card-actions{ margin-top:4px; }
+}

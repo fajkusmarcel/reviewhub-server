@@ -1,61 +1,70 @@
 {% extends "index.html" %}
 
 {% block content %}
-<form class="formWidthSmall" action="{{ url_for('project.project_select') }}" method="post">
 
-    <label for="project_id">Vyberte projekt:</label>
-    <select name="project_id" id="project_id">
-        {% for projekt in projekty %}
-            <option value="{{ projekt['project_id'] }}" {% if projekt['project_id'] == session.get('selected_project') | int %}selected{% endif %}>{{ projekt['project_name'] }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">Vybrat Projekt</button>
-</form>
+    <!-- Volba projektu -->
+    <form class="formWidthSmall" action="{{ url_for('project.project_select') }}" method="post">
+        <label for="project_id">Vyberte projekt:</label>
+        <select name="project_id" id="project_id">
+            {% for projekt in projekty %}
+                <option value="{{ projekt['project_id'] }}" {% if projekt['project_id'] == session.get('selected_project') | int %}selected{% endif %}>{{ projekt['project_name'] }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Vybrat Projekt</button>
+    </form>
 
-{% if user_role == 'admin' %}
-    
-    <div class="centre-container">
-        <h3>Seznam Projektů</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 100px;">ID</th>
-                    <th>Název Projektu</th>
-                    <th style="width: 100px;">Akce</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for projekt in projekty %}
-                <tr>
-                    <td style="width: 100px;">{{ projekt['project_id'] }}</td>
-                    <td>{{ projekt['project_name'] }}</td>
-                    <td style="width: 100px;">
-                        <a href="{{ url_for('project.project_edit', project_id=projekt['project_id']) }}"><img src="/reviewhub/static/icon-edit.svg" height="20px"></a>
-                        <a href="javascript:void(0);" onclick="openDeleteModal('{{ url_for('project.project_delete', project_id=projekt['project_id']) }}', '{{projekt.project_name}}')">
-                            <img src="/reviewhub/static/icon-delete.svg" height="20px">
-                        </a>
-                    </td>
+    <!-- jen pro administrátora -->
+    {% if user_role == 'admin' %}
+        
+        <!-- Tabulka projektů -->
+        <div class="centre-container">
+            <h3>Seznam Projektů</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">ID</th>
+                        <th>Název Projektu</th>
+                        <th style="width: 100px;">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for projekt in projekty %}
+                        <tr>
+                            <td style="width: 100px;">{{ projekt['project_id'] }}</td>
+                            <td>{{ projekt['project_name'] }}</td>
+                            <td style="width: 100px;">
+                                <a href="{{ url_for('project.project_edit', project_id=projekt['project_id']) }}"><img src="/reviewhub/static/icon-edit.svg" height="20px"></a>
+                                <a href="javascript:void(0);" onclick="openDeleteModal('{{ url_for('project.project_delete', project_id=projekt['project_id']) }}', '{{projekt.project_name}}')">
+                                    <img src="/reviewhub/static/icon-delete.svg" height="20px">
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <br>
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <a href="{{ url_for('project.project_add') }}" class="btn">Přidat Nový Projekt</a>
-    </div>
-    
-{% endif %}
+            <!-- Tlačítko - přidat projekt -->
+            <button onclick="location.href='{{ url_for('project.project_add') }}'">
+                Přidat nový projekt
+            </button>
 
-<div id="delete-modal">
-    <div id="delete-modalContent">
-        <h2>Potvrzení smazání</h2>
-        <p>Opravdu chcete smazat tento projekt?</p>
-        <div id="delete-modalContent-name"></div>
-        <div class="modal-buttons">
-            <button onclick="confirmDeletion()">Smazat</button>
-            <button onclick="closeModal()">Zrušit</button>
+        </div>
+        
+    {% endif %}
+
+    <div id="delete-modal">
+        <div id="delete-modalContent">
+            <h2>Potvrzení smazání</h2>
+            <p>Opravdu chcete smazat tento projekt?</p>
+            <div id="delete-modalContent-name"></div>
+            <div class="modal-buttons">
+                <button onclick="confirmDeletion()">Smazat</button>
+                <button onclick="closeModal()">Zrušit</button>
+            </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

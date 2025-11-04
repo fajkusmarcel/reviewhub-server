@@ -13,17 +13,17 @@
 {% endwith %}
 
 <!-- Kontejner pro seznam článků a detail -->
-<div class="select-view">
+<div class="select-view">    
     <!-- Přepínač pro volbu zobrazení -->
     <div class="view-options">
-        <button class="button-option" onclick="toggleView('list')">Seznamu</button>
+        <button class="button-option" onclick="toggleView('list')">Seznamu</button>        
         <button class="button-option active" onclick="toggleView('both')">Seznam a detail</button>
         <button class="button-option" onclick="toggleView('detail')">Detail</button>
         <button class="button-option" onclick="toggleView('export')">Export</button>
         <button class="button-option" onclick="toggleView('export-bib')">Export BIB</button>
 
         &nbsp | &nbsp
-        <button type="button" onclick="toggleFiltersDisplay()">Zobrazit/Skrýt filtrování</button>
+        <button type="button" onclick="toggleFiltersDsiplay()">Zobrazit/Skrýt filtrování</button> 
         &nbsp | &nbsp
         <button onclick="location.href='?view=table'" >Table</button>
         <button onclick="location.href='?view=cards'">Cards</button>
@@ -31,65 +31,64 @@
         <button onclick="showTab(event, 'fulltext')">Full Text</button>
         <button onclick="showTab(event, 'informace')">Detailní informace</button>
         <button onclick="showTab(event, 'klicove_informace')">Klíčové informace</button>
-
     </div>
 </div>
 
-<div class="main-content-container">
+<div class="main-content-container">    
 
 
     <!-- Levá část: Filtraci a seznam článků -->
-    <div class="left-section">
-        <!-- Filtrační formulář -->
-        <form id="filter-form" class="formWidthMedium" style="display:none;">
-            <div class="filter-row">
-                <div class="filter-group">
+    <div class="left-section">         
+        <!-- Filtrační formulář -->     
+        <form id="filter-form" class="formWidthMedium" style="display:none;">        
+            <div class="filter-row"> 
+                <div class="filter-group">                
                     <label for="filter_Casopis">Časopis:
-                    </label>
-                    <select id="filter_Casopis" name="filter_Casopis">
+                    </label>                
+                    <select id="filter_Casopis" name="filter_Casopis">                    
                         <option value="">Vše
-                        </option>                    {% for casopis in casopisy %}
+                        </option>                    {% for casopis in casopisy %}                         
                         <option value="{{ casopis.journal }}" {% if casopis.journal == request.args.get('filter_Casopis') %}selected{% endif %}>{{ casopis.journal }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
-                <div class="filter-group">
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>            
+                <div class="filter-group">                
                     <label for="filter_RokVydani">Rok vydání:
-                    </label>
-                    <select id="filter_RokVydani" name="filter_RokVydani">
+                    </label>                
+                    <select id="filter_RokVydani" name="filter_RokVydani">                    
                         <option value="">Vše
-                        </option>                    {% for rok in roky_vydani %}
+                        </option>                    {% for rok in roky_vydani %}                         
                         <option value="{{ rok.year_publication }}" {% if rok.year_publication == request.args.get('filter_RokVydani') %}selected{% endif %}>{{ rok.year_publication }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>     
                 <div class="filter-group">
                     <label for="filter_UsedInReview">Used in review:</label>
-                    <select id="filter_UsedInReview" name="filter_UsedInReview">
+                    <select id="filter_UsedInReview" name="filter_UsedInReview">    
                         <option value="">Vše</option>
                         {% for used in usedInReview %}
                         <option value="{{ used }}" {% if used == request.args.get('filter_UsedInReview') %}selected{% endif %}>{{ used }}</option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
-            <div class="filter-row">
-                <div class="filter-group">
+            </div>        
+            <div class="filter-row">            
+                <div class="filter-group">                
                     <label for="filter_Kategorie">Kategorie:
-                    </label>
-                    <select id="filter_Kategorie" name="filter_Kategorie">
+                    </label>                
+                    <select id="filter_Kategorie" name="filter_Kategorie">                    
                         <option value="">Vše
-                        </option>                    {% for kat in kategorie %}
+                        </option>                    {% for kat in kategorie %}                         
                         <option value="{{ kat.category }}" {% if kat.category == request.args.get('filter_Kategorie') %}selected{% endif %}>{{ kat.category }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
-                <div class="filter-group">
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>            
+                <div class="filter-group">                
                     <label for="filter_Podkategorie">Podkategorie:
-                    </label>
-                    <select id="filter_Podkategorie" name="filter_Podkategorie">
+                    </label>                
+                    <select id="filter_Podkategorie" name="filter_Podkategorie">                    
                         <option value="">Vše
-                        </option>                    {% for podkat in podkategorie %}
+                        </option>                    {% for podkat in podkategorie %}                         
                         <option value="{{ podkat.subcategory }}" {% if podkat.subcategory == request.args.get('filter_Podkategorie') %}selected{% endif %}>{{ podkat.subcategory }}
                         </option>                    {% endfor %}
                     </select>
@@ -104,115 +103,112 @@
                     </select>
                 </div>
             </div>
-            <div class="filter-row">
-                <div class="filter-group">
+            <div class="filter-row">            
+                <div class="filter-group">                
                     <label for="filter_TypSenzoru">Typ senzoru:
-                    </label>
-                    <select id="filter_TypSenzoru" name="filter_TypSenzoru">
+                    </label>                
+                    <select id="filter_TypSenzoru" name="filter_TypSenzoru">                    
                         <option value="">Vše
-                        </option>                    {% for typ in typy_senzoru %}
+                        </option>                    {% for typ in typy_senzoru %}                         
                         <option value="{{ typ.sensor_type }}" {% if typ.sensor_type == request.args.get('filter_TypSenzoru') %}selected{% endif %}>{{ typ.sensor_type }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="filter_PrincipSenzoru">Princip senzoru:
-                    </label>
-                    <select id="filter_PrincipSenzoru" name="filter_PrincipSenzoru">
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>    
+                
+                <div class="filter-group">                
+                    <label for="filter_PrincipSenzoru">Princip senzoru: 
+                    </label>                
+                    <select id="filter_PrincipSenzoru" name="filter_PrincipSenzoru">                    
                         <option value="">Vše
-                        </option>
-                        {% for princip in principy_senzoru %}
-                            <option value="{{ princip.sensor_principle }}" {% if princip.sensor_principle == request.args.get('filter_PrincipSenzoru') %}selected{% endif %}>{{ princip.sensor_principle }}</option>
-                        {% endfor %}
-
-
-                    </select>
-                </div>
-                <div class="filter-group">
+                        </option>                                   
+                        {% for princip in principy_senzoru %}                         
+                            <option value="{{ princip.sensor_principle }}" {% if princip.sensor_principle == request.args.get('filter_PrincipSenzoru') %}selected{% endif %}>{{ princip.sensor_principle }}</option>                    
+                        {% endfor %}    
+                                             
+                                    
+                    </select>            
+                </div>        
+                <div class="filter-group">                
                     <label for="filter_Velicina">Veličina:
-                    </label>
-                    <select id="filter_Velicina" name="filter_Velicina">
-                        <option value="">Vše
-                        </option>
-                        {% for value in veliciny %}
+                    </label>                
+                    <select id="filter_Velicina" name="filter_Velicina">                    
+                        <option value="">Vše                            
+                        </option>                    
+                        {% for value in veliciny %}     
                             <option value="{{ value.measured_value }}" {% if value.measured_value == request.args.get('filter_Velicina') %}selected{% endif %}>{{ value.measured_value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                        {% endfor %}               
+                    </select>            
+                </div>                             
+            </div>  
+            <div class="filter-row">    
+   
             </div>
             <div class="filter-row">
-
-            </div>
-            <div class="filter-row">
-                <div class="filter-group">
+                <div class="filter-group">                
                     <label for="filter_ZpusobZapouzdreni">Zapouzdření:
-                    </label>
-                    <select id="filter_ZpusobZapouzdreni" name="filter_ZpusobZapouzdreni">
-                        <option value="">Vše</option>                    {% for zpusob in zpusoby_zapouzdreni %}
+                    </label>                
+                    <select id="filter_ZpusobZapouzdreni" name="filter_ZpusobZapouzdreni">                    
+                        <option value="">Vše</option>                    {% for zpusob in zpusoby_zapouzdreni %}                         
                         <option value="{{ zpusob.encapsulation }}" {% if zpusob.encapsulation == request.args.get('filter_ZpusobZapouzdreni') %}selected{% endif %}>{{ zpusob.encapsulation }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter_ZpusobImplementace">Implementace:</label>
-                    <select id="filter_ZpusobImplementace" name="filter_ZpusobImplementace">
-                        <option value="">Vše</option>                    {% for zpusob in zpusoby_implementace %}
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div>    
+                <div class="filter-group">            
+                    <label for="filter_ZpusobImplementace">Implementace:</label>                
+                    <select id="filter_ZpusobImplementace" name="filter_ZpusobImplementace">                    
+                        <option value="">Vše</option>                    {% for zpusob in zpusoby_implementace %}                         
                         <option value="{{ zpusob.implementation }}" {% if zpusob.implementation == request.args.get('filter_ZpusobImplementace') %}selected{% endif %}>{{ zpusob.implementation }}
-                        </option>                    {% endfor %}
-                    </select>
-                </div>
+                        </option>                    {% endfor %}                 
+                    </select>            
+                </div> 
+            </div>   
+
+            <div class="filter-row">            
             </div>
 
-            <div class="filter-row">
-            </div>
-
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="search_query">Hledat:</label>
-                    <input type="text" id="search_query" name="search_query" placeholder="Zadejte hledaný výraz..." value="{{ request.args.get('search_query', '') }}">
-                </div>
-                <div class="filter-group">
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="search_query">Hledat:</label>                
+                    <input type="text" id="search_query" name="search_query" placeholder="Zadejte hledaný výraz..." value="{{ request.args.get('search_query', '') }}">            
+                </div>            
+                <div class="filter-group">                
                     <label for="search_option">Možnost:
-                    </label>
-                    <select id="search_option" name="search_option">
+                    </label>                
+                    <select id="search_option" name="search_option">                    
                         <option value="any" {% if request.args.get('search_option') == 'any' %}selected{% endif %}>Alespoň jeden
-                        </option>
+                        </option>                    
                         <option value="all" {% if request.args.get('search_option') == 'all' %}selected{% endif %}>Všechny
-                        </option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="sort_column_name">Sorting:</label>
-                    <select id="sort_column_name" name="sort_column_name">
-                        {% for sort in sorting %}
+                        </option>                
+                    </select>            
+                </div>        
+            </div>   
+            
+            <div class="filter-row">            
+                <div class="filter-group">                
+                    <label for="sort_column_name">Sorting:</label>                
+                    <select id="sort_column_name" name="sort_column_name"> 
+                        {% for sort in sorting %}                         
                             <option value="{{ sort.column_name }}" {% if sort.column_name == request.args.get('sort_column_name') %}selected{% endif %}>
                                 {{ sort.display_name }}
                             </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                        {% endfor %}  
+                    </select>            
+                </div> 
 
-                <div class="filter-group">
-                    <label for="sort_order">Order:</label>
-                    <select id="sort_order" name="sort_order">
-                        {% for sort in sorting_order %}
+                <div class="filter-group">                
+                    <label for="sort_order">Order:</label>                
+                    <select id="sort_order" name="sort_order">                    
+                        {% for sort in sorting_order %}                         
                             <option value="{{ sort.order }}" {% if sort.order == request.args.get('sort_order') %}selected{% endif %}>
                                 {{ sort.display_name }}
                             </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                        {% endfor %} 
+                    </select>            
+                </div> 
             </div>
 
-            <br>
+            <button type="button" onclick="applyFilters()">Filtrovat</button>                   
 
-            <button type="button" style="width:100%" onclick="applyFilters()">Filtrovat</button>
-
-            <br>
 
             <!-- Sekce pro volbu zobrazených sloupců -->
             <br>
@@ -220,207 +216,188 @@
 
 
                 <div class="checkbox-item">
+                    <label for="col_NazevClanku">Název článku</label>
                     <input type="checkbox" id="col_NazevClanku" checked onchange="toggleColumn('NazevClanku')">
-                    <label for="col_NazevClanku">Název článku</label>                    
                 </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_Casopis" onchange="toggleColumn('Casopis')">
                     <label for="col_Casopis">Název časopisu</label>
+                    <input type="checkbox" id="col_Casopis" onchange="toggleColumn('Casopis')">
                 </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_RokVydani" onchange="toggleColumn('RokVydani')">
                     <label for="col_RokVydani">Rok vydání</label>
-                </div>
-
-                
-                <!-- 
-                
-                <div class="checkbox-item">
-                    <input type="checkbox" id="col_ZpusobImplementace" onchange="toggleColumn('ZpusobImplementace')">
-                    <label for="col_ZpusobImplementace">Implementace</label>
-                </div>
-                
-                -->
-
-                <div class="checkbox-item">
-                    <input type="checkbox" id="col_Kategorie" checked onchange="toggleColumn('Kategorie')">
-                    <label for="col_Kategorie">Kategorie</label>
+                    <input type="checkbox" id="col_RokVydani" onchange="toggleColumn('RokVydani')">
                 </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_Podkategorie" checked onchange="toggleColumn('Podkategorie')">
-                    <label for="col_Podkategorie">Podkategorie</label>
-                </div>
-
-                <div class="checkbox-item">
-                    <input type="checkbox" id="col_MerenaVelicina" onchange="toggleColumn('MerenaVelicina')">
-                    <label for="col_MerenaVelicina">Veličina</label>
-                </div>
-
-                <div class="checkbox-item">
-                    <input type="checkbox" id="col_TypSenzoru" checked onchange="toggleColumn('TypSenzoru')">
                     <label for="col_TypSenzoru">Typ senzoru</label>
+                    <input type="checkbox" id="col_TypSenzoru" checked onchange="toggleColumn('TypSenzoru')">
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_PrincipSenzoru" checked onchange="toggleColumn('PrincipSenzoru')">
                     <label for="col_PrincipSenzoru">Princip senzoru</label>
+                    <input type="checkbox" id="col_PrincipSenzoru" checked onchange="toggleColumn('PrincipSenzoru')">
                 </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_KonstrukceSenzoru" onchange="toggleColumn('KonstrukceSenzoru')">
                     <label for="col_KonstrukceSenzoru">Konstrukce senzoru</label>
+                    <input type="checkbox" id="col_KonstrukceSenzoru" onchange="toggleColumn('KonstrukceSenzoru')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_TypOptickehoVlakna">Vlakno</label>
+                    <input type="checkbox" id="col_TypOptickehoVlakna" onchange="toggleColumn('TypOptickehoVlakna')">
                 </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_ZpusobZapouzdreni" onchange="toggleColumn('ZpusobZapouzdreni')">
                     <label for="col_ZpusobZapouzdreni">Zapouzdreni</label>
+                    <input type="checkbox" id="col_ZpusobZapouzdreni" onchange="toggleColumn('ZpusobZapouzdreni')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_ZpusobImplementace">Implementace</label>
+                    <input type="checkbox" id="col_ZpusobImplementace" onchange="toggleColumn('ZpusobImplementace')">
                 </div>
 
+                <div class="checkbox-item">
+                    <label for="col_Kategorie">Kategorie</label>
+                    <input type="checkbox" id="col_Kategorie" checked onchange="toggleColumn('Kategorie')">
+                </div>
 
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_Pubtype" checked onchange="toggleColumn('Pubtype')">
+                    <label for="col_Podkategorie">Podkategorie</label>
+                    <input type="checkbox" id="col_Podkategorie" checked onchange="toggleColumn('Podkategorie')">
+                </div>
+
+                <div class="checkbox-item">
                     <label for="col_Pubtype">Typ zaznamu</label>
+                    <input type="checkbox" id="col_Pubtype" checked onchange="toggleColumn('Pubtype')">
                 </div>
 
-                
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_Stav"  onchange="toggleColumn('Stav')">
-                    <label for="col_Stav">Stav</label>
+                    <label for="col_MerenaVelicina">Veličina</label>
+                    <input type="checkbox" id="col_MerenaVelicina" onchange="toggleColumn('MerenaVelicina')">
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="col_UsedInReview"  onchange="toggleColumn('UsedInReview')">
+                    <label for="col_RozsahMereni">Rozsah měření</label>
+                    <input type="checkbox" id="col_RozsahMereni"  onchange="toggleColumn('RozsahMereni')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Citlivost">Citlivost</label>
+                    <input type="checkbox" id="col_Citlivost"  onchange="toggleColumn('Citlivost')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Presnost">Přesnost</label>
+                    <input type="checkbox" id="col_Presnost"  onchange="toggleColumn('Presnost')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_FrekvencniRozsah">Frekvencni rozsah</label>
+                    <input type="checkbox" id="col_FrekvencniRozsah"  onchange="toggleColumn('FrekvencniRozsah')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Vyhody">Výhody</label>
+                    <input type="checkbox" id="col_Vyhody"  onchange="toggleColumn('Vyhody')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Nevyhody">Nevýhody</label>
+                    <input type="checkbox" id="col_Nevyhody"  onchange="toggleColumn('Nevyhody')">
+                </div>
+
+                <div class="checkbox-item">
+                    <label for="col_AplikaceStudie">Aplikace</label>
+                    <input type="checkbox" id="col_AplikaceStudie"  onchange="toggleColumn('AplikaceStudie')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_KlicovePoznamky">Klíčové poznámky</label>
+                    <input type="checkbox" id="col_KlicovePoznamky"  onchange="toggleColumn('KlicovePoznamky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Poznamky">Poznámky</label>
+                    <input type="checkbox" id="col_Poznamky"  onchange="toggleColumn('Poznamky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_NazevPDF">PDF</label>
+                    <input type="checkbox" id="col_NazevPDF"  onchange="toggleColumn('NazevPDF')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Obrazky">Obrazky</label>
+                    <input type="checkbox" id="col_Obrazky"  onchange="toggleColumn('Obrazky')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_Stav">Stav</label>
+                    <input type="checkbox" id="col_Stav"  onchange="toggleColumn('Stav')">
+                </div>
+                <div class="checkbox-item">
+                    <label for="col_CitaceBib">CitaceBib</label>
+                    <input type="checkbox" id="col_CitaceBib"  onchange="toggleColumn('CitaceBib')">
+                </div>
+                <div class="checkbox-item">
                     <label for="col_UsedInReview">Used in review</label>
+                    <input type="checkbox" id="col_UsedInReview"  onchange="toggleColumn('UsedInReview')">
                 </div>
 
 
             </div>
-
+            
             <br>
 
             <div>
-                <b>Akce: </b>
-                <button type="button" onclick="selectAllCheckboxesUseInReview()">Select all</button>
-                <button type="button" onclick="deSelectAllCheckboxesUseInReview()">De-select all</button>
+                <b>Akce: </b> 
+                <button onclick="selectAllCheckboxesUseInReview()">Select all</button>
+                <button onclick="deSelectAllCheckboxesUseInReview()">De-select all</button> 
             </div>
-
-        </form>
-
+            
+            
+        </form> 
 
         <div>
-            <b>Počet zobrazených článků: </b>
-            {{pocetClanku}}/{{pocetClankuCelkem.pocetClankuCelkem}}
+            <b>Počet zobrazených článků: </b> 
+            {{pocetClanku}}/{{pocetClankuCelkem.pocetClankuCelkem}} 
         </div>
 
-        <!-- Seznam clanku  -->
-        <table border="1" class="article-table">
-            <tr>
-                <th class='publication_id'>    ID</th>
-                <th class='NazevClanku'>       Článek</th>
-                <th class='Casopis' style="display: none">           Časopis</th>
-                <th class='RokVydani' style="display: none">         Rok Vydání</th>
-                <th class='TypSenzoru'>        Typ sen.</th>
-                <th class='PrincipSenzoru'>    Princip sen.</th>
-                <th class='KonstrukceSenzoru' style="display: none"> Konstrukce senzoru</th>
-                <th class='TypOptickehoVlakna' style="display: none">Vlakno</th>
-                <th class='ZpusobZapouzdreni' style="display: none"> Zapouzdření</th>
-                <th class='ZpusobImplementace' style="display: none">Implementace</th>
-                <th class='Kategorie'>         Kategorie</th>
-                <th class='Podkategorie'>      Podkategorie</th>
-                <th class='Pubtype'>           Typ zaznamu</th>
-                <th class='MerenaVelicina' style="display: none">    Veličina</th>
-                <!-- <th class='RozsahMereni'>      Rozsah mereni</th>  -->
-                <!-- <th class='Citlivost'>         Ciltivost</th>  -->
-                <!-- <th class='Presnost'>          Presnost</th>  -->
-                <!-- <th class='FrekvencniRozsah'>  FrekvencniRozsah</th>  -->
-                <!-- <th class='Vyhody'>            Vyhody</th>  -->
-                <!-- <th class='Nevyhody'>          Nevyhody</th>  -->
-                <!-- <th class='AplikaceStudie'>    Aplikace</th>  -->
-                <!-- <th class='KlicovePoznamky'>   Klicove poznamky</th>  -->
-                <!-- <th class='Poznamky'>          Poznamky</th>  -->
-                <!-- <th class='NazevPDF'>          NazevPDF</th>  -->
-                <!-- <th class='Obrazky'>           Obrazky</th>  -->
-                <th class='Stav' style="display: none">              Stav</th>
-                <th class='CitaceBib' style="display: none">         CitaceBib</th>
-                <th class='UsedInReview' style="display: none">      In review</th>
+        <!-- Seznam clanku  -->     
 
-                <th class='akce'>Akce</th>
-            </tr>
+        <!-- publications_cards.html -->
 
-            {% for clanek in clanky %}
-                <tr id="article-{{clanek.publication_id}}" onclick="showArticleDetail({{ clanek.publication_id }})">
+        <div class="cards">
+        {% for clanek in clanky %}
+        <article id="article-{{ clanek.publication_id }}" class="card" onclick="showArticleDetail({{clanek.publication_id}})">
+            <header class="card-title">
+            {{ clanek.publication_name }}
+            </header>
 
-                    <td class='publication_id type_{{ clanek.pub_type }}'>    {{ clanek.publication_id }}</th>
-                    <td class='NazevClanku'>       {{ clanek.publication_name }}       </td>
-                    <td class='Casopis' style="display: none">           {{ clanek.journal }}           </td>
-                    <td class='RokVydani' style="display: none">         {{ clanek.year_publication }}         </td>
-                    <td class='TypSenzoru'>        {{ clanek.sensor_type }}        </td>
-                    <td class='PrincipSenzoru'>    {{ clanek.sensor_principle }}    </td>
-                    <td class='KonstrukceSenzoru' style="display: none"> {{ clanek.construction_principle }}    </td>
-                    <td class='TypOptickehoVlakna' style="display: none">{{ clanek.optical_fiber }}</td>
-                    <td class='ZpusobZapouzdreni' style="display: none"> {{ clanek.encapsulation }} </td>
-                    <td class='ZpusobImplementace' style="display: none">{{ clanek.implementation }}</td>
-                    <td class='Kategorie'>         {{ clanek.category }}         </td>
-                    <td class='Podkategorie'>      {{ clanek.subcategory }}      </td>
-                    <td class='Pubtype'> {{ clanek.pub_type }}      </td>
-                    <td class='MerenaVelicina' style="display: none">    {{ clanek.measured_value }}    </td>
-                    <!--<td class='RozsahMereni'>      {{ clanek.measuring_range }}      </td>  -->
-                    <!--<td class='Citlivost'>         {{ clanek.sensitivity }}         </td>-->
-                    <!--<td class='Presnost'>          {{ clanek.accuracy }}          </td>  -->
-                    <!--<td class='FrekvencniRozsah'>  {{ clanek.frequency_range }}  </td>  -->
-                    <!--<td class='Vyhody'>            {{ clanek.advantages }}            </td> -->
-                    <!--<td class='Nevyhody'>          {{ clanek.disadvantages }}          </td> -->
-                    <!--<td class='AplikaceStudie'>    {{ clanek.application }}    </td>  -->
-                    <!--<td class='KlicovePoznamky'>   {{ clanek.key_knowledge }}   </td>  -->
-                    <!--<td class='Poznamky'>          {{ clanek.note }}          </td>  -->
-                    <!--<td class='NazevPDF'>          {{ clanek.pdf_name }}          </td> -->
-                    <!--<td class='Obrazky'>           {{ clanek.figure }}           </td>-->
-                    <td class='Stav' style="display: none">              {{ clanek.state }}              </td>
-                    <td class='CitaceBib' style="display: none">         {{ clanek.citation }}         </td>
-                    <td class="UsedInReview"  style="display: none">
-                        {% if clanek['used_in_review'] == "ANO" %}
-                            <span class="UsedInReviewText"></span> <input type="checkbox" name="UsedInReview" value="{{ clanek['publication_id'] }}" checked>
-                        {% else %}
-                            <span class="UsedInReviewText"></span> <input type="checkbox" name="UsedInReview" value="{{ clanek['publication_id'] }}">
-                        {% endif %}
-                    </td>
-                    <td class='akce'>
-                        <a href="{{ url_for('publication.publication_edit', clanek_id=clanek.publication_id) }}" style="padding: 3px;"><img src="/reviewhub/static/icon-edit.svg" height="20px"></a>
-                        <a href="javascript:void(0);" onclick="openDeleteModal('{{ url_for('publication.publication_delete', clanek_id=clanek['publication_id']) }}', '{{clanek['publication_name']}}')"><img src="/reviewhub/static/icon-delete.svg" height="20px"></a>
-                        {% if clanek['used_in_review'] == 'ANO' %}
-                            <input type="checkbox" name="UseInReview" value="{{ clanek['publication_id'] }}" checked>
-                        {% else %}
-                            <input type="checkbox" name="UseInReview" value="{{ clanek['publication_id'] }}">
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
+            <div class="card-pills">
+            {% if clanek.publication_id %}<span class="pill pill-id">ID:{{ clanek.publication_id }}</span>{% endif %}
+            {% if clanek.year_publication %}<span class="pill pill-year">{{ clanek.year_publication }}</span>{% endif %}
+            {% if clanek.category %}<span class="pill">{{ clanek.category }}</span>{% endif %}
+            {% if clanek.subcategory %}<span class="pill pill-outline">{{ clanek.subcategory }}</span>{% endif %}
+            {% if clanek.pub_type %}<span class="pill pill-type">{{ clanek.pub_type }}</span>{% endif %}
+            </div>
+        </article>
+        {% endfor %}
+        </div>
 
         <!-- Tlačítko pro export do textové oblasti -->
         <br>
-    </div>
+    </div>    
 
 
 
-    <!-- Pravá část: Detail článku -->
-    <div class="right-section">
-        <div id="article-detail" class="article-detail">
-
-            <div id="article-detail-content" class="article-detail-content">
+    <!-- Pravá část: Detail článku -->    
+    <div class="right-section">        
+        <div id="article-detail" class="article-detail">  
+            <div id="article-detail-content" class="article-detail-content">  
             </div>
         </div>
 
         <div id="article-export-bib" class="article-export-bib" style="display:none">
             <form id="extract-form">
                 <p>BIB reference</p>
-                <textarea id="bib" rows="30" cols="100"></textarea>
-                <button type="button" class="style" onclick="exportBIB()">Export BIB</button> <br>
+                <textarea id="bib" rows="30" cols="100"></textarea>   
+                <button type="button" class="style" onclick="exportBIB()">Export BIB</button> <br>   
             </form>
-        </div>
+        </div>    
 
-        <div id="article-export" class="article-export" style="display:none;">
+        <div id="article-export" class="article-export" style="display:none;">  
             <div id="article-export-left">
                 <h3>Příprava dat pro GPT</h3>
                 <form id="extract-form">
@@ -438,12 +415,10 @@
                     <!-- Textová oblast pro zobrazení výsledku JSON -->
                     <div class="filter-group checkbox-container">
                         <div class="checkbox-item">
-                            
-                            <label for="col_extract_NazevClanku">Název článku</label>                            
+                            <label for="col_extract_NazevClanku">Název článku</label>
                             <input type="checkbox" id="col_extract_NazevClanku" checked>
                         </div>
                         <div class="checkbox-item">
-                            
                             <label for="col_extract_DOI">DOI</label>
                             <input type="checkbox" id="col_extract_DOI" checked>
                         </div>
@@ -532,9 +507,9 @@
                             <option value="gpt-4o-mini" selected>gpt-4o-mini</option>
                             <option value="o1-preview">o1-preview</option>
                             <option value="o1-mini">o1-mini</option>
-                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>                  
                         </select>
-
+                        
                         <button type="button" onclick="generateTextByGPT()">Vygenerovat text</button>
                         <button type="button" onclick="markAsUsedInReview()">Označit jako zpracované</button>
                     </div>
@@ -547,9 +522,9 @@
                         <label for="exportedText">Extrahovaný text:</label><button type="button" onclick="downloadTextFromTextarea('exportedText')">Stáhnout jako soubor</button>
                     </div>
                     <textarea id="exportedText" rows="20" cols="100">{{ json_data }}</textarea>
-
+                    
                 </form>
-            </div>
+            </div>   
             <div id="article-export-right">
                 <h3>Vygenerovaný text</h3>
                 <div class="form-group">
@@ -572,17 +547,17 @@
     </div>
 </div>
 <!-- Modální okno pro editaci -->
-<div id="edit-modal" class="modal" style="display:none;">
-    <div class="modal-content">
+<div id="edit-modal" class="modal" style="display:none;">    
+    <div class="modal-content">        
         <span class="close" onclick="closeModal()">&times;
-        </span>        <h2>Editace Článku</h2>
-        <form id="edit-form" action="{{ url_for('publication.publication_add') }}" method="post" enctype="multipart/form-data">
+        </span>        <h2>Editace Článku</h2>        
+        <form id="edit-form" action="{{ url_for('publication.publication_add') }}" method="post" enctype="multipart/form-data">            
             <!-- Obsah formuláře se stejnými poli jako při vytváření článku -->
             <div class="form-group">
                 <label for="edit_nazev_clanku">Název článku:
                 </label>
                 <input type="text" id="edit_nazev_clanku" name="nazev_clanku" required>
-            </div>
+            </div>            
             <!-- Přidej další pole zde... -->
             <button type="submit">Uložit změny
             </button>
@@ -595,7 +570,7 @@
 <div id="delete-modal">
     <div id="delete-modalContent">
         <h2>Potvrzení smazání</h2>
-        <p>Opravdu chcete smazat tuto publikaci?</p>
+        <p>Opravdu chcete smazat tuto publikaci?</p> 
         <div id="delete-modalContent-name"></div>
         <div class="modal-buttons">
             <button onclick="confirmDeletion()">Smazat</button>
@@ -664,7 +639,7 @@ function showArticleDetail(clanekId) {
 
     const clankyData = {{ clanky|tojson }};
     const clanek = clankyData.find(publication => publication.publication_id == clanekId);  // Debug: porovnej clanekId s publication_id
-
+    
     // Pokud clanek neexistuje, vypiš chybu a ukonči funkci
     if (!clanek) {
         console.error("Článek s tímto ID nebyl nalezen.");
@@ -679,32 +654,32 @@ function showArticleDetail(clanekId) {
             ${clanek.pdf_name ? `<embed src="/reviewhub/static/uplouds/${clanek.pdf_name}" type="application/pdf" width="100%" height="1000px">` : '<p>Full text není dostupný.</p>'}
         </div>
 
-        <div class="tab-content" id="informace"  style="display:none;">
+        <div class="tab-content" id="informace"  style="display:none;"> 
             <h2>Detailní informace</h2>
 
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Název</div>
+                <div class="publication-detail-param-name">Název</div> 
                 <div class="publication-detail-param-value">${clanek.publication_name}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Abstrakt</div>
+                <div class="publication-detail-param-name">Abstrakt</div> 
                 <div class="publication-detail-param-value">${clanek.abstract}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Časopis</div>
+                <div class="publication-detail-param-name">Časopis</div> 
                 <div class="publication-detail-param-value"> ${clanek.journal}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Rok vydání</div>
+                <div class="publication-detail-param-name">Rok vydání</div> 
                 <div class="publication-detail-param-value"> ${clanek.year_publication}</div>
             </div>
             <hr>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Kategorie</div>
+                <div class="publication-detail-param-name">Kategorie</div> 
                 <div class="publication-detail-param-value"> ${clanek.category}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Podkategorie</div>
+                <div class="publication-detail-param-name">Podkategorie</div> 
                 <div class="publication-detail-param-value"> ${clanek.subcategory}</div>
             </div>
             <div class="publication-detail-param-container">
@@ -714,98 +689,98 @@ function showArticleDetail(clanekId) {
 
             <hr>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Typ senzoru</div>
+                <div class="publication-detail-param-name">Typ senzoru</div> 
                 <div class="publication-detail-param-value"> ${clanek.sensor_type}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Princip senzoru</div>
+                <div class="publication-detail-param-name">Princip senzoru</div> 
                 <div class="publication-detail-param-value"> ${clanek.sensor_principle}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Konstrukce senzoru</div>
+                <div class="publication-detail-param-name">Konstrukce senzoru</div> 
                 <div class="publication-detail-param-value"> ${clanek.construction_principle}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Optické vlákn</div>
+                <div class="publication-detail-param-name">Optické vlákn</div> 
                 <div class="publication-detail-param-value"> ${clanek.optical_fiber}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Zapouzdření</div>
+                <div class="publication-detail-param-name">Zapouzdření</div> 
                 <div class="publication-detail-param-value"> ${clanek.encapsulation}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Implementace</div>
+                <div class="publication-detail-param-name">Implementace</div> 
                 <div class="publication-detail-param-value"> ${clanek.implementation}</div>
             </div>
             <hr>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Měřená veličina</div>
+                <div class="publication-detail-param-name">Měřená veličina</div> 
                 <div class="publication-detail-param-value"> ${clanek.measured_value}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Rozsah měření</div>
+                <div class="publication-detail-param-name">Rozsah měření</div> 
                 <div class="publication-detail-param-value"> ${clanek.measuring_range}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Citlivost</div>
+                <div class="publication-detail-param-name">Citlivost</div> 
                 <div class="publication-detail-param-value"> ${clanek.sensitivity}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Přesnost</div>
+                <div class="publication-detail-param-name">Přesnost</div> 
                 <div class="publication-detail-param-value"> ${clanek.accuracy}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Frekvenční rozsah</div>
+                <div class="publication-detail-param-name">Frekvenční rozsah</div> 
                 <div class="publication-detail-param-value"> ${clanek.frequency_range}</div>
-            </div>
+            </div>            
             <hr>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Aplikace</div>
+                <div class="publication-detail-param-name">Aplikace</div> 
                 <div class="publication-detail-param-value"> ${clanek.application}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Klíčové poznatky</div>
+                <div class="publication-detail-param-name">Klíčové poznatky</div> 
                 <div class="publication-detail-param-value"> ${clanek.key_knowledge}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Shrnutí</div>
+                <div class="publication-detail-param-name">Shrnutí</div> 
                 <div class="publication-detail-param-value"> ${clanek.summary}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Výhody</div>
+                <div class="publication-detail-param-name">Výhody</div> 
                 <div class="publication-detail-param-value"> ${clanek.advantages}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Nevýhody</div>
+                <div class="publication-detail-param-name">Nevýhody</div> 
                 <div class="publication-detail-param-value"> ${clanek.disadvantages}</div>
             </div>
             <hr>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Poznámky</div>
+                <div class="publication-detail-param-name">Poznámky</div> 
                 <div class="publication-detail-param-value"> ${clanek.note}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Obrázky</div>
+                <div class="publication-detail-param-name">Obrázky</div> 
                 <div class="publication-detail-param-value"> ${clanek.figure}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Autoři</div>
+                <div class="publication-detail-param-name">Autoři</div> 
                 <div class="publication-detail-param-value"> ${clanek.authors}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">DOI</div>
+                <div class="publication-detail-param-name">DOI</div> 
                 <div class="publication-detail-param-value"> ${clanek.doi}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">CitaceBib</div>
+                <div class="publication-detail-param-name">CitaceBib</div> 
                 <div class="publication-detail-param-value"> ${clanek.citation}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Stav</div>
+                <div class="publication-detail-param-name">Stav</div> 
                 <div class="publication-detail-param-value"> ${clanek.used_in_review}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Název PDF souboru</div>
+                <div class="publication-detail-param-name">Název PDF souboru</div> 
                 <div class="publication-detail-param-value"> ${clanek.pdf_name}</div>
             </div>
         </div>
@@ -813,23 +788,23 @@ function showArticleDetail(clanekId) {
         <div class="tab-content" id="klicove_informace" style="display:none;">
             <h2>Klíčové informace</h2>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Abstrakt</div>
+                <div class="publication-detail-param-name">Abstrakt</div> 
                 <div class="publication-detail-param-value"> ${clanek.abstract}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Aplikace</div>
+                <div class="publication-detail-param-name">Aplikace</div> 
                 <div class="publication-detail-param-value"> ${clanek.application}</div>
-            </div>
+            </div>                    
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Klíčové poznatky</div>
+                <div class="publication-detail-param-name">Klíčové poznatky</div> 
                 <div class="publication-detail-param-value"> ${clanek.key_knowledge}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Shrnutí</div>
+                <div class="publication-detail-param-name">Shrnutí</div> 
                 <div class="publication-detail-param-value"> ${clanek.summary}</div>
             </div>
             <div class="publication-detail-param-container">
-                <div class="publication-detail-param-name">Poznámky</div>
+                <div class="publication-detail-param-name">Poznámky</div> 
                 <div class="publication-detail-param-value"> ${clanek.note}</div>
             </div>
             <div class="publication-detail-param-container">
@@ -881,24 +856,21 @@ function applyFilters() {
         }
     }
     // ***
-    saveFormState()
     // Načti filtraci
     window.location.href = `/reviewhub/publication?${queryParams.toString()}`;
-    
+    saveFormState()
 
 }
 
 
-// ZMena zobrazeni checkboxu pro volbu zobrazeni parametru v seznamu publikaci
-function toggleFiltersDisplay() {
-    const filterForm = document.getElementById("filter-form");
-    if (filterForm.style.display === 'none') {
-        filterForm.style.display = 'block';
+// ZMena zobrazeni checkboxu pro volbu zobrazeni parametru v seznamu publikaci 
+function toggleFiltersDsiplay() {
+    const checkboxContainer = document.getElementById("filter-form");
+    if (checkboxContainer.style.display == 'none') {
+        checkboxContainer.style.display = '';
     } else {
-        filterForm.style.display = 'none';
-    }    
-    // Uložení stavu hned při přepnutí
-    localStorage.setItem('filters', filterForm.style.display);
+        checkboxContainer.style.display ='none';
+    }
 }
 
 
@@ -935,7 +907,6 @@ function initializeColumns() {
 }
 
 function saveFormState() {
-
     const formState = {};
 
     // Uloží stav checkboxů
@@ -950,8 +921,6 @@ function saveFormState() {
 
     // Uloží stav do localStorage
     localStorage.setItem('formState', JSON.stringify(formState));
-
-    
 }
 
 
@@ -987,14 +956,6 @@ function loadFormState() {
             }
         });
     }
-
-    // Načti zobrazení filtru
-    const filterState = localStorage.getItem('filters');
-    const filterForm = document.querySelector('#filter-form');
-    if (filterState !== null ) {
-        filterForm.style.display = filterState;
-    }
-    
 }
 
 
@@ -1045,7 +1006,7 @@ function toggleView(view) {
         // Zobrazit obě sekce
         document.querySelector('.button-option:nth-child(4)').classList.add('active');
         leftSection.style.display = 'none';
-        leftSection.style.width = '';
+        leftSection.style.width = '';       
         rightSection.style.display = '';
         rightSection.style.width = '100%';
         articleDetail.style.display = 'none';
@@ -1056,7 +1017,7 @@ function toggleView(view) {
         // Zobrazit obě sekce
         document.querySelector('.button-option:nth-child(5)').classList.add('active');
         leftSection.style.display = '';
-        leftSection.style.width = '60%';
+        leftSection.style.width = '60%';       
         rightSection.style.display = '';
         rightSection.style.width = '50%';
         articleDetail.style.display = 'none'
@@ -1066,7 +1027,7 @@ function toggleView(view) {
         viewState = 'export-bib';
     }
 
-    // Uloží stav do localStorage
+    // Uloží stav do localStorage    
     localStorage.setItem('viewState', viewState);
 
 }
@@ -1089,7 +1050,7 @@ function exportToJSON() {
     const instrukce = document.getElementById('Instrukce').value;
     const projectStructure = {{ projekt.project_structure | tojson }};
     const projectName = {{ projekt.project_name | tojson }};
-
+    
     // Vytvoření JSON struktury na základě zaškrtnutých checkboxů
     const articlesJson = selectedArticles.map(publication => {
         let article = { 'ID': publication.publication_id };
@@ -1157,11 +1118,11 @@ function exportToJSON() {
     const exportJson = {
         'RozsahGenerovanehoTextu': rozsahTextu,  // Pro celý export
         'Instrukce': instrukce,  // Pro celý export
-        'Struktura': parseSections(projectStructure),
+        'Struktura': parseSections(projectStructure), 
         'project_name': projectName,
         'Articles': articlesJson  // Seznam článků
     };
-
+    
     // Zobrazení výsledku JSON v textové oblasti
     const jsonText = JSON.stringify(exportJson, null, 4);
     const textarea = document.getElementById('exportedText');
@@ -1189,10 +1150,10 @@ function markAsUsedInReview() {
     const selectedArticles = clankyData.filter(publication => selectedIds.includes(String(publication.publication_id)));
 
     // Aktualizace UsedInReview na strance a v databazi  pro exportované články
-    selectedArticles.forEach(publication => {
+    selectedArticles.forEach(publication => {        
         // Aktualizace databaze
         updateUsedInReview(publication.publication_id, 'ANO');
-
+        
         // Změníme checkboxu na ANO
         const usedInReviewCheckbox = document.querySelector(`input[name="UsedInReview"][value="${publication.publication_id}"]`);
         const usedInReviewText = usedInReviewCheckbox.parentNode.querySelector('.UsedInReviewText');
@@ -1214,7 +1175,9 @@ function copyToClipboard() {
 function exportBIB() {
     // Získáme ID vybraných článků (checkboxy)
     const selectedIds = Array.from(document.querySelectorAll('input[name="UsedInReview"]:checked')).map(cb => cb.value);
+    console.log(selectedIds)
     const selectedArticles = clankyData.filter(publication => selectedIds.includes(String(publication.publication_id)));
+    console.log(selectedArticles)
     var bib = "";
     const articlesJson = selectedArticles.map(publication => {
         bib = bib + "\n" + publication.citation;
@@ -1230,17 +1193,12 @@ function exportBIB() {
 //window.onload = loadFormState;
 //document.addEventListener('DOMContentLoaded', loadFormState);
 // Přidání posluchače změny pro všechny selecty na stránce
-//function attachSelectListeners() {
-//    const selects = document.querySelectorAll('select');
-//    selects.forEach(select => {
-//        select.addEventListener('change', saveFormState);
-//    });
-//    // Po nacteni stránky aktualizace zobrazení
-//    console.log(localStorage)
-//    document.addEventListener('DOMContentLoaded', loadFormState);
-//}
-
-
+function attachSelectListeners() {
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.addEventListener('change', saveFormState);
+    });
+}
 
 function updateUsedInReview(articleId, status) {
     // Odeslání požadavku na server
@@ -1253,7 +1211,7 @@ function updateUsedInReview(articleId, status) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Úspěšně uloženo:', data);  
+        console.log('Úspěšně uloženo:', data);
     })
     .catch(error => console.error('Chyba při ukládání:', error));
 }

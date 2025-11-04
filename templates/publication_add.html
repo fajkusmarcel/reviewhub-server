@@ -73,14 +73,7 @@
         <input type="text" id="podkategorie" name="podkategorie" placeholder="Zadej novou podkategorii">
     </div>
 
-    <div class="form-group">
-        <label for="pubtype_select">Typ zaznamu:</label>
-        <select id="pubtype_select" name="pubtype_select">
-                {% for pt in pub_types %}
-                <option value="{{ pt }}" {% if pt == 'article' %}selected{% endif %}>{{ pt }}</option>
-                {% endfor %}
-        </select>
-    </div>
+    
 
 
 
@@ -208,6 +201,33 @@
             <option value="zpracováno">Zpracováno</option>
         </select>
     </div>
+
+    <div class="form-group">
+        <label for="pubtype_select">Typ zaznamu:</label>
+        <select id="pubtype_select" name="pubtype_select">
+                {% for pt in pub_types %}
+                <option value="{{ pt }}" {% if pt == 'article' %}selected{% endif %}>{{ pt }}</option>
+                {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="important">Důležitost:</label>
+        <select id="important" name="important">
+            <option value="1">Nízká</option>
+            <option value="2">Střední</option>
+            <option value="3">Vysoká</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="stav">Stav:</label>
+        <select id="stav" name="stav">
+            <option value="zavedeno">Zavedeno</option>
+            <option value="zpracováno">Zpracováno</option>
+        </select>
+    </div>    
+    
 
     <button type="button" id="submit_button" onclick="submitForm(event)">Pridat článek</button>
 </form>

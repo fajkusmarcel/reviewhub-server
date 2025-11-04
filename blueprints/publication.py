@@ -120,8 +120,15 @@ def publication():
 
     projekt = sql_get_project(selected_project)
 
+    view = request.args.get('view') or session.get('article_view', 'table')
+    if view not in ('table', 'cards'):
+        view = 'table'
+        session['article_view'] = view
+
+    template_name = 'publication_cards.html' if view == 'cards' else 'publication.html'
+
     # Předání dat šabloně
-    return render_responsive('publication.html', 'publication_mobile.html',
+    return render_responsive(template_name, 'publication_mobile.html',
                            clanky=clanky, 
                            pocetClanku=pocetClanku,
                            pocetClankuCelkem=pocetClankuCelkem,

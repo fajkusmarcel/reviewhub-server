@@ -13,7 +13,7 @@ function generateTextByGPT() {
     
     // Vstupy pro GPT
     configGPT = document.getElementById("configAI").value;
-    textForGPT = document.getElementById("exportedText").value;
+    textForGPT = document.getElementById("extractedText").value;
     gptModel = document.getElementById("gpt_model").value;
 
 
