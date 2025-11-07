@@ -24,45 +24,58 @@
 
         <!-- Meta (volně upravitelné) -->
         <div class="m-simple-meta">
+
+          {% set r = it.rating|default(0)|int %}
+          <span class="pill pill-rating Rating"
+                data-article-id="{{ it.publication_id }}"   {# POZOR: použij interní DB id, ne publication_id #}
+                data-current="{{ r }}">
+            <span class="rt-stars">
+              {% for i in range(1,4) %}
+                <span class="rt-star {% if i <= r %}on{% else %}off{% endif %}"
+                      data-value="{{ i }}">{{ '★' if i <= r else '☆' }}</span>
+              {% endfor %}
+            </span>
+          </span>
+          
           {% if it.category %}<span class="pill">{{ it.category }}</span>{% endif %}
           {% if it.subcategory %}<span class="pill">{{ it.subcategory }}</span>{% endif %}
           {% if it.year_publication %}<span class="pill" style="background:#ecfdf5;border-color:#d1fae5;color:#065f46;">{{ it.year_publication }}</span>{% endif %}
         </div>
 
         <!-- Skrytý JSON s daty článku (AUTO-BIND) -->
-{# ---- Robustní detekce PDF jména a URL (zkus více polí) ---- #}
-{% set pdf_name = (
-  it.pdf_name if it.pdf_name is defined else
-  it.fulltext_name if it.fulltext_name is defined else
-  it.fulltext if it.fulltext is defined else
-  it.file_pdf if it.file_pdf is defined else
-  it.file_name if it.file_name is defined else
-  it.filename if it.filename is defined else
-  ''
-) %}
+        {# ---- Robustní detekce PDF jména a URL (zkus více polí) ---- #}
+        {% set pdf_name = (
+          it.pdf_name if it.pdf_name is defined else
+          it.fulltext_name if it.fulltext_name is defined else
+          it.fulltext if it.fulltext is defined else
+          it.file_pdf if it.file_pdf is defined else
+          it.file_name if it.file_name is defined else
+          it.filename if it.filename is defined else
+          ''
+        ) %}
 
-{% set pdf_url = (
-  it.pdf_url if it.pdf_url is defined else
-  it.file_url if it.file_url is defined else
-  ''
-) %}
+        {% set pdf_url = (
+          it.pdf_url if it.pdf_url is defined else
+          it.file_url if it.file_url is defined else
+          ''
+        ) %}
 
-<script type="application/json" class="js-data">
-  {{ {
-    "id": it.publication_id,
-    "title": it.publication_name,
-    "year": it.year_publication,
-    "category": it.category,
-    "subcategory": it.subcategory,
-    "journal": it.journal if it.journal is defined else "",
-    "doi": it.doi if it.doi is defined else "",
-    "abstract": it.abstract if it.abstract is defined else "",
-    "key_knowledge": it.key_knowledge if it.key_knowledge is defined else "",
-    "application": it.application if it.application is defined else "",
-    "pdf_name": pdf_name,
-    "pdf_url": pdf_url
-  } | tojson }}
-</script>
+        <script type="application/json" class="js-data">
+          {{ {
+            "id": it.publication_id,
+            "title": it.publication_name,
+            "year": it.year_publication,
+            "category": it.category,
+            "subcategory": it.subcategory,
+            "journal": it.journal if it.journal is defined else "",
+            "doi": it.doi if it.doi is defined else "",
+            "abstract": it.abstract if it.abstract is defined else "",
+            "key_knowledge": it.key_knowledge if it.key_knowledge is defined else "",
+            "application": it.application if it.application is defined else "",
+            "pdf_name": pdf_name,
+            "pdf_url": pdf_url
+          } | tojson }}
+        </script>
 
       </li>
     {% else %}
@@ -106,5 +119,65 @@
     <iframe id="pdf-frame" class="pdf-frame" src="" title="PDF"></iframe>
   </div>
 
+
+  
+<script>
+// Hvězdičkové hodnocení
+
+function updateStars(container, val){
+  container.dataset.current = String(val);
+  container.querySelectorAll('.rt-star').forEach(s => {
+    const i = parseInt(s.dataset.value, 10);
+    const on = i <= val;
+    s.textContent = on ? '★' : '☆';
+    s.classList.toggle('on', on);
+    s.classList.toggle('off', !on);
+  });
+}
+
+
+function updateRating(articleId, rating){
+  return fetch(`/reviewhub/publication_setRating/${articleId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rating: rating })
+  })
+  .then(r => r.json());
+}
+
+document.addEventListener('click', async (e) => {
+  const star = e.target.closest('.rt-star');
+  if (!star) return;
+
+  // robustně najdi kontejner s daty (funguje pro tabulku, karty i mobil)
+  const cell = star.closest('[data-article-id]');
+  if (!cell) return; // prevence: nebyl nalezen žádný rating-kontejner
+
+  // pokud by klik bublal na odkaz, zastav
+  e.preventDefault();
+  e.stopPropagation();
+
+  const id   = parseInt(cell.dataset.articleId, 10);
+  const prev = parseInt(cell.dataset.current || '0', 10);
+  const val  = parseInt(star.dataset.value, 10);
+
+  updateStars(cell, val);
+
+  try {
+    const r = await fetch(`/reviewhub/publication_setRating/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: val })
+    });
+    const json = await r.json();
+    if (!r.ok || json.ok === false) throw new Error(json.error || r.statusText);
+    // success -> necháme nový stav
+  } catch (err) {
+    updateStars(cell, prev); // revert
+    console.error('Chyba při ukládání:', err);
+  }
+});
+
+</script>
 {% endblock %}
 

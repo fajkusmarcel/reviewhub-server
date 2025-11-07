@@ -218,6 +218,10 @@
             <br>
             <div id="parameters" class="filter-group checkbox-container">
 
+                <div class="checkbox-item">
+                    <input type="checkbox" id="col_Rating" checked onchange="toggleColumn('Rating')">
+                    <label for="col_Rating">Rating</label>                    
+                </div>
 
                 <div class="checkbox-item">
                     <input type="checkbox" id="col_NazevClanku" checked onchange="toggleColumn('NazevClanku')">
@@ -316,8 +320,9 @@
         <!-- Seznam clanku  -->
         <table border="1" class="article-table">
             <tr>
-                <th class='publication_id'>    ID</th>
-                <th class='NazevClanku'>       Článek</th>
+                <th class='publication_id'>ID</th>
+                <th class='Rating'>Rating</th>
+                <th class='NazevClanku'>Článek</th>
                 <th class='Casopis' style="display: none">           Časopis</th>
                 <th class='RokVydani' style="display: none">         Rok Vydání</th>
                 <th class='TypSenzoru'>        Typ sen.</th>
@@ -352,19 +357,48 @@
                 <tr id="article-{{clanek.publication_id}}" onclick="showArticleDetail({{ clanek.publication_id }})">
 
                     <td class='publication_id type_{{ clanek.pub_type }}'>    {{ clanek.publication_id }}</th>
-                    <td class='NazevClanku'>       {{ clanek.publication_name }}       </td>
-                    <td class='Casopis' style="display: none">           {{ clanek.journal }}           </td>
-                    <td class='RokVydani' style="display: none">         {{ clanek.year_publication }}         </td>
-                    <td class='TypSenzoru'>        {{ clanek.sensor_type }}        </td>
-                    <td class='PrincipSenzoru'>    {{ clanek.sensor_principle }}    </td>
-                    <td class='KonstrukceSenzoru' style="display: none"> {{ clanek.construction_principle }}    </td>
-                    <td class='TypOptickehoVlakna' style="display: none">{{ clanek.optical_fiber }}</td>
-                    <td class='ZpusobZapouzdreni' style="display: none"> {{ clanek.encapsulation }} </td>
-                    <td class='ZpusobImplementace' style="display: none">{{ clanek.implementation }}</td>
-                    <td class='Kategorie'>         {{ clanek.category }}         </td>
-                    <td class='Podkategorie'>      {{ clanek.subcategory }}      </td>
-                    <td class='Pubtype'> {{ clanek.pub_type }}      </td>
-                    <td class='MerenaVelicina' style="display: none">    {{ clanek.measured_value }}    </td>
+
+                    <!-- Rating stars
+                    <td class="Rating">
+                    {% set r = clanek.rating|default(0)|int %}  {# POZOR: správný atribut je nejspíš "rating", ne "Rating" #}
+                    <span class="rt-stars" title="Rating: {{ r }} / 3" aria-label="Rating {{ r }} z 3" role="img">
+                        {# vyplněné hvězdy #}
+                        {% for _ in range(r) %}<span class="rt-star on">★</span>{% endfor %}
+                        {# prázdné hvězdy (volitelné) – smaž, pokud je nechceš #}
+                        {% for _ in range(3 - r) %}<span class="rt-star off">☆</span>{% endfor %}
+                    </span>
+                    </td>
+                    
+-->
+                    <td class="Rating" data-article-id="{{ clanek.publication_id }}" data-current="{{ r }}">
+                    {% set r = clanek.rating|default(0)|int %}
+                    <span class="rt-stars" title="Rating: {{ r }} / 3" aria-label="Rating {{ r }} z 3">
+                        {% for i in range(1, r + 1) %}
+                        <span class="rt-star on"  data-value="{{ i }}">★</span>
+                        {% endfor %}
+                        {% for i in range(r + 1, 4) %}
+                        <span class="rt-star off" data-value="{{ i }}">☆</span>
+                        {% endfor %}
+                    </span>
+                    </td>
+                    
+
+
+                    
+
+                    <td class='NazevClanku'>                                {{ clanek.publication_name }} </td>
+                    <td class='Casopis' style="display: none">              {{ clanek.journal }}  </td>
+                    <td class='RokVydani' style="display: none">            {{ clanek.year_publication }} </td>
+                    <td class='TypSenzoru'>                                 {{ clanek.sensor_type }} </td>
+                    <td class='PrincipSenzoru'>                             {{ clanek.sensor_principle }} </td>
+                    <td class='KonstrukceSenzoru' style="display: none">    {{ clanek.construction_principle }} </td>
+                    <td class='TypOptickehoVlakna' style="display: none">   {{ clanek.optical_fiber }} </td>
+                    <td class='ZpusobZapouzdreni' style="display: none">    {{ clanek.encapsulation }} </td>
+                    <td class='ZpusobImplementace' style="display: none">   {{ clanek.implementation }} </td>
+                    <td class='Kategorie'>                                  {{ clanek.category }} </td>
+                    <td class='Podkategorie'>                               {{ clanek.subcategory }} </td>
+                    <td class='Pubtype'>                                    {{ clanek.pub_type }} </td>
+                    <td class='MerenaVelicina' style="display: none">       {{ clanek.measured_value }} </td>
                     <!--<td class='RozsahMereni'>      {{ clanek.measuring_range }}      </td>  -->
                     <!--<td class='Citlivost'>         {{ clanek.sensitivity }}         </td>-->
                     <!--<td class='Presnost'>          {{ clanek.accuracy }}          </td>  -->
@@ -1280,5 +1314,57 @@ function deSelectAllCheckboxesUseInReview() {
 }
 
 
+// Hvězdičkové hodnocení
 
-</script>{% endblock %}
+function updateStars(cell, val){
+  cell.dataset.current = String(val);
+  cell.querySelectorAll('.rt-star').forEach(star => {
+    const i = parseInt(star.dataset.value, 10);
+    const on = i <= val;
+    star.classList.toggle('on',  on);
+    star.classList.toggle('off', !on);
+    star.textContent = on ? '★' : '☆';
+  });
+}
+
+function updateRating(articleId, rating){
+  return fetch(`/reviewhub/publication_setRating/${articleId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rating: rating })
+  })
+  .then(r => r.json());
+}
+
+document.addEventListener('click', (e) => {
+  const star = e.target.closest('.rt-star');
+  if (!star) return;
+
+  const cell = star.closest('td.Rating, .Rating');
+  const id   = parseInt(cell.dataset.articleId, 10);
+  const prev = parseInt(cell.dataset.current || '0', 10);
+  const val  = parseInt(star.dataset.value, 10);
+
+  // optimisticky přepiš UI
+  updateStars(cell, val);
+
+  updateRating(id, val)
+    .then(data => {
+      if (data && data.ok) {
+        // OK – nech novou hodnotu
+      } else {
+        // revert při chybě z backendu
+        updateStars(cell, prev);
+        console.error('Uložení selhalo:', data);
+      }
+    })
+    .catch(err => {
+      updateStars(cell, prev);
+      console.error('Chyba při ukládání:', err);
+    });
+});
+
+</script>
+
+
+{% endblock %}

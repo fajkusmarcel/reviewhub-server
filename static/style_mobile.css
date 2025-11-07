@@ -220,6 +220,12 @@ img, svg, video { max-width: 100%; height: auto; display: block; }
   line-height: 1;
 }
 
+
+.pill-rating .rt-star { cursor: pointer; }
+.pill-rating .rt-stars { display:inline-flex; gap:2px; line-height:1; font-size:14px; }
+.pill-rating .rt-star.on  { color:#383735; }
+.pill-rating .rt-star.off { color:#d1d5db; }
+
 /* Stavy při dotyku */
 .m-simple-item:active { background: #f8fafc; }
 
@@ -694,3 +700,141 @@ img, svg, video { max-width: 100%; height: auto; display: block; }
   /* větší mobily – mírně větší karty */
   .m-simple-item { padding: 14px 14px; }
 }
+
+
+/* ───────────────────────────────────────────────────────────────────────
+   10) LOGS
+   ──────────────────────────────────────────────────────────────────── */
+
+/* ===== Formulář filtrů: 1 sloupec, uvnitř label | input na jednom řádku ===== */
+.logs-filters{
+  display:grid;
+  gap: var(--space-2);
+  grid-template-columns: 1fr;   /* mobil: jeden sloupec položek */
+  align-items: end;
+  
+}
+
+/* Každá položka formuláře = dvousloupcový mini-grid: [label][input] */
+.logs-filters > div{
+  display:grid;
+  grid-template-columns: max-content 1fr; /* label pevný, input roztáhne */
+  align-items:center;
+  gap: 10px;
+}
+
+/* Label vlevo, jednolitý styl */
+.logs-filters label{
+  padding:5px;
+  white-space:nowrap;
+  font-size:.92rem;
+  color: var(--text-muted);
+  width: 100px;  
+}
+
+/* Vstupní prvky vpravo – bílé pozadí, plná šířka */
+.logs-filters .form-control,
+.logs-filters select,
+.logs-filters input[type="text"],
+.logs-filters input[type="number"]{
+  width:100%;
+  padding:6px 12px;
+  margin: 3px 0px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background:#fff;                    /* <- požadavek: bílé pozadí */
+  border: 1px solid rgb(221, 221, 221);
+}
+
+/* Inline checkbox + text */
+.form-check-inline{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* Skupina s "s" na konci */
+.input-group{
+  display:flex;
+  align-items:stretch;
+  max-width:100%;
+}
+.input-group .form-control{
+  border-right:0;
+  border-top-right-radius:0;
+  border-bottom-right-radius:0;
+  background:#fff;                    /* sjednocení */
+}
+.input-group .input-group-text{
+  display:inline-flex;
+  align-items:center;
+  padding:0 10px;
+  border: var(--border);
+  border-left:0;
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  background: var(--bg-soft);
+}
+
+/* „Akční“ řádek s tlačítky – žádný label, jen tlačítka vedle sebe */
+.logs-filters > div .btn{ margin-right:8px; margin-bottom:8px; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius: var(--radius); border: var(--border); background: var(--bg-pane); text-decoration:none; }
+.btn-primary{ background:#0a7cff; border-color:#0a7cff; color:#fff; }
+.btn-secondary{ background: var(--bg-soft); }
+.btn-outline-secondary{ background:transparent; }
+
+/* ===== Log panel ===== */
+/* Kontejner se scroll bary – aplikuj na .loglist (tvůj markup) */
+.loglist{
+  background:#fff;
+  border: var(--border);
+  border-radius: var(--radius);
+  padding:10px;
+  max-height: 65vh;                 /* ať nezmizí celý viewport */
+  overflow-x:auto;                  /* klíčové: horizontální scroll */
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch; /* plynulé na iOS */
+  overscroll-behavior:contain;
+}
+
+/* Každý řádek logu: monospace, nezalamovat = posouvat doprava */
+.logline{
+  font: 12.5px/1.5 var(--mono);
+  white-space: nowrap;              /* NE wrap – povolí vodorovný posun */
+  min-width: max-content;           /* šířka podle obsahu */
+  border-bottom: 1px solid #eee;
+  padding:6px 10px;
+}
+
+/* Metadata vlevo – fixní „sloupec“ pro hezké zarovnání */
+.logline .meta{
+  display:inline-block;
+  color:#667;
+  margin-right:12px;
+  min-width: 36ch;                  /* cca „sloupec“ na datum/uživatele/level */
+}
+
+/* Zpráva – běží dál v jednom řádku (dědí white-space:nowrap) */
+.logline .msg{}
+
+/* Jemné zvýraznění úrovní */
+.lvl-DEBUG    { color:#666; }
+.lvl-INFO     { color:#0b6e4f; }
+.lvl-WARNING  { color:#a86b00; font-weight:600; }
+.lvl-ERROR    { color:#b00020; font-weight:700; }
+.lvl-CRITICAL { color:#8b0000; font-weight:800; }
+
+/* Malý vizuální náznak, že jde posouvat (nepovinné) */
+.loglist::after{
+  content:"";
+  position:sticky;
+  right:0; top:0; bottom:0;
+  width:18px;
+  pointer-events:none;
+  background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,.95));
+}
+
+/* Vizuální rozestupy */
+h1.mb-3{ margin-bottom: var(--space-3); }
+.mb-4{ margin-bottom: 20px; }
+.mt-1{ margin-top: var(--space-1); }

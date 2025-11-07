@@ -3,14 +3,14 @@
 /* Mřížka karet: menší mezery */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  /*grid-template-columns:repeat(auto-fit,minmax(360px,1fr));*/
   gap:10px;                 /* z 14 -> 10 */
 }
 
 /* Karta: menší padding, menší radius, jemný stín */
 .card{
   padding:10px 12px;        /* z 14 -> 10/12 */
-  border:1px solid #e5e7eb;
+  border:1px solid #dbdbdb;
   border-radius:10px;       /* z 12 -> 10 */
   box-shadow:0 1px 2px rgba(0,0,0,.04);
   cursor:pointer;
@@ -52,6 +52,11 @@
   background:#f3f4f6;
   white-space:nowrap;
 }
+.pill-rating, td.Rating {
+  font-size:14px;           /* z 16 -> 14 */
+
+}
+
 
 .pill-year{ background:#eef6ff; }
 .pill-outline{ background:transparent; border:1px solid #d0d5dd; }

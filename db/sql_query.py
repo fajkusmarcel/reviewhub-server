@@ -752,7 +752,7 @@ def sql_insert_publication(projekt_id, nazev_clanku, abstract, casopis, rok_vyda
                            princip_senzoru, konstrukce_senzoru, typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace,
                            kategorie, podkategorie, merena_velicina, rozsah_merani, citlivost,
                            presnost, frekvencni_rozsah, vyhody, nevyhody, aplikace_studie,
-                           klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type):
+                           klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type, rating):
     """
     Vloží novou publikaci do databáze.
     """
@@ -765,14 +765,14 @@ def sql_insert_publication(projekt_id, nazev_clanku, abstract, casopis, rok_vyda
             sensor_principle, construction_principle, optical_fiber, encapsulation, implementation, 
             category, subcategory, measured_value, measuring_range, sensitivity, 
             accuracy, frequency_range, advantages, disadvantages, application, 
-            key_knowledge, summary, note, pdf_name, figure, authors, doi, citation, scopus, pub_type
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            key_knowledge, summary, note, pdf_name, figure, authors, doi, citation, scopus, pub_type, rating
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ''', (
         nazev_clanku, abstract, casopis, rok_vydani, typ_senzoru,
         princip_senzoru, konstrukce_senzoru, typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace,
         kategorie, podkategorie, merena_velicina, rozsah_merani, citlivost,
         presnost, frekvencni_rozsah, vyhody, nevyhody, aplikace_studie,
-        klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type
+        klicove_poznatky, summary, poznamky, pdf_filename, obrazky, autori, doi, citaceBib, scopus_state, pub_type, rating
     ))
     publication_id = cursor.lastrowid
     conn.commit()
@@ -858,7 +858,6 @@ def sql_get_current_status(clanek_id, project_id):
     result = cursor.fetchone()
     cursor.close()
     return result['used_in_review'] if result else None
-
 
 def sql_get_filtered_publications(project_id, search_terms, search_option, filters, sort):
     """
@@ -1307,7 +1306,7 @@ def sql_update_publication(clanek_id, nazev_clanku, abstract, casopis, rok_vydan
                            typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace, kategorie,
                            podkategorie, merena_velicina, rozsah_merani, citlivost, presnost,
                            frekvencni_rozsah, vyhody, nevyhody, aplikace_studie, klicove_poznatky, summary, 
-                           poznamky, obrazky, autori, doi, citaceBib, stav, projekt_id, pdf_name_new, pub_type):
+                           poznamky, obrazky, autori, doi, citaceBib, stav, projekt_id, pdf_name_new, pub_type, rating):
     """
     Aktualizuje publikaci v databázi.
     """
@@ -1320,16 +1319,33 @@ def sql_update_publication(clanek_id, nazev_clanku, abstract, casopis, rok_vydan
             implementation = %s, category = %s, subcategory = %s, measured_value = %s,
             measuring_range = %s, sensitivity = %s, accuracy = %s, frequency_range = %s, advantages = %s,
             disadvantages = %s, application = %s, key_knowledge = %s, summary = %s, note = %s, figure = %s, authors = %s, 
-            doi = %s, citation = %s, pdf_name = %s, pub_type = %s
+            doi = %s, citation = %s, pdf_name = %s, pub_type = %s, rating = %s
         WHERE publication_id = %s
     ''', (nazev_clanku, abstract, casopis, rok_vydani, typ_senzoru, princip_senzoru, konstrukce_senzoru, 
           typ_optickeho_vlakna, zpusob_zapouzdreni, zpusob_implementace, 
           kategorie, podkategorie, merena_velicina, rozsah_merani, 
           citlivost, presnost, frekvencni_rozsah, vyhody, nevyhody, 
           aplikace_studie, klicove_poznatky, summary, poznamky, obrazky, autori, doi, citaceBib,
-          pdf_name_new, pub_type, clanek_id))
+          pdf_name_new, pub_type, rating, clanek_id))
     conn.commit()
     cursor.close()
+
+def sql_update_publication_rating(article_id, rating):
+    """
+    Aktualizuje hodnocení publikace v databázi.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('''
+        UPDATE publication
+        SET rating = %s
+        WHERE publication_id = %s
+    ''', (rating, article_id))
+    conn.commit()
+    cursor.close()
+
+
+
 
 def sql_get_number_of_publications_in_system():
     conn = get_db_connection()

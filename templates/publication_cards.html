@@ -367,6 +367,23 @@
 
             <div class="card-pills">
             {% if clanek.publication_id %}<span class="pill pill-id">ID:{{ clanek.publication_id }}</span>{% endif %}
+
+            
+
+            {% set r = clanek.rating|default(0)|int %}
+            <span class="pill pill-rating Rating"
+                data-article-id="{{ clanek.publication_id }}"
+                data-current="{{ r }}"
+                title="Rating: {{ r }} / 3"
+                aria-label="Rating {{ r }} z 3">
+            <span class="rt-stars">
+                {% for i in range(1,4) %}
+                <span class="rt-star {% if i <= r %}on{% else %}off{% endif %}"
+                        data-value="{{ i }}">{{ '★' if i <= r else '☆' }}</span>
+                {% endfor %}
+            </span>
+                    </span>
+
             {% if clanek.year_publication %}<span class="pill pill-year">{{ clanek.year_publication }}</span>{% endif %}
             {% if clanek.category %}<span class="pill">{{ clanek.category }}</span>{% endif %}
             {% if clanek.subcategory %}<span class="pill pill-outline">{{ clanek.subcategory }}</span>{% endif %}
@@ -1238,5 +1255,55 @@ function deSelectAllCheckboxesUseInReview() {
 }
 
 
+
+// Hvězdičkové hodnocení
+
+function updateStars(cell, val){
+  cell.dataset.current = String(val);
+  cell.querySelectorAll('.rt-star').forEach(star => {
+    const i = parseInt(star.dataset.value, 10);
+    const on = i <= val;
+    star.classList.toggle('on',  on);
+    star.classList.toggle('off', !on);
+    star.textContent = on ? '★' : '☆';
+  });
+}
+
+function updateRating(articleId, rating){
+  return fetch(`/reviewhub/publication_setRating/${articleId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rating: rating })
+  })
+  .then(r => r.json());
+}
+
+document.addEventListener('click', (e) => {
+  const star = e.target.closest('.rt-star');
+  if (!star) return;
+
+  const cell = star.closest('td.Rating, .Rating');
+  const id   = parseInt(cell.dataset.articleId, 10);
+  const prev = parseInt(cell.dataset.current || '0', 10);
+  const val  = parseInt(star.dataset.value, 10);
+
+  // optimisticky přepiš UI
+  updateStars(cell, val);
+
+  updateRating(id, val)
+    .then(data => {
+      if (data && data.ok) {
+        // OK – nech novou hodnotu
+      } else {
+        // revert při chybě z backendu
+        updateStars(cell, prev);
+        console.error('Uložení selhalo:', data);
+      }
+    })
+    .catch(err => {
+      updateStars(cell, prev);
+      console.error('Chyba při ukládání:', err);
+    });
+});
 
 </script>{% endblock %}

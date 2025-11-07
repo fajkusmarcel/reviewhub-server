@@ -21,14 +21,14 @@
     <div class="m-brand">ScienceHub</div>
     {% block header_right %}{% endblock %}
 
-<div class="top-bar-right">
-            {% if 'user_id' in session %}
-                <span>{{ session['user_name'] }} {{ session['user_surname'] }} ({{ session['user_role'] }})</span>
-                <a href="{{ url_for('auth.logout') }}">Odhlásit</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">LOGIN</a>
-            {% endif %}
-        </div>
+    <div class="top-bar-right">
+        {% if 'user_id' in session %}
+            <span>{{ session['user_name'] }} {{ session['user_surname'] }} ({{ session['user_role'] }})</span>
+            <a href="{{ url_for('auth.logout') }}">Odhlásit</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">LOGIN</a>
+        {% endif %}
+    </div>
 
 
   </header>
@@ -40,6 +40,9 @@
       <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
       <a href="{{ url_for('publication.publication') }}">Články</a>
       <a href="{{ url_for('project.project') }}">Projekty</a>
+      {% if session['user_role'] == 'admin' %}
+        <a href="{{ url_for('settings.settings') }}">Nastavení</a>
+      {% endif %}
     </div>
   </nav>
 

@@ -173,6 +173,15 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label for="rating">Ranking: {{ clanek.rating }}</label>
+                <select id="rating" name="rating">
+                    <option value="1" {% if clanek.rating == 1 %}selected{% endif %}>1</option>
+                    <option value="2" {% if clanek.rating == 2 %}selected{% endif %}>2</option>
+                    <option value="3" {% if clanek.rating == 3 %}selected{% endif %}>3</option>
+                </select>
+            </div>
+
 
             <button type="submit">Uložit změny</button>
             <a href="{{ url_for('publication.publication') }}">Zrušit</a>

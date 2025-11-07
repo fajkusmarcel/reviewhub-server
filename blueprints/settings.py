@@ -20,7 +20,9 @@ from flask_mysqldb import MySQL
 # Vlastní moduly (část tvé aplikace)
 import config  # Konfigurace aplikace
 from utils.utils import *
+from utils.responsive import wants_mobile, render_responsive
 from utils.decorators import *
+from utils.responsive import wants_mobile, render_responsive
 from db.sql_query import *
 from .gpt import *
 
@@ -48,8 +50,8 @@ LOG_LINE_RE = re.compile(
 @project_required
 @admin_required
 def settings():
-
-    return render_template('settings.html', site_name="Settings")
+    
+    return render_responsive('settings.html', 'settings_mobile.html', site_name="Settings")
 
 
 # KONFIGURACE AI
@@ -265,8 +267,8 @@ def logs():
     if order == 'oldest':
         filtered = list(reversed(filtered))
 
-    return render_template(
-        'settings_logs.html',
+    return render_responsive(
+        'settings_logs.html', 'settings_logs_mobile.html',
         site_name="Logs",
         logs=filtered,
         form={

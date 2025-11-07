@@ -12,28 +12,12 @@ from flask_mysqldb import MySQL
 import config  # Konfigurace aplikace
 from utils.utils import *
 from utils.decorators import *
+from utils.responsive import wants_mobile, render_responsive
 from db.sql_query import *
 
 # Definice blueprintu pro uživatele
 dashboard_bp = Blueprint('dashboard', __name__)
 
-MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
-
-def wants_mobile() -> bool:
-    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
-    q = request.args.get("mobile")
-    if q == "1":
-        return True
-    if q == "0":
-        return False
-
-    ua = (request.user_agent.string or "").lower()
-    return any(k in ua for k in MOBILE_KEYWORDS)
-
-def render_responsive(desktop_template: str, mobile_template: str, **ctx):
-    if wants_mobile():
-        return render_template(mobile_template, **ctx)
-    return render_template(desktop_template, **ctx)
 
 @dashboard_bp.route('/dashboard')
 @login_required

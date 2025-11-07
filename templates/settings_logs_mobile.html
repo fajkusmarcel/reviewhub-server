@@ -1,9 +1,9 @@
-{% extends "index.html" %}
+{% extends "login_mobile.html" %}
 {% block content %}
 
 <h1 class="mb-3">Logs</h1>
 
-<form method="get" action="{{ url_for('settings.logs') }}" class="mb-4" style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end">
+<form method="get" action="{{ url_for('settings.logs') }}" class="mb-4 logs-filters" >
 
   <div>
     <label for="lines">Počet řádků</label>
@@ -74,6 +74,29 @@
   </div>
 </form>
 
+<div class="card">
+  <div class="card-body p-0">
+    <div class="loglist">
+      {% if logs %}
+        {% for r in logs %}
+          {% if r.level %}
+            <div class="logline lvl-{{ r.level }}"
+                 title="{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}] {{ r.msg }}">
+              <span class="meta">{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}]</span>
+              <span class="msg">{{ r.msg }}</span>
+            </div>
+          {% else %}
+            <!-- neparsovatelné řádky (např. traceback) -> zploštíme newliny -->
+            <div class="logline"
+                 title="{{ r.raw }}">{{ r.raw|replace('\n', ' ⏎ ') }}</div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="logline"><span class="meta">–</span><span class="msg text-muted">Žádné záznamy neodpovídají filtrům.</span></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
 <script>
   // Při načtení stránky nastav čitelnost/readonly podle checkboxu
@@ -183,29 +206,7 @@
 }
 </style>
 
-<div class="card">
-  <div class="card-body p-0">
-    <div class="loglist">
-      {% if logs %}
-        {% for r in logs %}
-          {% if r.level %}
-            <div class="logline lvl-{{ r.level }}"
-                 title="{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}] {{ r.msg }}">
-              <span class="meta">{{ r.ts }} '{{ r.user }}' [{{ r.level }}] [{{ r.etype }}]</span>
-              <span class="msg">{{ r.msg }}</span>
-            </div>
-          {% else %}
-            <!-- neparsovatelné řádky (např. traceback) -> zploštíme newliny -->
-            <div class="logline"
-                 title="{{ r.raw }}">{{ r.raw|replace('\n', ' ⏎ ') }}</div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <div class="logline"><span class="meta">–</span><span class="msg text-muted">Žádné záznamy neodpovídají filtrům.</span></div>
-      {% endif %}
-    </div>
-  </div>
-</div>
+
 
 
 

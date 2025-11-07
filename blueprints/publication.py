@@ -16,30 +16,13 @@ from utils.utils import *
 from utils.decorators import *
 from .gpt import *
 from utils.logger import log_info, log_warning, log_error
-
+from utils.responsive import wants_mobile, render_responsive
 
 
 # Definice blueprintu pro uživatele
 publication_bp = Blueprint('publication', __name__)
 
 
-MOBILE_KEYWORDS = ("mobile", "iphone", "ipad", "android", "opera mini", "mobi", "silk")
-
-def wants_mobile() -> bool:
-    # Volitelný ruční override přes query (?mobile=1/0) – hodí se na testy
-    q = request.args.get("mobile")
-    if q == "1":
-        return True
-    if q == "0":
-        return False
-
-    ua = (request.user_agent.string or "").lower()
-    return any(k in ua for k in MOBILE_KEYWORDS)
-
-def render_responsive(desktop_template: str, mobile_template: str, **ctx):
-    if wants_mobile():
-        return render_template(mobile_template, **ctx)
-    return render_template(desktop_template, **ctx)
 
 
 @publication_bp.route('/publication', methods=['GET'])
@@ -96,8 +79,6 @@ def publication():
     podkategorie = sql_get_unique_values(selected_project, 'subcategory')
     usedInReview = ['ANO', 'NE']
     pub_types = ['article', 'review', 'patent', 'UV', 'FVZ', 'poloprovoz', 'Zenodo', 'URL', 'book', 'chapter']
-
-
 
     sorting = [
         {'column_name': 'publication_id', 'display_name': 'Inserted'},
@@ -386,6 +367,7 @@ def publication_add():
         # Informace z databaze SCOPUS
         scopus_data = get_article_info_from_SCOPUS(form_data['nazev_clanku'], next_id)
 
+        
         if 'error' in scopus_data: 
             # Informace z formulare
 
@@ -411,7 +393,7 @@ def publication_add():
                                 category, subcategory, form_data['merena_velicina'],
                                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
-                                form_data['poznamky'], pdf_filename, form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'], 0, pub_type)
+                                form_data['poznamky'], pdf_filename, form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'], 0, pub_type, form_data['rating'])
         else:
             # Informace ze SCOPUS - ověření a ošetření hodnot
             title = scopus_data["title"] if scopus_data.get("title") != 'N/A' else form_data['nazev_clanku']
@@ -487,7 +469,7 @@ def publication_add():
 @project_required
 def publication_edit(clanek_id):
     """
-    Odstraneni publikace
+    Editace publikace
     """    
     # ID vybraného projektu
     selected_project = session['selected_project']
@@ -603,7 +585,7 @@ def publication_update(clanek_id):
                         form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'],
                         form_data['frekvencni_rozsah'], form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'],
                         form_data['klicove_poznatky'], form_data['summary'], form_data['poznamky'], form_data['obrazky'], form_data['autori'], form_data['doi'], form_data['citaceBib'],
-                        form_data['stav'], selected_project, pdf_name_new, pub_type)
+                        form_data['stav'], selected_project, pdf_name_new, pub_type, form_data['rating'])
     
 
 
@@ -763,6 +745,21 @@ def publication_bib():
         return render_template('publication_bib.html', response=response, site_name="Citations")
 
 
+@publication_bp.route('/publication_setRating/<int:article_id>', methods=['POST'])
+@login_required
+@project_required
+def publication_setRating(article_id):
+    data = request.get_json(silent=True) or {}
+    try:
+        rating = int(data.get('rating', 0))
+    except (TypeError, ValueError):
+        return jsonify(ok=False, error='Bad rating'), 400
+    if rating not in (0, 1, 2, 3):
+        return jsonify(ok=False, error='Out of range'), 400
+
+    # TODO: ověř, že článek patří do vybraného projektu uživatele
+    sql_update_publication_rating(article_id, rating)
+    return jsonify(ok=True, rating=rating)
 
 
 
