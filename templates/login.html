@@ -1,17 +1,19 @@
-{% extends "index.html" %}
+{% extends "layout_login.html" %}
 
 {% block content %}
-<form class="formWidthSmall"method="POST">
+<div class="auth-wrap">
+  <form class="auth-card" method="POST" novalidate>
     <div class="form-group">
-        <label for="username">Uživatelské jméno:</label>
-        <input type="text" id="username" name="username" required>
+      <label for="username">Uživatelské jméno:</label>
+      <input type="text" id="username" name="username" required autocomplete="username" autofocus>
     </div>
-    <div class="form-group">
-        <label for="password">Heslo:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <button type="submit">Přihlásit se</button>
-</form>
 
+    <div class="form-group">
+      <label for="password">Heslo:</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password">
+    </div>
+
+    <button type="submit" class="btn primary auth-submit">Přihlásit se</button>
+  </form>
+</div>
 {% endblock %}
-

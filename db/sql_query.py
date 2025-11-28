@@ -713,15 +713,19 @@ def sql_exist_publication(publication_id):
 
 
 def sql_check_publication_name_exists(nazev_clanku):
-    """
-    Zkontroluje, zda existuje článek s daným názvem.
-    """
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT COUNT(*) AS count FROM publication WHERE publication_name = %s", (nazev_clanku,))
+    query = """
+        SELECT COUNT(*) AS count
+        FROM publication
+        WHERE TRIM(publication_name) = LOWER(TRIM(%s))
+    """
+    cursor.execute(query, (nazev_clanku,))
     result = cursor.fetchone()
     cursor.close()
-    return result['count'] > 0  # Vrátí True, pokud existuje
+    conn.close()
+    return result['count'] > 0
+
 
 def sql_check_publication_name_exist_in_project(nazev_clanku, projekt_id):
 

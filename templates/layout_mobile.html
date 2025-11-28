@@ -17,7 +17,12 @@
 
   <!-- Horní lišta s hamburgerem -->
   <header class="m-header">
+    {% if 'user_id' in session %}
+
     <button class="m-burger" aria-controls="m-drawer" aria-expanded="false">☰</button>
+
+    {% endif %}
+
     <div class="m-brand">ScienceHub</div>
     {% block header_right %}{% endblock %}
 

@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="centre-container">
+    <h3>Check</h3>    
+</div>
+<form method="post" action="{{ url_for('publication.publication_check')}}">    
+    <div class="form-group">
+        <label for="nazev_clanku">Vstupni text:</label>
+        <input type="text" id="nazev_clanku" name="nazev_clanku">            
+        </textarea>
+    </div>
+
+    <button type="button" onclick="checkArticle()">Check</button>
+</form>
+
+
+
+<!-- Překryvný div pro zobrazení výsledku -->
+<div id="overlay">
+    <div id="overlayContent">
+        <h3>Výsledek kontroly</h3>
+        <p id="overlayMessage"></p>
+        <button type="button" onclick="closeOverlay()" >Zavřít</button>
+    </div>
+</div>
+
+<script>
+// Funkce pro kontrolu článku
+async function checkArticle() {
+    const nazev = document.getElementById('nazev_clanku').value;
+
+    // Provedeme asynchronní volání na server
+    const response = await fetch('/reviewhub/publication_check', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nazev_clanku: nazev })
+    });
+
+    const data = await response.json();
+    const overlay = document.getElementById('overlay');
+    const message = document.getElementById('overlayMessage');
+
+    if (data.exists) {
+        // Zobrazení chybové zprávy a zamezení odeslání formuláře
+        message.textContent = "Článek již existuje v databázi.";
+        message.className = "red-text";
+        overlay.style.display = 'block';
+        return false;  // Zastavení odeslání formuláře
+    } else {
+        message.textContent = "Článek v databázi neexistuje.";
+        message.className = "green-text";
+        overlay.style.display = 'block';  // Skrytí zprávy, pokud článek neexistuje
+        return true;  // Článek neexistuje, formulář může být odeslán
+    }
+}
+
+function closeOverlay() {
+    const button = document.querySelector('button');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+</script>
+{% endblock %}

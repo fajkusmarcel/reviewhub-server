@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReviewHub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles-agel.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='cards.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_mobile.css') }}">
 
     <script src="/reviewhub/static/js.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,50 +32,17 @@
         </div>
     </header>
 
-    <!-- Hlavní rozvržení -->
-    <div class="container">
 
         
-        <!-- Boční panel (Sidebar) -->
-
-        <nav class="sidebar">
-            {% if 'user_id' in session %}
-            <button id="sidebarToggle" class="collapse-btn" onclick="toggleSidebar()" aria-label="Skrýt menu" title="Skrýt menu">
-            <span class="chev">«</span>
-            </button>
-
-            <ul>
-                <li class="left_menu_section">Základní funkce</li>
-                <li><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('publication.publication_search') }}">Hledat</a></li>
-                <li><a href="{{ url_for('publication.publication') }}">Články</a></li>
-                <li><a href="{{ url_for('publication.publication_check') }}">Check</a></li>
-                <li><a href="{{ url_for('publication.publication_add') }}">Přidat článek</a></li>
-                <li><a href="{{ url_for('project.project') }}">Projekty</a></li>
-                <li><a href="{{ url_for('publication.publication_all') }}">Seznam článků</a></li>
-                <li><a href="{{ url_for('publication.publication_bib') }}">BIB references</a></li>
-
-                {% if session['user_role'] == 'admin' %}
-                    <li class="left_menu_section">Skryté funkce</li>
-                    <li><a href="{{ url_for('publication.publication_pdf2text') }}">PDF2Text</a></li>  
-
-                    <li class="left_menu_section">Administrace</li>
-                    <li><a href="{{ url_for('user.users') }}">Uživatelé</a></li>
-                    <li><a href="{{ url_for('settings.settings') }}">Nastavení</a></li>
-                {% endif %}
-            </ul>
-            {% endif %}
-        </nav>
         
 
         <!-- Hlavní obsah -->
-        <main class="main_content">
-            <div class="site_name">{{site_name}}</div>
-            <div class="main_container">
-                {% block content %}{% endblock %}
-            </div>
+        <main class="m_content">
+            
+               {% block content %}{% endblock %}
+            
         </main>
-    </div>
+   
 </body>
 
 <script>

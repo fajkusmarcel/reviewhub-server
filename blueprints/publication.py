@@ -386,7 +386,6 @@ def publication_add():
             except ValueError:
                 rok_vydani = 1990
 
-
             publication_id = sql_insert_publication(selected_project, form_data['nazev_clanku'], form_data['abstract'], form_data['casopis'],
                                 rok_vydani, form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
                                 form_data['typ_optickeho_vlakna'], form_data['zpusob_zapouzdreni'], form_data['zpusob_implementace'],
@@ -421,7 +420,6 @@ def publication_add():
             subcategory = request.form.get('podkategorie') if selected == '__NEW__' else selected
             pub_type = request.form.get('pubtype_select')
 
-
             publication_id = sql_insert_publication(
                 selected_project, title, form_data['abstract'], journal,
                 year, form_data['typ_senzoru'], form_data['princip_senzoru'], form_data['konstrukce_senzoru'],
@@ -429,7 +427,7 @@ def publication_add():
                 category, subcategory, form_data['merena_velicina'],
                 form_data['rozsah_merani'], form_data['citlivost'], form_data['presnost'], form_data['frekvencni_rozsah'],
                 form_data['vyhody'], form_data['nevyhody'], form_data['aplikace_studie'], form_data['klicove_poznatky'], form_data['summary'],
-                form_data['poznamky'], pdf_filename, form_data['obrazky'], authors, doi, bibtex_citation, 1, pub_type)
+                form_data['poznamky'], pdf_filename, form_data['obrazky'], authors, doi, bibtex_citation, 1, pub_type, form_data['rating'])
 
         # Vložení do tabulky ArticleTracking
         user_id = session['user_id']  # ID přihlášeného uživatele
@@ -456,8 +454,8 @@ def publication_add():
 
     # Při GET načteme seznam projektů pro roletkové menu ve formuláři
     projekty = sql_get_projects()
-    kategorie = sql_get_categories()
-    podkategorie = sql_get_subcategories()
+    kategorie = sorted(sql_get_categories())
+    podkategorie = sorted(sql_get_subcategories())
     pub_types = ['article', 'review', 'patent', 'UV', 'FVZ', 'poloprovoz', 'Zenodo', 'URL', 'book', 'chapter']
 
     return render_template('publication_add.html', projekty=projekty, kategorie=kategorie, podkategorie=podkategorie, pub_types=pub_types, site_name="Add publication")
@@ -598,23 +596,31 @@ def publication_update(clanek_id):
     return redirect(url_for('publication.publication'))  # Přesměrování zpět na seznam článků
 
 
-
-@publication_bp.route('/publication_check', methods=['POST'])
+@publication_bp.route('/publication_check', methods=['GET', 'POST'])
 @login_required
 @project_required
 def publication_check():
     """
     Kontrola, zda nazev clanku jiz neni v databazi
     """    
-    # Načtení dat z požadavku
-    form_data = request.get_json()
-    nazev = form_data.get('nazev_clanku')
+    print("Publication check")
+    if request.method == 'POST':
+        # Načtení dat z požadavku
+        form_data = request.get_json()
+        nazev = form_data.get('nazev_clanku')
 
-    # Zkontroluj, zda článek existuje
-    exists = sql_check_publication_name_exists(nazev)
+        # Zkontroluj, zda článek existuje
+        exists = sql_check_publication_name_exists(nazev)
 
-    # Vrácení výsledku jako JSON
-    return jsonify({'exists': exists})
+        # Vrácení výsledku jako JSON
+        return jsonify({'exists': exists})
+        
+    return render_template('publication_check.html')
+
+
+
+
+    
 
 @publication_bp.route('/publication_delete/<int:clanek_id>', methods=['GET', 'DELETE'])
 @login_required
